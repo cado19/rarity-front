@@ -5,6 +5,7 @@ import { baseURL } from "../../constants/url";
 import Loading from "../../components/PageContent/Loading";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
+import BookingNav from "../../components/navs/bookingnav";
 
 export default function AllBookings() {
   const columns = [
@@ -39,7 +40,7 @@ export default function AllBookings() {
     },
     {
       name: "Options",
-      cell: (row) => <Link to={`/vehicle/${row.id}`}>Details</Link>,
+      cell: (row) => <Link to={`/booking/${row.id}`}>Details</Link>,
     }
   ];
   
@@ -78,6 +79,7 @@ export default function AllBookings() {
     const alteredData = bookings && bookings.map((booking) => {
       return {
         ...booking,
+        id: booking.id,
         no: booking.booking_no,
         client: booking.c_fname + " " + booking.c_lname,
         vehicle: booking.make + " " + booking.model,
@@ -107,9 +109,12 @@ export default function AllBookings() {
   }
 
   return (
+    <>  
     <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
+    <BookingNav />
       {/* <h1 className="text-bold text-center">Vehicles </h1> */}
       <DataTable columns={columns} data={alteredData} pagination title="Bookings" />
     </div>
+    </>
   );
 }
