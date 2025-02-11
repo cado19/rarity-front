@@ -5,9 +5,10 @@ import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import axios from "axios";
 import { baseURL } from "../../constants/url";
-import Loading from "../../components/PageContent/Loading";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import Loading from "../../components/PageContent/Loading";
+import BookingNav from "../../components/navs/bookingnav";
 
 export default function NewBooking() {
   const clientOptions = [];
@@ -272,7 +273,8 @@ export default function NewBooking() {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
-        <h3>New Booking</h3>
+          <BookingNav />
+        <h1 className="4xl my-2 text-center font-bold">New Booking</h1>
         <form onSubmit={handleSubmit}>
           {/* Client select  */}
           <div className=" mb-5 group">
@@ -379,7 +381,7 @@ export default function NewBooking() {
             </div>
             <button
               disabled={disabled}
-              className="border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
+              className="w-full border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
             >
               Submit
             </button>
