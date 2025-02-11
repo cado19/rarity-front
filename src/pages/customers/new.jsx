@@ -9,12 +9,15 @@ import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import Select from "react-select";
 import React, { useState } from "react";
+import { baseURL } from "../../constants/url";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function NewCustomer() {
   // state
   const [inputs, setInputs] = useState({
-    first_name: "",
-    last_name: "",
+    f_name: "",
+    l_name: "",
     email: "",
     phone_number: "",
     date_of_birth: '',
@@ -29,6 +32,7 @@ export default function NewCustomer() {
   const [dlExpiry, setDlExpiry] = useState(new Date());
   const [selectedOption, setSelectedOption] = useState(null);
   const [phone, setPhone] = useState("");
+  const [disabled, setDisabled] = useState(false);
 
   const [errors, setErrors] = useState({});
 
@@ -38,7 +42,11 @@ export default function NewCustomer() {
     { value: "Military ID", label: "Military ID" },
   ];
 
-  console.log(phone);
+  const customerUrl = baseURL + "/api/customers/create.php";
+
+  const navigate = useNavigate();
+
+  // console.log(phone);
 
   // handle change function
   const handleChange = (e) => {
@@ -47,7 +55,7 @@ export default function NewCustomer() {
       ...inputs,
       [name]: value,
     });
-    console.log(inputs);
+    // console.log(inputs);
   };
 
   const birthDateChange = (value) => {
@@ -61,7 +69,7 @@ export default function NewCustomer() {
       date_of_birth: formattedBirthDate,
     });
 
-    console.log(inputs);
+    // console.log(inputs);
   };
 
   const dlDateChange = (value) => {
@@ -75,7 +83,7 @@ export default function NewCustomer() {
       dl_expiry: formattedDlExpiry,
     });
 
-    console.log(inputs);
+    // console.log(inputs);
   };
 
   const idTypeChange = (value) => {
@@ -85,7 +93,7 @@ export default function NewCustomer() {
       ...inputs,
       id_type: value.value,
     });
-    console.log(value.value);
+    // console.log(value.value);
   };
 
   const phoneChange = (value) => {
@@ -94,22 +102,32 @@ export default function NewCustomer() {
       ...inputs,
       phone_number: value,
     });
-    console.log(value);
+    // console.log(value);
   }
 
   // submit function
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setDisabled(true);
     const validationErrors = validate(inputs);
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
       console.log("Form could not be submitted");
       console.log(validationErrors);
+      setDisabled(false);
     } else {
       // submit the form
+      const response = axios.post(customerUrl, inputs);
+      // redirect if response is "Customer Created"
+      if (response.data.message === "Customer Created") {
+        navigate("/customer", {state: {message: "Customer Created"}});
+      }
+      // console.log(response);
+      setDisabled(false);
+      
       console.log(inputs);
-      console.log("Form submitted");
+      // console.log("Form submitted");
     }
   };
 
@@ -118,12 +136,12 @@ export default function NewCustomer() {
     const errors = {};
 
     // validate first name
-    if (!data.first_name) {
+    if (!data.f_name) {
       errors.first_name = "First name is required";
     }
 
     // validate last name
-    if (!data.last_name) {
+    if (!data.l_name) {
       errors.last_name = "Last name is required";
     }
 
@@ -181,12 +199,12 @@ export default function NewCustomer() {
             <div className="relative z-0 w-full mb-5 group">
               <input
                 type="text"
-                name="first_name"
+                name="f_name"
                 id="first_name"
                 className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 placeholder=" "
                 required
-                value={inputs.first_name}
+                value={inputs.f_name}
                 onChange={handleChange}
               />
               <label
@@ -203,12 +221,12 @@ export default function NewCustomer() {
             <div className="relative z-0 w-full mb-5 group">
               <input
                 type="text"
-                name="last_name"
+                name="l_name"
                 id="last_name"
                 className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 placeholder=" "
                 required
-                value={inputs.last_name}
+                value={inputs.l_name}
                 onChange={handleChange}
               />
               <label
@@ -404,7 +422,7 @@ export default function NewCustomer() {
             )}
           </div>
 
-          <button className="border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2">
+          <button disabled={disabled} className="border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2">
             Submit
           </button>
         </form>
