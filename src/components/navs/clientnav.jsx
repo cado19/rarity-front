@@ -21,6 +21,11 @@ export default function ClientNav() {
               Recent
             </NavLink>
           </li>
+          <li className="me-2">
+            <NavLink to="/customer/new" className={classNameFunc}>
+              Add Client
+            </NavLink>
+          </li>
         </ul>
       </div>
     </div>

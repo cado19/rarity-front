@@ -36,6 +36,11 @@ export default function BookingNav() {
               Completed
             </NavLink>
           </li>
+          <li cclassNamelass="me-2">
+            <NavLink to="/bookings/new" className={classNameFunc}>
+              Create Booking
+            </NavLink>
+          </li>
         </ul>
       </div>
     </div>
