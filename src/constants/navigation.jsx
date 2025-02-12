@@ -8,6 +8,7 @@ import {
     HiOutlineAnnotation,
     HiOutlineQuestionMarkCircle,
     HiOutlineCog,
+    HiOutlineTruck,
   } from "react-icons/hi";
   
   export const DASHBOARD_SIDEBAR_LINKS = [
@@ -21,13 +22,14 @@ import {
           key: 'clients',
           label: 'Clients',
           path: '/customers',
-          icon: <HiOutlineCube />
+          icon: <HiOutlineUsers /> 
+        
       },
       {
           key: 'vehicles',
           label: 'Vehicles',
           path: '/vehicles',
-          icon: <HiOutlineShoppingCart />
+          icon:  <HiOutlineTruck />
       },
       {
           key: 'drivers',
@@ -38,7 +40,7 @@ import {
       {
           key: 'bookings',
           label: 'Bookings',
-          path: '/bookings',
+          path: '/bookings/all',
           icon: <HiOutlineDocumentText />
       },
       {
