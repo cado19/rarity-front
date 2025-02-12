@@ -13,6 +13,7 @@ export default function Customer() {
   const customerUrl = baseURL + `/api/customers/read_single.php?id=${id}`;
   const licenseURL = feUrl + `/upload_license/${id}`;
   const idURL = feUrl + `/upload_id/${id}`;
+  const profileURL = feUrl + `/upload_profile/${id}`;
 
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,6 +36,16 @@ export default function Customer() {
     Swal.fire({
       title: "Link copied",
       text: "ID Link copied to clipboard",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+  };
+
+  const copyProfileURL = () => {
+    navigator.clipboard.writeText(profileURL);
+    Swal.fire({
+      title: "Link copied",
+      text: "Profile Link copied to clipboard",
       icon: "success",
       confirmButtonText: "OK",
     });
@@ -188,7 +199,7 @@ export default function Customer() {
           <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
             <button
               className="border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
-              // onClick={handleUpload}
+              onClick={copyProfileURL}
             >
               Profile Link
             </button>
