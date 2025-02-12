@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import { baseURL } from "../../constants/url";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import ClientNav from "../../components/navs/clientnav";
 
 export default function NewCustomer() {
   // state
@@ -193,7 +194,8 @@ export default function NewCustomer() {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
-        <h3>Add Client</h3>
+        <ClientNav /> 
+        <h3 className="xl mt-2">Add Client</h3>
         <form className="max-w-md mx-auto p-3" onSubmit={handleSubmit}>
           <div className="grid md:grid-cols-2 md:gap-6">
             <div className="relative z-0 w-full mb-5 group">
