@@ -51,6 +51,10 @@ export default function CompletedBookings() {
   const bookingUrl = baseURL + "/api/bookings/completed.php";
 
   useEffect(() => {
+    const loggedIn = localStorage.getItem("loggedIn");
+    if (!loggedIn){
+      navigate("/login");
+    };
     getBookings();
   }, [loading]);
 

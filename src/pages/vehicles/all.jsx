@@ -114,6 +114,10 @@ export default function AllVehicles() {
   // console.log(vehicleData);
 
   useEffect(() => {
+    const loggedIn = localStorage.getItem("loggedIn");
+    if (!loggedIn){
+      navigate("/login");
+    };
     getVehicles();
   }, [vehicles]);
 

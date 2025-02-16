@@ -102,6 +102,10 @@ export default function NewBooking() {
   }
 
   useEffect(() => {
+    const loggedIn = localStorage.getItem("loggedIn");
+    if (!loggedIn){
+      navigate("/login");
+    };
     fetchClients();
     fetchVehicles();
     fetchDrivers();

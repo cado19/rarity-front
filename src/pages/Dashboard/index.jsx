@@ -80,6 +80,10 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    const loggedIn = localStorage.getItem("loggedIn");
+    if (!loggedIn){
+      navigate("/login");
+    };
     getVehicles();
     getBookings();
   }, [loading]);

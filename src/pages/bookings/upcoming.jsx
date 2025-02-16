@@ -51,6 +51,10 @@ export default function UpcomingBookings() {
   const bookingUrl = baseURL + "/api/bookings/upcoming.php";
 
   useEffect(() => {
+    const loggedIn = localStorage.getItem("loggedIn");
+    if (!loggedIn){
+      navigate("/login");
+    };
     getBookings();
   }, [loading]);
 

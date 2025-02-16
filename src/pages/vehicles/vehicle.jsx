@@ -30,6 +30,10 @@ export default function Vehicle() {
     }
   }
   useEffect(() => {
+    const loggedIn = localStorage.getItem("loggedIn");
+    if (!loggedIn){
+      navigate("/login");
+    };
     getVehicle();
   }, []);
 
