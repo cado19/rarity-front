@@ -200,6 +200,7 @@ export default function AllCustomers() {
       <DataTable
         columns={columns}
         data={customers}
+        pagination
         title="Clients"
         highlightOnHover
         progressPending={loading}
