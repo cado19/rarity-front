@@ -291,23 +291,7 @@ export default function NewCustomer() {
           </div>
 
           <div>
-            {/* <label
-              for="countries"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Id Type
-            </label>
-            <select
-              id="countries"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              name="id_type"
-              // value={inputs.id_type}
-              onChange={handleChange}
-            >
-              <option>National ID</option>
-              <option>Passport</option>
-              <option>Military ID</option>
-            </select> */}
+
             <Select
               options={options}
               defaultValue={options[0]}
@@ -369,10 +353,7 @@ export default function NewCustomer() {
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               value={dlExpiry}
               onChange={(newValue) => dlDateChange(newValue)}
-              // slotProps={{ textField: { name: "dl_expiry" } }}
-              // label="Dl Expiry"
-              // name="dl_expiry"
-              // format="yyyy-mm-dd"
+
             />
           </div>
 
