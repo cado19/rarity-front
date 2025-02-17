@@ -37,6 +37,7 @@ export default function AllVehicles() {
 
   const addVehicle = (vehicle) => {
     vehicleData.push({
+      id: vehicle.id,
       make: vehicle.make,
       model: vehicle.model,
       number_plate: vehicle.number_plate,
