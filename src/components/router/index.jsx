@@ -26,6 +26,12 @@ import CompleteBooking from '../bookings/complete'
 import LicenseUpload from '../../pages/customers/license_upload'
 import IDUpload from '../../pages/customers/id_upload'
 import ProfileUpload from '../../pages/customers/profile_upload'
+import AllDrivers from '../../pages/drivers/all'
+import NewDriver from '../../pages/drivers/new'
+import AllAgents from '../../pages/agents/all'
+import NewAgent from '../../pages/agents/new'
+import Agent from '../../pages/agents/agent'
+import Driver from '../../pages/drivers/driver'
 
 
 export default function AppRouter() {
@@ -46,6 +52,9 @@ export default function AppRouter() {
             <Route path='/customer/new' element={<NewCustomer />} />
 
             {/* Driver Routes  */}
+            <Route path='/drivers' element={<AllDrivers />} />
+            <Route path='/driver/new' element={<NewDriver />} />
+            <Route path='/driver/:id' element={<Driver />} />
 
             {/* Booking Routes  */}
             <Route path='/bookings/all' element={<AllBookings />} />
@@ -57,6 +66,11 @@ export default function AppRouter() {
             <Route path='/booking/:id' element={<Booking />} />
             <Route path='/booking/:id/cancel' element={<CancelBooking />} />
             <Route path='/booking/:id/complete' element={<CompleteBooking />} />
+
+            {/* Agent Routes  */}
+            <Route path='/agents' element={<AllAgents />} />
+            <Route path='/agents/new' element={<NewAgent />} />
+            <Route path='/agent/:id' element={<Agent />} />
             
           </Route>
           <Route path='/login' element={<Login />} />
