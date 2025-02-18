@@ -3,12 +3,14 @@ import {
     HiOutlineViewGrid,
     HiOutlineCube,
     HiOutlineShoppingCart,
-    HiOutlineUsers,
+    HiOutlineUserGroup,
+    HiOutlineUser,
     HiOutlineDocumentText,
     HiOutlineAnnotation,
     HiOutlineQuestionMarkCircle,
     HiOutlineCog,
     HiOutlineTruck,
+    HiOutlineIdentification 
   } from "react-icons/hi";
   
   export const DASHBOARD_SIDEBAR_LINKS = [
@@ -22,7 +24,14 @@ import {
           key: 'clients',
           label: 'Clients',
           path: '/customers',
-          icon: <HiOutlineUsers /> 
+          icon: <HiOutlineUserGroup /> 
+        
+      },
+      {
+          key: 'agents',
+          label: 'Agents',
+          path: '/agents',
+          icon: <HiOutlineUser /> 
         
       },
       {
@@ -35,7 +44,7 @@ import {
           key: 'drivers',
           label: 'Drivers',
           path: '/drivers',
-          icon: <HiOutlineUsers />
+          icon: <HiOutlineIdentification />
       },
       {
           key: 'bookings',
