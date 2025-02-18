@@ -1,4 +1,4 @@
-// THIS COMPONENT SHOWS RECENTLY ADDED CUSTOMERS
+// THIS COMPONENT SHOWS ALL AGENTS
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { baseURL } from "../../constants/url";
