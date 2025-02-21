@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { baseURL, feUrl } from "../../constants/url";
+import { baseURL, feUrl, userUrl } from "../../constants/url";
 import { useParams } from "react-router-dom";
 import Loading from "../../components/PageContent/Loading";
 import Swal from "sweetalert2";
@@ -11,9 +11,9 @@ import IDmodal from "./id_modal";
 export default function Customer() {
   const { id } = useParams();
   const customerUrl = baseURL + `/api/customers/read_single.php?id=${id}`;
-  const licenseURL = feUrl + `/upload_license/${id}`;
-  const idURL = feUrl + `/upload_id/${id}`;
-  const profileURL = feUrl + `/upload_profile/${id}`;
+  const licenseURL = userUrl + `/license_form&id=${id}`;
+  const idURL = userUrl + `/new&id=${id}`;
+  const profileURL = userUrl + `/profile_form&id=${id}`;
 
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
