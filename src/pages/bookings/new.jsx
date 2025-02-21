@@ -23,6 +23,7 @@ export default function NewBooking() {
     end_date: "",
     start_time: "",
     end_time: "",
+    custom_rate: "",
   });
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -39,7 +40,6 @@ export default function NewBooking() {
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
-
 
   const customersURL = baseURL + "/api/customers/booking_customers.php";
   const vehiclesURL = baseURL + "/api/fleet/booking_vehicles.php";
@@ -96,16 +96,14 @@ export default function NewBooking() {
         console.log(response.data.drivers);
         response.data.drivers.forEach((driver) => addDriverOptions(driver));
       });
-    } catch (error) {
-      
-    }
-  }
+    } catch (error) {}
+  };
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
-    if (!loggedIn){
+    if (!loggedIn) {
       navigate("/login");
-    };
+    }
     fetchClients();
     fetchVehicles();
     fetchDrivers();
@@ -223,17 +221,16 @@ export default function NewBooking() {
   const validate = (data) => {
     const errors = {};
 
-    if(!data.vehicle_id) errors.vehicle_id = "Vehicle is required";
-    if(!data.customer_id) errors.customer_id = "Client is required";
-    if(!data.driver_id) errors.driver_id = "Driver is required";
-    if(!data.start_date) errors.start_date = "Start Date is required";
-    if(!data.end_date) errors.end_date = "End Date is required";
-    if(!data.start_time) errors.start_time = "Start Time is required";
-    if(!data.end_time) errors.end_time = "End Time is required";
+    if (!data.vehicle_id) errors.vehicle_id = "Vehicle is required";
+    if (!data.customer_id) errors.customer_id = "Client is required";
+    if (!data.driver_id) errors.driver_id = "Driver is required";
+    if (!data.start_date) errors.start_date = "Start Date is required";
+    if (!data.end_date) errors.end_date = "End Date is required";
+    if (!data.start_time) errors.start_time = "Start Time is required";
+    if (!data.end_time) errors.end_time = "End Time is required";
 
     return errors;
-  }
-
+  };
 
   // submit function
   const handleSubmit = (e) => {
@@ -244,19 +241,21 @@ export default function NewBooking() {
       Swal.fire({
         title: "Validation Error",
         icon: "error",
-        text: "Check form fields for highlighted errors"
+        text: "Check form fields for highlighted errors",
       });
       setDisabled(false);
     } else {
       axios.post(bookingURL, inputs).then((response) => {
-        if(response.data.status == "Success"){
+        if (response.data.status == "Success") {
           const id = response.data.booking_id;
-          navigate(`/booking/${id}`,{ state: {message: "Booking created successfully"}});
+          navigate(`/booking/${id}`, {
+            state: { message: "Booking created successfully" },
+          });
         } else {
           Swal.fire({
             title: "Error",
             icon: "error",
-            text: "An error occured while creating booking"
+            text: "An error occured while creating booking",
           });
           setDisabled(false);
         }
@@ -269,7 +268,7 @@ export default function NewBooking() {
   if (loading) {
     return (
       <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading /> 
+        <Loading />
       </div>
     );
   }
@@ -277,7 +276,7 @@ export default function NewBooking() {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
-          <BookingNav />
+        <BookingNav />
         <h1 className="4xl my-2 text-center font-bold">New Booking</h1>
         <form onSubmit={handleSubmit}>
           {/* Client select  */}
@@ -291,8 +290,8 @@ export default function NewBooking() {
               isSearchable
             />
             {errors.customer_id && (
-                <p className="text-red-500 text-xs mt-1">{errors.customer_id}</p>
-              )}
+              <p className="text-red-500 text-xs mt-1">{errors.customer_id}</p>
+            )}
           </div>
 
           {/* Vehicle select  */}
@@ -306,8 +305,8 @@ export default function NewBooking() {
               isSearchable
             />
             {errors.vehicle_id && (
-                <p className="text-red-500 text-xs mt-1">{errors.vehicle_id}</p>
-              )}
+              <p className="text-red-500 text-xs mt-1">{errors.vehicle_id}</p>
+            )}
           </div>
 
           {/* Driver select  */}
@@ -321,8 +320,8 @@ export default function NewBooking() {
               isSearchable
             />
             {errors.driver_id && (
-                <p className="text-red-500 text-xs mt-1">{errors.driver_id}</p>
-              )}
+              <p className="text-red-500 text-xs mt-1">{errors.driver_id}</p>
+            )}
           </div>
 
           {/* Booking dates  */}
@@ -382,6 +381,24 @@ export default function NewBooking() {
               {errors.end_time && (
                 <p className="text-red-500 text-xs mt-1">{errors.end_time}</p>
               )}
+            </div>
+            {/* Driver select  */}
+            <div className="relative z-0 w-full mb-5 group">
+              <input
+                type="text"
+                name="custom_rate"
+                id="custom_rate"
+                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                value={inputs.custom_rate}
+                onChange={handleChange}
+              />
+
+              <label
+                for="custom_rate"
+                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+              >
+                Custome Rate
+              </label>
             </div>
             <button
               disabled={disabled}

@@ -189,7 +189,7 @@ export default function Booking() {
             {booking.model} {booking.number_plate}
           </p>
           <p className="leading-loose text-center">
-            <span className="font-bold">Rate:</span> {booking.daily_rate}/-
+            <span className="font-bold">Rate:</span> {booking.custom_rate > 0 ? (<span><span className="line-through text-gray-400">{booking.daily_rate}</span> <span>{booking.custom_rate}</span></span>): (<span>{booking.daily_rate}</span>)}/-
           </p>
           <p className="leading-loose text-center">
             <span className="font-bold">Total:</span> {booking.total}/-
