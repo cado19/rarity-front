@@ -55,6 +55,13 @@ export default function Booking() {
           icon: "success",
           confirmButtonText: "OK",
         });
+      } else if (location.state.message = "Booking updated successfully") {
+        Swal.fire({
+          title: "Booking updated",
+          text: "The booking has been updated",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
       }
     }
   };
@@ -104,8 +111,8 @@ export default function Booking() {
       text: "Signature link has been copied to your clipboard",
       icon: "success",
       confirmButtonText: "OK",
-    })
-  }
+    });
+  };
   const copyVoucherLink = () => {
     navigator.clipboard.writeText(bookingVoucherURL);
     Swal.fire({
@@ -113,8 +120,8 @@ export default function Booking() {
       text: "Voucher link has been copied to your clipboard",
       icon: "success",
       confirmButtonText: "OK",
-    })
-  }
+    });
+  };
   const copyContractLink = () => {
     navigator.clipboard.writeText(contractViewURL);
     Swal.fire({
@@ -122,9 +129,9 @@ export default function Booking() {
       text: "Contract link has been copied to your clipboard",
       icon: "success",
       confirmButtonText: "OK",
-    })
-  }
-  
+    });
+  };
+
   // function to get booking data
   const getBooking = async () => {
     try {
@@ -189,7 +196,18 @@ export default function Booking() {
             {booking.model} {booking.number_plate}
           </p>
           <p className="leading-loose text-center">
-            <span className="font-bold">Rate:</span> {booking.custom_rate > 0 ? (<span><span className="line-through text-gray-400">{booking.daily_rate}</span> <span>{booking.custom_rate}</span></span>): (<span>{booking.daily_rate}</span>)}/-
+            <span className="font-bold">Rate:</span>{" "}
+            {booking.custom_rate > 0 ? (
+              <span>
+                <span className="line-through text-gray-400">
+                  {booking.daily_rate}
+                </span>{" "}
+                <span>{booking.custom_rate}</span>
+              </span>
+            ) : (
+              <span>{booking.daily_rate}</span>
+            )}
+            /-
           </p>
           <p className="leading-loose text-center">
             <span className="font-bold">Total:</span> {booking.total}/-
@@ -222,7 +240,10 @@ export default function Booking() {
                 Extend Booking
               </button>
             )}
-            <button className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black">
+            <button
+              className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
+              onClick={() => navigate(`/bookings/edit/${id}`)}
+            >
               Edit Booking
             </button>
             {booking.status != "cancelled" && (

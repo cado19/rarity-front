@@ -11,18 +11,19 @@ import ActiveBookings from '../../pages/bookings/active'
 import UpcomingBookings from '../../pages/bookings/upcoming'
 import CompletedBookings from '../../pages/bookings/completed'
 import CancelledBookings from '../../pages/bookings/cancelled'
+import NewBooking from '../../pages/bookings/new'
+import EditBooking from '../../pages/bookings/edit'
+import CancelBooking from '../bookings/cancel'
+import CompleteBooking from '../bookings/complete'
 import Booking from '../../pages/bookings/booking'
 import NewCustomer from '../../pages/customers/new'
 import Login from '../../pages/accounts/login'
-import NewBooking from '../../pages/bookings/new'
 import ShowContract from '../../pages/contracts/show'
 import EditContract from '../../pages/contracts/edit'
 import Success from '../../pages/utilities/success'
 import RecentCustomers from '../../pages/customers/recent'
 import BookingVoucher from '../../pages/bookings/voucher'
 import SelfRegister from '../../pages/customers/self_register'
-import CancelBooking from '../bookings/cancel'
-import CompleteBooking from '../bookings/complete'
 import LicenseUpload from '../../pages/customers/license_upload'
 import IDUpload from '../../pages/customers/id_upload'
 import ProfileUpload from '../../pages/customers/profile_upload'
@@ -63,6 +64,7 @@ export default function AppRouter() {
             <Route path='/bookings/upcoming' element={<UpcomingBookings />} />
             <Route path='/bookings/cancelled' element={<CancelledBookings />} />
             <Route path='/bookings/new' element={<NewBooking />} />
+            <Route path='/bookings/edit/:id' element={<EditBooking />} />
             <Route path='/booking/:id' element={<Booking />} />
             <Route path='/booking/:id/cancel' element={<CancelBooking />} />
             <Route path='/booking/:id/complete' element={<CompleteBooking />} />
