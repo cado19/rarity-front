@@ -5,6 +5,8 @@ import { baseURL } from "../../constants/url";
 import Loading from "../../components/PageContent/Loading";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import VehicleNav from "../../components/navs/vehicleNav";
 
 export default function AllVehicles() {
   const columns = [
@@ -89,9 +91,10 @@ export default function AllVehicles() {
     // setVehicles(newRows);
 
     let query = e.target.value;
-    const newRecords = vehicleData.filter((item) =>
-      item.make.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-      item.model.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
+    const newRecords = vehicleData.filter(
+      (item) =>
+        item.make.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+        item.model.toLocaleLowerCase().includes(query.toLocaleLowerCase())
       // item.rate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
     );
     setVehicles(newRecords);
@@ -116,9 +119,9 @@ export default function AllVehicles() {
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
-    if (!loggedIn){
+    if (!loggedIn) {
       navigate("/login");
-    };
+    }
     getVehicles();
   }, [vehicles]);
 
@@ -140,6 +143,13 @@ export default function AllVehicles() {
 
   return (
     <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
+      <VehicleNav />
+      <div className="flex flex-row items-center gap-1">
+        <IoIosAddCircleOutline className="mt-3 text-blue-600" />
+        <Link to="/vehicle/new" className="mt-3">
+          Add Vehicle
+        </Link>
+      </div>
       {/* <h1 className="text-bold text-center">Vehicles </h1> */}
       <div className="flex justify-end">
         <div class="relative mt-2">
