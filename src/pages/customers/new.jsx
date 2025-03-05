@@ -154,24 +154,24 @@ export default function NewCustomer() {
     }
 
     // validate date of birth
-    if (!data.date_of_birth) {
-      errors.date_of_birth = "Date of birth is required";
-    }
+    // if (!data.date_of_birth) {
+    //   errors.date_of_birth = "Date of birth is required";
+    // }
 
     // validate id type
-    if (!data.id_type) {
-      errors.id_type = "Id type is required";
-    }
+    // if (!data.id_type) {
+    //   errors.id_type = "Id type is required";
+    // }
 
     // validate id number
-    if (!data.id_number) {
-      errors.id_number = "Id number is required";
-    }
+    // if (!data.id_number) {
+    //   errors.id_number = "Id number is required";
+    // }
 
     // validate dl number
-    if (!data.dl_number) {
-      errors.dl_number = "DL number is required";
-    }
+    // if (!data.dl_number) {
+    //   errors.dl_number = "DL number is required";
+    // }
 
     // validate dl expiry
     // if (!data.dl_expiry) {
@@ -179,14 +179,14 @@ export default function NewCustomer() {
     // }
 
     // validate residential address
-    if (!data.residential_address) {
-      errors.residential_address = "Residential address is required";
-    }
+    // if (!data.residential_address) {
+    //   errors.residential_address = "Residential address is required";
+    // }
 
     // validate work address
-    if (!data.work_address) {
-      errors.work_address = "Work address is required";
-    }
+    // if (!data.work_address) {
+    //   errors.work_address = "Work address is required";
+    // }
 
     return errors;
   };
@@ -312,7 +312,7 @@ export default function NewCustomer() {
               id="id_number"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              required
+              
               value={inputs.id_number}
               onChange={handleChange}
             />
@@ -332,7 +332,7 @@ export default function NewCustomer() {
               id="dl_number"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              required
+              
               value={inputs.dl_number}
               onChange={handleChange}
             />
@@ -365,7 +365,7 @@ export default function NewCustomer() {
               id="floating_email"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              required
+              
               value={inputs.residential_address}
               onChange={handleChange}
             />
@@ -390,7 +390,7 @@ export default function NewCustomer() {
               id="work_address"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              required
+              
               value={inputs.work_address}
               onChange={handleChange}
             />
