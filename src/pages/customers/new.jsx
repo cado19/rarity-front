@@ -21,11 +21,11 @@ export default function NewCustomer() {
     l_name: "",
     email: "",
     phone_number: "",
-    date_of_birth: '',
+    date_of_birth: '1970-01-01',
     id_type: "",
     id_number: "",
     dl_number: "",
-    dl_expiry: '',
+    dl_expiry: '1970-01-01',
     residential_address: "",
     work_address: "",
   });
@@ -121,13 +121,13 @@ export default function NewCustomer() {
       // submit the form
       const response = axios.post(customerUrl, inputs);
       // redirect if response is "Customer Created"
+      console.log(inputs);
       if (response.data.message === "Customer Created") {
         navigate("/customer", {state: {message: "Customer Created"}});
       }
       // console.log(response);
       setDisabled(false);
       
-      console.log(inputs);
       // console.log("Form submitted");
     }
   };

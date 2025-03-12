@@ -33,6 +33,8 @@ import AllAgents from '../../pages/agents/all'
 import NewAgent from '../../pages/agents/new'
 import Agent from '../../pages/agents/agent'
 import Driver from '../../pages/drivers/driver'
+import NewVehicle from '../../pages/vehicles/new'
+import Calen from '../../pages/Dashboard/calen'
 
 
 export default function AppRouter() {
@@ -42,9 +44,11 @@ export default function AppRouter() {
         <Routes>
           <Route path='/' element={<PageContent />}>
             <Route index element={<Dashboard />} />
+            <Route path='/calen' element={<Calen />} />
             {/* Vehicle Routes  */}
             <Route path='/vehicles' element={<AllVehicles />} />
             <Route path='/vehicle/:id' element={<Vehicle />} />
+            <Route path='/vehicle/new' element={<NewVehicle />} />
 
             {/* Customer Routes  */}
             <Route path='/customers' element={<AllCustomers />} />

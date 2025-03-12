@@ -1,20 +1,32 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Timeline, {TimelineHeaders, SidebarHeader, DateHeader} from "react-calendar-timeline";
+import Timeline, {
+  TimelineHeaders,
+  SidebarHeader,
+  DateHeader,
+} from "react-calendar-timeline";
 // import 'react-calendar-timeline/lib/Timeline.css';
 import "react-calendar-timeline/styles.css";
 import moment from "moment";
 // import { Chart } from "react-google-charts";
 import Loading from "../../components/PageContent/Loading";
 import { baseURL } from "../../constants/url";
+import FullCalendar from "@fullcalendar/react";
+import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
+import dayGridPlugin from "@fullcalendar/daygrid";
+// import weekGridPlugin from "@fullcalendar/weekgrid";
+import interactionPlugin from "@fullcalendar/interaction"; // needed for dateClick
+import { useNavigate } from "react-router-dom";
 
-export default function Dashboard() {
+export default function Calen() {
   const [bookings, setBookings] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const workplanData = [];
+
+  const navigate = useNavigate();
 
   const bookingUrl = baseURL + "/api/bookings/workplan_bookings.php";
   const vehicleUrl = baseURL + "/api/fleet/workplan_vehicles.php";
@@ -23,32 +35,18 @@ export default function Dashboard() {
     workplanData.push({
       id: booking.id,
       title: booking.title,
-      group: booking.group,
-      start_time: moment(booking.start_time),
-      end_time: moment(booking.end_time),
-      itemProps: {
-        style: {
-          background: `${booking.status}`
-          
-        }
-      }
+      resourceId: booking.group,
+      start: booking.start_time,
+      end: booking.end_time,
+      cateory: booking.category,
+      color: booking.status,
+      //   itemProps: {
+      //     style: {
+      //       background: `${booking.status}`,
+      //     },
+      //   },
     });
     // console.log(workplanData);
-  };
-
-
-  const updateBookings = (booking) => {
-    const bookingData = {
-      id: booking.id,
-      booking_no: booking.booking_no,
-      group: booking.group,
-      start_time: booking.start_date,
-      end_time: booking.end_date,
-    };
-    const newBookings = [];
-    newBookings.push(bookingData);
-    return newBookings;
-    // setBookings(newBookings);
   };
 
   const getBookings = async () => {
@@ -56,7 +54,9 @@ export default function Dashboard() {
       const response = await axios.get(bookingUrl);
       // response.data.bookings.map((booking) => updateBookings(booking));
       // console.log(response.data);
-      response.data.bookings.forEach((booking) => {addData(booking)});
+      response.data.bookings.forEach((booking) => {
+        addData(booking);
+      });
       setBookings(workplanData);
       setLoading(false);
     } catch (error) {
@@ -81,16 +81,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
-    if (!loggedIn){
+    if (!loggedIn) {
       navigate("/login");
-    };
+    }
     getVehicles();
     getBookings();
   }, [loading]);
 
   console.log(vehicles);
 
-  if(error) {
+  if (error) {
     return (
       <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
         <h1 className="text-red-600 text-center">{error}</h1>
@@ -106,27 +106,39 @@ export default function Dashboard() {
     );
   }
   return (
-    <div className=" bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
-      {/* <Chart width={"100%"} height={"500px"} chartType="Timeline" data={workplanData} loader={<div>Loading Chart</div>} />  */}
-      <Timeline
-        groups={vehicles}
-        items={bookings}
-        defaultTimeStart={moment().add(-2, "month")}
-        defaultTimeEnd={moment()}
-        // height={"500px"}
-        sidebarWidth={350}
-        sidebarContent={"Vehicles"}
-      >
-        {/* <TimelineHeaders className="sticky">
-          <SidebarHeader>
-            {({ getRootProps }) => {
-              return <div {...getRootProps()}>Left</div>;
-            }}
-          </SidebarHeader>
-          <DateHeader unit="primaryHeader" />
-          <DateHeader  />
-        </TimelineHeaders> */}
-      </Timeline>
+    <div className="bg-white px-4 py-6 pb-4 rounded border-gray-200 flex-1 shadow-md h-screen">
+      <div className="mt-3">
+        <FullCalendar
+          initialView="resourceTimeline"
+          schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
+          plugins={[resourceTimelinePlugin, dayGridPlugin, interactionPlugin]}
+          events={bookings}
+          resources={vehicles}
+          resourceGroupField="category"
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right:
+              "resourceTimelineMonth",
+          }}
+          stickyFooterScrollbar={true}
+          resourceAreaHeaderContent="Vehicles"
+          resourceAreaWidth="20%"
+          slotLabelFormat={{
+            weekday: 'short', // abbreviated day names
+            month: 'short', // abbreviated month names
+            day: 'numeric' // numeric day
+          }}
+          slotLabelContent={(arg) => (
+            <div className="custom-slot-label">
+              <p><span className="day">{arg.date.toLocaleDateString('en-US', { weekday: 'short' })}</span></p>
+              <span className="date">{arg.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+            </div>
+          )}
+        //   weekends={calendarState.weekendsVisible}
+        //   calendarWeekends={true}
+        />
+      </div>
     </div>
   );
 }

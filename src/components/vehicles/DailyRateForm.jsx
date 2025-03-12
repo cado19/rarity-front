@@ -1,6 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function DailyRateForm({ vehicle_id }) {
+  const [rate, setRate] = useState('');
+
+  const handleSubmit = (e) => {
+    const validationErrors = validate(rate);
+  }
+
+  const validate = (rate) => {
+    const errors = {};
+    if(!rate){
+      errors.rate = "Rate is required";
+    }
+    return errors;
+  }
+
   return (
     <div>
       <form>
@@ -11,6 +25,8 @@ export default function DailyRateForm({ vehicle_id }) {
             type="text"
             placeholder="8000"
             aria-label="Full name"
+            value={rate}
+            onChange={(e) => setRate(e.target.value)}
           />
           <button
             className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
