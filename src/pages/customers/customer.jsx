@@ -11,8 +11,8 @@ import IDmodal from "./id_modal";
 export default function Customer() {
   const { id } = useParams();
   const customerUrl = baseURL + `/api/customers/read_single.php?id=${id}`;
-  const licenseURL = userUrl + `/license_form&id=${id}`;
-  const idURL = userUrl + `/new&id=${id}`;
+  const licenseURL = userUrl + `/dl_form&id=${id}`;
+  const idURL = userUrl + `/id_form&id=${id}`;
   const profileURL = userUrl + `/profile_form&id=${id}`;
 
   const [customer, setCustomer] = useState(null);

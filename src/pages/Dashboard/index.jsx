@@ -10,19 +10,21 @@ import "react-calendar-timeline/styles.css";
 import moment from "moment";
 // import { Chart } from "react-google-charts";
 import Loading from "../../components/PageContent/Loading";
-import { baseURL } from "../../constants/url";
+import { baseURL, userUrl } from "../../constants/url";
 import FullCalendar from "@fullcalendar/react";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import dayGridPlugin from "@fullcalendar/daygrid";
 // import weekGridPlugin from "@fullcalendar/weekgrid";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dateClick
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
-export default function Calen() {
+export default function Dashboard() {
   const [bookings, setBookings] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const newCustomerUrl = userUrl + "/new";
 
   const workplanData = [];
 
@@ -30,6 +32,16 @@ export default function Calen() {
 
   const bookingUrl = baseURL + "/api/bookings/workplan_bookings.php";
   const vehicleUrl = baseURL + "/api/fleet/workplan_vehicles.php";
+
+  const copyNewCustomerURL = () => {
+    navigator.clipboard.writeText(newCustomerUrl);
+    Swal.fire({
+      title: "Link copied",
+      text: "New Customer Link copied to clipboard",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+  };
 
   const addData = (booking) => {
     workplanData.push({
@@ -109,7 +121,7 @@ export default function Calen() {
     <div className="bg-white px-4 py-6 pb-4 rounded border-gray-200 flex-1 shadow-md h-screen">
       <div className="mt-3">
         <FullCalendar
-          initialView="resourceTimeline"
+          initialView="resourceTimelineMonth"
           schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
           plugins={[resourceTimelinePlugin, dayGridPlugin, interactionPlugin]}
           events={bookings}
@@ -118,26 +130,40 @@ export default function Calen() {
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right:
-              "resourceTimelineMonth",
+            right: "resourceTimelineMonth",
           }}
           stickyFooterScrollbar={true}
           resourceAreaHeaderContent="Vehicles"
           resourceAreaWidth="20%"
           slotLabelFormat={{
-            weekday: 'short', // abbreviated day names
-            month: 'short', // abbreviated month names
-            day: 'numeric' // numeric day
+            weekday: "short", // abbreviated day names
+            month: "short", // abbreviated month names
+            day: "numeric", // numeric day
           }}
           slotLabelContent={(arg) => (
             <div className="custom-slot-label">
-              <p><span className="day">{arg.date.toLocaleDateString('en-US', { weekday: 'short' })}</span></p>
-              <span className="date">{arg.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+              <p>
+                <span className="day">
+                  {arg.date.toLocaleDateString("en-US", { weekday: "short" })}
+                </span>
+              </p>
+              <span className="date">
+                {arg.date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}
+              </span>
             </div>
           )}
-        //   weekends={calendarState.weekendsVisible}
-        //   calendarWeekends={true}
         />
+      </div>
+      <div className="mt-3">
+        <button
+          className="border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
+          onClick={copyNewCustomerURL}
+        >
+          New Customer link
+        </button>
       </div>
     </div>
   );
