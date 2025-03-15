@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { baseURL } from "../../constants/url";
+import { baseURL, contractSignUrl, contractViewUrl } from "../../constants/url";
 import { voucherUrl } from "../../constants/url";
 import { feUrl } from "../../constants/url";
 import BookingInfoBoxes from "../../components/infoboxes/BookingInfoBoxes";
@@ -18,9 +18,9 @@ export default function Booking() {
 
   const [extendInfo, setExtendInfo] = useState(null);
   const bookingUrl = baseURL + `/api/bookings/read_single.php?id=${id}`;
-  const contractSignUrl = feUrl + `/sign_contract/${id}`;
-  const contractViewURL = feUrl + `/contract/${id}`;
-  const bookingVoucherURL = voucherUrl + `/${id}`;
+  const SignUrl = contractSignUrl + `${id}`; // url for signing contract
+  const contractURL = contractViewUrl + `${id}`;
+  const bookingVoucherURL = voucherUrl + `${id}`;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -55,15 +55,14 @@ export default function Booking() {
           icon: "success",
           confirmButtonText: "OK",
         });
-      } else if (location.state.message = "Booking updated successfully") {
+      } else if (location.state.message = "Booking created successfully") {
         Swal.fire({
-          title: "Booking updated",
-          text: "The booking has been updated",
+          title: "Booking created",
+          text: "The booking has been created successfully",
           icon: "success",
           confirmButtonText: "OK",
         });
       }
-    }
   };
 
   // function to handle extend date of booking
