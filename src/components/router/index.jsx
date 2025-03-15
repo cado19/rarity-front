@@ -35,6 +35,7 @@ import Agent from '../../pages/agents/agent'
 import Driver from '../../pages/drivers/driver'
 import NewVehicle from '../../pages/vehicles/new'
 import Calen from '../../pages/Dashboard/calen'
+import NotFound from '../../pages/utilities/404'
 
 
 export default function AppRouter() {
@@ -79,6 +80,7 @@ export default function AppRouter() {
             <Route path='/agent/:id' element={<Agent />} />
             
           </Route>
+          <Route path='*' element={<NotFound />} />
           <Route path='/login' element={<Login />} />
           <Route path='/contract/:id' element={<ShowContract /> } />
           <Route path='/sign_contract/:id' element={<EditContract />} />
