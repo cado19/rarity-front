@@ -24,6 +24,11 @@ export default function Dashboard() {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [inputs, setInputs] = useState({
+    id: "",
+    start_date: "",
+    end_date: "",
+  });
   const newCustomerUrl = userUrl + "/new";
 
   const workplanData = [];
@@ -78,7 +83,7 @@ export default function Dashboard() {
     }
   };
 
-  console.log(bookings);
+  // console.log(bookings);
 
   const getVehicles = async () => {
     try {
@@ -91,6 +96,53 @@ export default function Dashboard() {
     }
   };
 
+  //update booking
+  const updateBooking = async (args) => {
+    const startDay = args.event.start.getDate().toString().padStart(2, "0");
+    const startMonth = (args.event.start.getMonth() + 1)
+      .toString()
+      .padStart(2, "0");
+    const startYear = args.event.start.getFullYear().toString();
+    const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
+    const endDay = args.event.end.getDate().toString().padStart(2, "0");
+    const endMonth = (args.event.end.getMonth() + 1)
+      .toString()
+      .padStart(2, "0");
+    const endYear = args.event.start.getFullYear().toString();
+    const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
+
+    const booking = {
+      booking_id: args.event.id,
+      start_date: formattedStartDate,
+      end_date: formattedEndDate,
+    };
+
+    try {
+      const response = await axios.post(
+        baseURL + "/api/bookings/update_dash_booking.php",
+        booking
+      );
+      if (response.data.status === "success") {
+        Swal.fire({
+          title: "Booking Updated",
+          text: "Booking has been updated successfully",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      } else {
+        Swal.fire({
+          title: "Booking Update Failed",
+          text: "Booking update failed",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    } catch (error) {
+      const errorMessage = "Error: " + error.message;
+      console.error("Error: ", error);
+    }
+  };
+
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
     if (!loggedIn) {
@@ -100,7 +152,7 @@ export default function Dashboard() {
     getBookings();
   }, [loading]);
 
-  console.log(vehicles);
+  // console.log(vehicles);
 
   if (error) {
     return (
@@ -119,6 +171,17 @@ export default function Dashboard() {
   }
   return (
     <div className="bg-white px-4 py-6 pb-4 rounded border-gray-200 flex-1 shadow-md h-screen">
+      {/* NEW CUSTOMER BUTTON  */}
+      <div className="mt-3">
+        <button
+          className="border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
+          onClick={copyNewCustomerURL}
+        >
+          New Customer link
+        </button>
+      </div>
+
+      {/* CALENDAR  */}
       <div className="mt-3">
         <FullCalendar
           initialView="resourceTimelineMonth"
@@ -155,15 +218,39 @@ export default function Dashboard() {
               </span>
             </div>
           )}
+          editable={true}
+          // droppable={true}
+          eventClick={(arg) => {
+            console.log(arg.event);
+            // navigate("/booking/" + arg.event.id);
+          }}
+          eventDrop={(arg) => {
+            updateBooking(arg);
+            const oldResource = arg.event.extendedProps.oldResourceId;
+            const newResource = arg.event.resourceId;
+            if (arg.oldEvent != "null") {
+              // console.log(arg.oldEvent);
+              // console.log(arg.oldEvent.id);
+              console.log(arg.newEvent);
+            }
+            console.log(arg.event.start);
+            console.log(oldResource);
+            console.log(arg.newResource);
+            // const booking = {
+            //   id: arg.event.id,
+            //   vehicle_id: arg.newResource.id,
+            // };
+            // console.log(booking);
+            // axios
+            //   .post(baseURL + "/api/bookings/update_booking_vehicle.php", booking)
+            //   .then((response) => {
+            //     console.log(response.data);
+            //   })
+            //   .catch((error) => {
+            //     console.error("Error: ", error);
+            //   });
+          }}
         />
-      </div>
-      <div className="mt-3">
-        <button
-          className="border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
-          onClick={copyNewCustomerURL}
-        >
-          New Customer link
-        </button>
       </div>
     </div>
   );
