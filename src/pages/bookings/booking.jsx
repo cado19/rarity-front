@@ -63,6 +63,7 @@ export default function Booking() {
           confirmButtonText: "OK",
         });
       }
+    }
   };
 
   // function to handle extend date of booking
