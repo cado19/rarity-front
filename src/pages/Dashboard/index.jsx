@@ -96,33 +96,44 @@ export default function Dashboard() {
     }
   };
 
-  //update booking
-  const updateBooking = async (args) => {
-    const startDay = args.event.start.getDate().toString().padStart(2, "0");
-    const startMonth = (args.event.start.getMonth() + 1)
-      .toString()
-      .padStart(2, "0");
-    const startYear = args.event.start.getFullYear().toString();
-    const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
-    const endDay = args.event.end.getDate().toString().padStart(2, "0");
-    const endMonth = (args.event.end.getMonth() + 1)
-      .toString()
-      .padStart(2, "0");
-    const endYear = args.event.start.getFullYear().toString();
-    const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
+  // helper function to post vehicle update 
+  const postDashVehicle = async (booking) => {
+    try {
+      const response = await axios.post(baseURL + "/api/bookings/update_dash_vehicle_booking.php", booking);
+      if (response.data.status === "Success") {
+        Swal.fire({
+          title: "Booking Updated",
+          text: "Booking has been updated successfully",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      } else {
+        Swal.fire({
+          title: "Booking Update Failed",
+          text: "Booking update failed",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    } catch (error) {
+      console.error("Error: ", error);
+      Swal.fire({
+        title: "An Error Occured",
+        text: "Try again or contact support",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
 
-    const booking = {
-      booking_id: args.event.id,
-      start_date: formattedStartDate,
-      end_date: formattedEndDate,
-    };
-
+  // helper function to update dates
+  const updateDates = async (booking) => {
     try {
       const response = await axios.post(
         baseURL + "/api/bookings/update_dash_booking.php",
         booking
       );
-      if (response.data.status === "success") {
+      if (response.data.status === "Success") {
         Swal.fire({
           title: "Booking Updated",
           text: "Booking has been updated successfully",
@@ -141,6 +152,47 @@ export default function Dashboard() {
       const errorMessage = "Error: " + error.message;
       console.error("Error: ", error);
     }
+  };
+
+  //update booking without resource
+  const updateBooking = async (args) => {
+    const startDay = args.event.start.getDate().toString().padStart(2, "0");
+    const startMonth = (args.event.start.getMonth() + 1)
+      .toString()
+      .padStart(2, "0");
+    const startYear = args.event.start.getFullYear().toString();
+    const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
+    const endDay = args.event.end.getDate().toString().padStart(2, "0");
+    const endMonth = (args.event.end.getMonth() + 1)
+      .toString()
+      .padStart(2, "0");
+    const endYear = args.event.start.getFullYear().toString();
+    const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
+
+    const oldResourceId = args.oldResource?.id;
+    const newResourceId = args.newResource?.id;
+
+    if (oldResourceId != null) {
+      // update the booking with the new vehicle
+      const booking = {
+        booking_id: args.event.id,
+        vehicle_id: newResourceId,
+        start_date: formattedStartDate,
+        end_date: formattedEndDate,
+      };
+      postDashVehicle(booking);
+    } else {
+      // update the booking with the new dates
+
+      const booking = {
+        booking_id: args.event.id,
+        start_date: formattedStartDate,
+        end_date: formattedEndDate,
+      };
+      updateDates(booking);
+    }
+
+    
   };
 
   useEffect(() => {
@@ -226,29 +278,6 @@ export default function Dashboard() {
           }}
           eventDrop={(arg) => {
             updateBooking(arg);
-            const oldResource = arg.event.extendedProps.oldResourceId;
-            const newResource = arg.event.resourceId;
-            if (arg.oldEvent != "null") {
-              // console.log(arg.oldEvent);
-              // console.log(arg.oldEvent.id);
-              console.log(arg.newEvent);
-            }
-            console.log(arg.event.start);
-            console.log(oldResource);
-            console.log(arg.newResource);
-            // const booking = {
-            //   id: arg.event.id,
-            //   vehicle_id: arg.newResource.id,
-            // };
-            // console.log(booking);
-            // axios
-            //   .post(baseURL + "/api/bookings/update_booking_vehicle.php", booking)
-            //   .then((response) => {
-            //     console.log(response.data);
-            //   })
-            //   .catch((error) => {
-            //     console.error("Error: ", error);
-            //   });
           }}
         />
       </div>
