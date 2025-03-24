@@ -10,6 +10,7 @@ import { baseURL } from "../../constants/url";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import DriverNav from "../../components/navs/drivernav";
+import Swal from "sweetalert2";
 
 export default function NewDriver() {
   // state
@@ -104,24 +105,24 @@ export default function NewDriver() {
     }
 
     // validate date of birth
-    if (!data.date_of_birth) {
-      errors.date_of_birth = "Date of birth is required";
-    }
+    // if (!data.date_of_birth) {
+    //   errors.date_of_birth = "Date of birth is required";
+    // }
 
     // validate id number
-    if (!data.id_number) {
-      errors.id_number = "Id number is required";
-    }
+    // if (!data.id_number) {
+    //   errors.id_number = "Id number is required";
+    // }
 
     // validate dl number
-    if (!data.dl_number) {
-      errors.dl_number = "DL number is required";
-    }
+    // if (!data.dl_number) {
+    //   errors.dl_number = "DL number is required";
+    // }
 
     // validate dl expiry
-    if (!data.dl_expiry) {
-      errors.dl_expiry = "DL expiry is required";
-    }
+    // if (!data.dl_expiry) {
+    //   errors.dl_expiry = "DL expiry is required";
+    // }
 
     return errors;
   };
@@ -139,15 +140,21 @@ export default function NewDriver() {
       setDisabled(false);
     } else {
       // submit the form
-      // const response = axios.post(driverUrl, inputs);
+      const response = await axios.post(driverUrl, inputs);
       // redirect if response is "Driver Created"
-      // if (response.data.message === "Driver Created") {
-      //   const driver_id = response.data.driver_id;
-      //   navigate(`/driver/${driver_id}`, {
-      //     state: { message: "Driver Created" },
-      //   });
-      // }
-      // console.log(response);
+      if (response.data.status === "Success") {
+        const driver_id = response.data.driver_id;
+        navigate(`/driver/${driver_id}`, {
+          state: { message: "Driver Created" },
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+      console.log(response);
       setDisabled(false);
 
       console.log(inputs);
