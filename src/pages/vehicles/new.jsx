@@ -56,7 +56,8 @@ export default function NewVehicle() {
   ];
 
   const navigate = useNavigate();
-  const vehicleURL = baseURL + `/api/fleet/create.php`;
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const vehicleURL = baseUrl + `/api/fleet/create.php`;
 
   const capitalizePlate2 = () => {
     // const { value } = e.target;

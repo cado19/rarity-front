@@ -14,7 +14,8 @@ export default function Vehicle() {
 //   const carImg = require('../../assets/car-img.png');
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
-  const vehicleUrl = baseURL + `/api/fleet/read_single.php?id=${id}`;
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const vehicleUrl = baseUrl + `/api/fleet/read_single.php?id=${id}`;
 
   //   function to fetch vehicle from backend
   async function getVehicle() {

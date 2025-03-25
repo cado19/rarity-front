@@ -51,7 +51,9 @@ export default function AllVehicles() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const vehicleUrl = baseURL + "/api/fleet/all.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const vehicleUrl = baseUrl + "/api/fleet/all.php";
 
   const handleSearch = (e) => {
     // let searchValue;
