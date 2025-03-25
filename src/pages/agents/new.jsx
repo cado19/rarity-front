@@ -33,7 +33,8 @@ export default function NewAgent() {
     { value: "2", label: "Agent" },
   ];
 
-  const agentURL = baseURL + "/api/agents/create.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const agentURL = baseUrl + "/api/agents/create.php";
 
   const navigate = useNavigate();
 

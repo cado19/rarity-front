@@ -54,7 +54,9 @@ export default function AllAgents() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const agentURL = baseURL + "/api/agents/all.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const agentURL = baseUrl + "/api/agents/all.php";
 
   const handleSearch = (e) => {
     let searchValue;
@@ -108,7 +110,7 @@ export default function AllAgents() {
     try {
       await axios.get(agentURL).then((response) => {
         console.log(response);
-        if (response.data.agents.length === 0) {
+        if (response.data.data.length === 0) {
           setError("No agents found");
         } else {
           response.data.agents.forEach((agent) => addAgentData(agent));

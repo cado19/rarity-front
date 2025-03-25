@@ -10,7 +10,8 @@ export default function Agent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const agentURL = baseURL + `/api/agents/read_single.php?id=${id}`;
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const agentURL = baseUrl + `/api/agents/read_single.php?id=${id}`;
 
   const getAgent = async () => {
     try {
