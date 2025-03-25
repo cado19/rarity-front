@@ -9,8 +9,8 @@ export default function LicenseUpload() {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const { id } = useParams();
-
-  const uploadURL = baseURL + `/api/customers/license_upload.php`;
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const uploadURL = baseUrl + `/api/customers/license_upload.php`;
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);

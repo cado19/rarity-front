@@ -43,7 +43,8 @@ export default function SelfRegister() {
   ];
 
   const navigate = useNavigate();
-  const customerUrl = baseURL + "/api/customers/create.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const customerUrl = baseUrl + "/api/customers/create.php";
 
   // handle change function
   const handleChange = (e) => {

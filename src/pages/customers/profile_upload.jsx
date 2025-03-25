@@ -10,7 +10,9 @@ export default function ProfileUpload() {
   const webcamRef = useRef(null);
   const { id } = useParams();
   const navigate = useNavigate();
-  const uploadURL = baseURL + `/api/customers/profile_upload.php`;
+  
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const uploadURL = baseUrl + `/api/customers/profile_upload.php`;
 
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();

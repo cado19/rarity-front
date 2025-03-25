@@ -42,7 +42,9 @@ export default function RecentCustomers() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const customerURL = baseURL + "/api/customers/recent.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const customerURL = baseUrl + "/api/customers/recent.php";
 
   const getCustomers = async () => {
     try {

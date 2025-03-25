@@ -11,7 +11,9 @@ export default function IDUpload() {
 
   const { id } = useParams();
 
-  const uploadURL = baseURL + `/api/customers/id_upload.php`;
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const uploadURL = baseUrl + `/api/customers/id_upload.php`;
 
   const handleidFrontChange = (e) => {
     setidFront(e.target.files[0]);

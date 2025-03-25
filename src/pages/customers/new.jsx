@@ -43,7 +43,9 @@ export default function NewCustomer() {
     { value: "Military ID", label: "Military ID" },
   ];
 
-  const customerUrl = baseURL + "/api/customers/create.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const customerUrl = baseUrl + "/api/customers/create.php";
 
   const navigate = useNavigate();
 

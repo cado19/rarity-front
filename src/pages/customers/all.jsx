@@ -58,7 +58,9 @@ export default function AllCustomers() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const customerURL = baseURL + "/api/customers/all.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const customerURL = baseUrl + "/api/customers/all.php";
 
   const handleSearch = (e) => {
     let searchValue;
