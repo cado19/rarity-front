@@ -22,6 +22,7 @@ export default function Booking() {
   const contractURL = contractViewUrl + `${id}`;
   const bookingVoucherURL = voucherUrl + `${id}`;
 
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -105,7 +106,7 @@ export default function Booking() {
   };
 
   const copySignatureLink = () => {
-    navigator.clipboard.writeText(contractSignUrl);
+    navigator.clipboard.writeText(SignUrl);
     Swal.fire({
       title: "Link copied",
       text: "Signature link has been copied to your clipboard",
@@ -123,7 +124,7 @@ export default function Booking() {
     });
   };
   const copyContractLink = () => {
-    navigator.clipboard.writeText(contractViewURL);
+    navigator.clipboard.writeText(contractURL);
     Swal.fire({
       title: "Link copied",
       text: "Contract link has been copied to your clipboard",

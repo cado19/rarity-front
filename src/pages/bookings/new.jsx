@@ -41,10 +41,12 @@ export default function NewBooking() {
 
   const navigate = useNavigate();
 
-  const customersURL = baseURL + "/api/customers/booking_customers.php";
-  const vehiclesURL = baseURL + "/api/fleet/booking_vehicles.php";
-  const driversURL = baseURL + "/api/drivers/booking_drivers.php";
-  const bookingURL = baseURL + "/api/bookings/create.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const customersURL = baseUrl + "/api/customers/booking_customers.php";
+  const vehiclesURL = baseUrl + "/api/fleet/booking_vehicles.php";
+  const driversURL = baseUrl + "/api/drivers/booking_drivers.php";
+  const bookingURL = baseUrl + "/api/bookings/create.php";
 
   const userData = JSON.parse(localStorage.getItem("user"));
   const userId = userData.id;

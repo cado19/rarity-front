@@ -1,4 +1,4 @@
-// This component renders completedx bookings
+// This component renders completed bookings
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { baseURL } from "../../constants/url";
@@ -48,7 +48,9 @@ export default function CompletedBookings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const renderCount = useRef(0);
-  const bookingUrl = baseURL + "/api/bookings/completed.php";
+
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const bookingUrl = baseUrl + "/api/bookings/completed.php";
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");

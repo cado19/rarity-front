@@ -44,11 +44,13 @@ export default function EditBooking() {
     custom_rate: booking?.custom_rate,
   });
 
-  const bookingFetchURL = baseURL + `/api/bookings/read_single.php?id=${id}`;
-  const customersURL = baseURL + "/api/customers/booking_customers.php";
-  const vehiclesURL = baseURL + "/api/fleet/booking_vehicles.php";
-  const driversURL = baseURL + "/api/drivers/booking_drivers.php";
-  const bookingURL = baseURL + "/api/bookings/update.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const bookingFetchURL = baseUrl + `/api/bookings/read_single.php?id=${id}`;
+  const customersURL = baseUrl + "/api/customers/booking_customers.php";
+  const vehiclesURL = baseUrl + "/api/fleet/booking_vehicles.php";
+  const driversURL = baseUrl + "/api/drivers/booking_drivers.php";
+  const bookingURL = baseUrl + "/api/bookings/update.php";
 
   // get user from local storage and get user id
   const userData = JSON.parse(localStorage.getItem("user"));

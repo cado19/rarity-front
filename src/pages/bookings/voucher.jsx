@@ -12,7 +12,9 @@ export default function BookingVoucher() {
 
   const { id } = useParams();
 
-  const bookingURL = baseURL + `/api/bookings/voucher.php?id=${id}`;
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const bookingURL = baseUrl + `/api/bookings/voucher.php?id=${id}`;
 
   const getBooking = async () => {
     try {

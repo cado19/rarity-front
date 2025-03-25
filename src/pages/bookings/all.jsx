@@ -48,7 +48,9 @@ export default function AllBookings() {
   const [alteredData, setAlteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const bookingUrl = baseURL + "/api/bookings/all.php";
+
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const bookingUrl = baseUrl + "/api/bookings/all.php";
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
