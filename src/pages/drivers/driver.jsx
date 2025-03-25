@@ -10,7 +10,8 @@ export default function Driver() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const driverURL = baseURL + `/api/drivers/read_single.php?id=${id}`;
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const driverURL = baseUrl + `/api/drivers/read_single.php?id=${id}`;
 
   const getDriver = async () => {
     try {

@@ -32,7 +32,8 @@ export default function NewDriver() {
 
   const [errors, setErrors] = useState({});
 
-  const driverUrl = baseURL + "/api/drivers/create.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const driverUrl = baseUrl + "/api/drivers/create.php";
 
   const navigate = useNavigate();
 

@@ -58,7 +58,9 @@ export default function AllDrivers() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const driverURL = baseURL + "/api/drivers/all.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const driverURL = baseUrl + "/api/drivers/all.php";
 
   const handleSearch = (e) => {
     let searchValue;
