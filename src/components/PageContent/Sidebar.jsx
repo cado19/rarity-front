@@ -35,7 +35,7 @@ const Sidebar = () => {
       {/* Bottom Links  */}
       <div>
         {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map((item) => (
-          <SidebarLink key={item.key} item={item} />
+          <SidebarLink key={item.key} item={item} isSideBarOpen={isSideBarOpen} />
         ))}
       </div>
     </motion.div>

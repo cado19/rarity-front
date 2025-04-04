@@ -113,7 +113,7 @@ export default function AllAgents() {
         if (response.data.data.length === 0) {
           setError("No agents found");
         } else {
-          response.data.agents.forEach((agent) => addAgentData(agent));
+          response.data.data.forEach((agent) => addAgentData(agent));
           // setAgents(response.data.data);
           console.log(agentData);
           setLoading(false);
@@ -131,7 +131,7 @@ export default function AllAgents() {
       navigate("/login");
     }
     getAgents();
-  }, [agents, navigate]);
+  }, [agents, navigate, loading]);
 
   if (error) {
     return (

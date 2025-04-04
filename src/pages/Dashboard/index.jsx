@@ -10,7 +10,7 @@ import "react-calendar-timeline/styles.css";
 import moment from "moment";
 // import { Chart } from "react-google-charts";
 import Loading from "../../components/PageContent/Loading";
-import { baseURL, userUrl } from "../../constants/url";
+import {  userUrl } from "../../constants/url";
 import FullCalendar from "@fullcalendar/react";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -35,8 +35,10 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
 
-  const bookingUrl = baseURL + "/api/bookings/workplan_bookings.php";
-  const vehicleUrl = baseURL + "/api/fleet/workplan_vehicles.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const bookingUrl = baseUrl + "/api/bookings/workplan_bookings.php";
+  const vehicleUrl = baseUrl + "/api/fleet/workplan_vehicles.php";
 
   const copyNewCustomerURL = () => {
     navigator.clipboard.writeText(newCustomerUrl);
@@ -99,7 +101,7 @@ export default function Dashboard() {
   // helper function to post vehicle update 
   const postDashVehicle = async (booking) => {
     try {
-      const response = await axios.post(baseURL + "/api/bookings/update_dash_vehicle_booking.php", booking);
+      const response = await axios.post(baseUrl + "/api/bookings/update_dash_vehicle_booking.php", booking);
       if (response.data.status === "Success") {
         Swal.fire({
           title: "Booking Updated",
@@ -130,7 +132,7 @@ export default function Dashboard() {
   const updateDates = async (booking) => {
     try {
       const response = await axios.post(
-        baseURL + "/api/bookings/update_dash_booking.php",
+        baseUrl + "/api/bookings/update_dash_booking.php",
         booking
       );
       if (response.data.status === "Success") {

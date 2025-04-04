@@ -10,7 +10,10 @@ import {
     HiOutlineQuestionMarkCircle,
     HiOutlineCog,
     HiOutlineTruck,
-    HiOutlineIdentification 
+    HiOutlineIdentification, 
+    HiOutlineChartPie,
+    HiOutlineArrowRight,
+    HiOutlineArrowCircleRight
   } from "react-icons/hi";
   
   export const DASHBOARD_SIDEBAR_LINKS = [
@@ -53,19 +56,20 @@ import {
           icon: <HiOutlineDocumentText />
       },
       {
-          key: 'messages',
-          label: 'Messages',
-          path: '/messages',
-          icon: <HiOutlineAnnotation />
+          key: 'analytics',
+          label: 'Analytics',
+          path: '/analytics',
+          icon: <HiOutlineChartPie />
       },
   ]
   
   export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
       {
-          key: 'settings',
-          label: 'Settings',
+          key: 'logout',
+          label: 'Logout',
           path: '/settings',
-          icon: <HiOutlineCog />
+          icon: <HiOutlineArrowRight />
+          
       },
       {
           key: 'support',

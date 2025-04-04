@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 import PageContent from '../PageContent'
 import Dashboard from '../../pages/Dashboard'
 import AllVehicles from '../../pages/vehicles/all'
@@ -36,12 +36,13 @@ import Driver from '../../pages/drivers/driver'
 import NewVehicle from '../../pages/vehicles/new'
 import Calen from '../../pages/Dashboard/calen'
 import NotFound from '../../pages/utilities/404'
+import Analytics from '../../pages/analytics'
 
 
 export default function AppRouter() {
   return (
     <div>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path='/' element={<PageContent />}>
             <Route index element={<Dashboard />} />
@@ -78,6 +79,9 @@ export default function AppRouter() {
             <Route path='/agents' element={<AllAgents />} />
             <Route path='/agents/new' element={<NewAgent />} />
             <Route path='/agent/:id' element={<Agent />} />
+
+            {/* Analytic Routes  */}
+            <Route path='/analytics' element={<Analytics />} />
             
           </Route>
           <Route path='*' element={<NotFound />} />
@@ -91,7 +95,7 @@ export default function AppRouter() {
           <Route path='/upload_id/:id' element={<IDUpload />} />
           <Route path='/upload_profile/:id' element={<ProfileUpload />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   )
 }
