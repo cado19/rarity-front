@@ -95,7 +95,7 @@ export default function NewBooking() {
   const fetchDrivers = async () => {
     try {
       axios.get(driversURL).then((response) => {
-        console.log(response.data.drivers);
+        // console.log(response.data.drivers);
         response.data.drivers.forEach((driver) => addDriverOptions(driver));
       });
     } catch (error) {}
@@ -231,6 +231,8 @@ export default function NewBooking() {
     if (!data.start_time) errors.start_time = "Start Time is required";
     if (!data.end_time) errors.end_time = "End Time is required";
 
+    setErrors(errors);
+
     return errors;
   };
 
@@ -238,13 +240,14 @@ export default function NewBooking() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setDisabled(true);
-    const validationErrors = validate(inputs);
-    if (Object.keys(validationErrors).length > 0) {
+    const errors = validate(inputs);
+    if (Object.keys(errors).length > 0) {
       Swal.fire({
         title: "Validation Error",
         icon: "error",
         text: "Check form fields for highlighted errors",
       });
+      console.log("Validation Errors: ", errors);
       setDisabled(false);
     } else {
       axios.post(bookingURL, inputs).then((response) => {
