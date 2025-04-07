@@ -96,7 +96,8 @@ export default function AllVehicles() {
     const newRecords = vehicleData.filter(
       (item) =>
         item.make.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-        item.model.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+        item.model.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+        item.number_plate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
       // item.rate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
     );
     setVehicles(newRecords);
