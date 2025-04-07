@@ -17,7 +17,8 @@ export default function Booking() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [extendInfo, setExtendInfo] = useState(null);
-  const bookingUrl = baseURL + `/api/bookings/read_single.php?id=${id}`;
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const bookingUrl = baseUrl + `/api/bookings/read_single.php?id=${id}`;
   const SignUrl = contractSignUrl + `${id}`; // url for signing contract
   const contractURL = contractViewUrl + `${id}`;
   const bookingVoucherURL = voucherUrl + `${id}`;
@@ -63,6 +64,20 @@ export default function Booking() {
           icon: "success",
           confirmButtonText: "OK",
         });
+      } else if (location.state.message = "Booking activated") {
+        Swal.fire({
+          title: "Booking activated",
+          text: "The booking has been activated successfully",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      } else if (location.state.message = "Booking could not be activated") {
+        Swal.fire({
+          title: "Booking activated",
+          text: "Booking could not be activated",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
       }
     }
   };
@@ -101,6 +116,22 @@ export default function Booking() {
     }).then((result) => {
       if (result.isConfirmed) {
         navigate(`/booking/${id}/complete`);
+      }
+    });
+  };
+
+  // function to activate booking
+  const activateBooking = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Activating booking",
+      confirmButtonText: "Yes",
+      denyButtonText: "No",
+      showDenyButton: true,
+      showConfirmButton: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate(`/booking/${id}/activate`);
       }
     });
   };
@@ -229,7 +260,7 @@ export default function Booking() {
           <hr />
           <div className="flex flex-row gap-4 w-full mt-10">
             {booking.status == "upcoming" && (
-              <button className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300">
+              <button className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300" onClick={() => activateBooking()}>
                 Activate Booking
               </button>
             )}

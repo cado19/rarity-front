@@ -37,6 +37,7 @@ import NewVehicle from '../../pages/vehicles/new'
 import Calen from '../../pages/Dashboard/calen'
 import NotFound from '../../pages/utilities/404'
 import Analytics from '../../pages/analytics'
+import ActivateBooking from '../bookings/activate'
 
 
 export default function AppRouter() {
@@ -74,6 +75,7 @@ export default function AppRouter() {
             <Route path='/booking/:id' element={<Booking />} />
             <Route path='/booking/:id/cancel' element={<CancelBooking />} />
             <Route path='/booking/:id/complete' element={<CompleteBooking />} />
+            <Route path='/booking/:id/activate' element={<ActivateBooking />} />
 
             {/* Agent Routes  */}
             <Route path='/agents' element={<AllAgents />} />
