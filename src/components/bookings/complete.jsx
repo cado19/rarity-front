@@ -7,8 +7,9 @@ import { baseURL } from '../../constants/url';
 export default function CompleteBooking() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const cancelURL = baseURL + `/api/bookings/complete.php?id=${id}`;
-    axios.post(cancelURL).then((response) => {
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const completeURL = baseUrl + `/api/bookings/complete.php?id=${id}`;
+    axios.post(completeURL).then((response) => {
         if(response.data.message = "Successfully completed booking"){
             navigate(`/booking/${id}`, { state: { message: "Booking completed" } });
         } else {
