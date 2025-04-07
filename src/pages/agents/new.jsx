@@ -91,7 +91,7 @@ export default function NewAgent() {
     if (!data.country) {
       errors.country = "Country is required";
     }
-
+    setErrors(errors);
     return errors;
   };
 

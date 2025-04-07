@@ -188,6 +188,7 @@ export default function NewVehicle() {
     if (!data.vehicle_excess)
       errors.vehicle_excess = "Vehicle Excess is required";
 
+    setErrors(errors);
     return errors;
   };
 

@@ -124,7 +124,7 @@ export default function NewDriver() {
     // if (!data.dl_expiry) {
     //   errors.dl_expiry = "DL expiry is required";
     // }
-
+    setErrors(errors);
     return errors;
   };
 

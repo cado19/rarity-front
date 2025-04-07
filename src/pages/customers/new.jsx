@@ -189,7 +189,7 @@ export default function NewCustomer() {
     // if (!data.work_address) {
     //   errors.work_address = "Work address is required";
     // }
-
+    setErrors(errors);
     return errors;
   };
 
