@@ -59,6 +59,7 @@ export default function Dashboard() {
       end: booking.end_time,
       cateory: booking.category,
       color: booking.status,
+      textColor: booking.textColor,
       //   itemProps: {
       //     style: {
       //       background: `${booking.status}`,
@@ -255,7 +256,7 @@ export default function Dashboard() {
           slotLabelFormat={{
             weekday: "short", // abbreviated day names
             month: "short", // abbreviated month names
-            day: "numeric", // numeric day
+            day: "numeric" // numeric day
           }}
           slotLabelContent={(arg) => (
             <div className="custom-slot-label">
@@ -276,7 +277,7 @@ export default function Dashboard() {
           // droppable={true}
           eventClick={(arg) => {
             console.log(arg.event);
-            // navigate("/booking/" + arg.event.id);
+            navigate("/booking/" + arg.event.id);
           }}
           eventDrop={(arg) => {
             updateBooking(arg);
