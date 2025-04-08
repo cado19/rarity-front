@@ -49,6 +49,7 @@ export default function RecentCustomers() {
   const getCustomers = async () => {
     try {
       await axios.get(customerURL).then((response) => {
+        console.log(response);
         setCustomers(response.data.data);
         setLoading(false);
       });

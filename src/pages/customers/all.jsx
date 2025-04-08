@@ -63,58 +63,60 @@ export default function AllCustomers() {
   const customerURL = baseUrl + "/api/customers/all.php";
 
   const handleSearch = (e) => {
-    let searchValue;
-    let firstNameValue;
-    let lastNameValue;
-    let emailValue;
-    let idNoValue;
-    let phoneNoValue;
-    // let eyeColorValue;
+    // let searchValue;
+    // let firstNameValue;
+    // let lastNameValue;
+    // let emailValue;
+    // let idNoValue;
+    // let phoneNoValue;
+    // // let eyeColorValue;
 
-    const newRows = customerData.filter((row) => {
-      firstNameValue = row.first_name
-        .toString()
-        .toLowerCase()
-        .includes(e.target.value.toLowerCase());
+    // const newRows = customerData.filter((row) => {
+    //   firstNameValue = row.first_name
+    //     .toString()
+    //     .toLowerCase()
+    //     .includes(e.target.value.toLowerCase());
 
-      lastNameValue = row.last_name
-        .toLowerCase()
-        .includes(e.target.value.toLowerCase());
+    //   lastNameValue = row.last_name
+    //     .toLowerCase()
+    //     .includes(e.target.value.toLowerCase());
 
-      emailValue = row.email
-        .toLowerCase()
-        .includes(e.target.value.toLowerCase());
+    //   emailValue = row.email
+    //     .toLowerCase()
+    //     .includes(e.target.value.toLowerCase());
 
-      idNoValue = row.id_no
-        .toLowerCase()
-        .includes(e.target.value.toLowerCase());
+    //   idNoValue = row.id_no
+    //     .toLowerCase()
+    //     .includes(e.target.value.toLowerCase());
 
-      phoneNoValue = row.phone_no
-        .toLowerCase()
-        .includes(e.target.value.toLowerCase());
+    //   phoneNoValue = row.phone_no
+    //     .toLowerCase()
+    //     .includes(e.target.value.toLowerCase());
 
-      if (firstNameValue) {
-        searchValue = firstNameValue;
-      } else if (lastNameValue) {
-        searchValue = lastNameValue;
-      } else if (emailValue) {
-        searchValue = emailValue;
-      } else if (idNoValue) {
-        searchValue = idNoValue;
-      } else {
-        searchValue = phoneNoValue;
-      }
+    //   if (firstNameValue) {
+    //     searchValue = firstNameValue;
+    //   } else if (lastNameValue) {
+    //     searchValue = lastNameValue;
+    //   } else if (emailValue) {
+    //     searchValue = emailValue;
+    //   } else if (idNoValue) {
+    //     searchValue = idNoValue;
+    //   } else {
+    //     searchValue = phoneNoValue;
+    //   }
 
-      return searchValue;
-    });
+    //   return searchValue;
+    // });
 
-    setCustomers(newRows);
+    // setCustomers(newRows);
 
-    // let query = e.target.value;
-    // const newRecords = customerData.filter((item) =>
-    //   item.first_name.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
-    // );
-    // setCustomers(newRecords);
+    let query = e.target.value;
+    const newRecords = customerData.filter((item) => 
+      item.first_name.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+      item.last_name.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+      item.email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
+    );
+    setCustomers(newRecords);
   };
 
   const getCustomers = async () => {
