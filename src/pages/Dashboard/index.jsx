@@ -252,7 +252,7 @@ export default function Dashboard() {
           }}
           stickyFooterScrollbar={true}
           resourceAreaHeaderContent="Vehicles"
-          resourceAreaWidth="20%"
+          resourceAreaWidth="35%"
           slotLabelFormat={{
             weekday: "short", // abbreviated day names
             month: "short", // abbreviated month names
