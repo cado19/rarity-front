@@ -162,7 +162,8 @@ export default function NewVehicle() {
           Swal.fire({
             title: "Error",
             icon: "error",
-            text: "An error occured while creating vehicle",
+            text: response.data.message,
+            confirmButtonText: "OK",
           });
           setDisabled(false);
         }

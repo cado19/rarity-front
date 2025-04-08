@@ -145,6 +145,19 @@ export default function NewBooking() {
     // console.log(inputs);
   };
 
+  const initStartDate = () => {
+    const today = new Date();
+    setStartDate(today);
+    const day = today.getDate().toString().padStart(2, "0");
+    const month = (today.getMonth() + 1).toString().padStart(2, "0");
+    const year = today.getFullYear().toString();
+    const formattedStartDate = `${year}-${month}-${day}`;
+    setInputs({
+      ...inputs,
+      start_date: formattedStartDate,
+    });
+  }
+
   const endDateChange = (value) => {
     setEndDate(value);
     const day = value.getDate().toString().padStart(2, "0");
@@ -226,7 +239,7 @@ export default function NewBooking() {
     if (!data.vehicle_id) errors.vehicle_id = "Vehicle is required";
     if (!data.customer_id) errors.customer_id = "Client is required";
     if (!data.driver_id) errors.driver_id = "Driver is required";
-    if (!data.start_date) errors.start_date = "Start Date is required";
+    if (!data.start_date) initStartDate();
     if (!data.end_date) errors.end_date = "End Date is required";
     if (!data.start_time) errors.start_time = "Start Time is required";
     if (!data.end_time) errors.end_time = "End Time is required";
@@ -260,7 +273,8 @@ export default function NewBooking() {
           Swal.fire({
             title: "Error",
             icon: "error",
-            text: "An error occured while creating booking",
+            text: response.data.message,
+            confirmButtonText: "OK"
           });
           setDisabled(false);
         }

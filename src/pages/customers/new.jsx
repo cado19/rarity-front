@@ -13,6 +13,7 @@ import { baseURL } from "../../constants/url";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ClientNav from "../../components/navs/clientnav";
+import Swal from "sweetalert2";
 
 export default function NewCustomer() {
   // state
@@ -121,11 +122,19 @@ export default function NewCustomer() {
       setDisabled(false);
     } else {
       // submit the form
-      const response = axios.post(customerUrl, inputs);
+      const response = await axios.post(customerUrl, inputs);
       // redirect if response is "Customer Created"
       console.log(inputs);
-      if (response.data.message === "Customer Created") {
+      console.log(response);
+      if (response.data.status === "Success") {
         navigate("/customer", {state: {message: "Customer Created"}});
+      } else if(response.data.status === "Error") {
+        Swal.fire({
+          title: "Error Occurred",
+          text: response.data.message,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
       }
       // console.log(response);
       setDisabled(false);
