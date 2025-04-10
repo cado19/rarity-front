@@ -127,7 +127,8 @@ export default function NewCustomer() {
       console.log(inputs);
       console.log(response);
       if (response.data.status === "Success") {
-        navigate("/customer", {state: {message: "Customer Created"}});
+        const customer_id = response.data.customer_id;
+        navigate(`/customer/${customer_id}`, {state: {message: "Customer Created"}});
       } else if(response.data.status === "Error") {
         Swal.fire({
           title: "Error Occurred",
