@@ -38,6 +38,8 @@ import Calen from '../../pages/Dashboard/calen'
 import NotFound from '../../pages/utilities/404'
 import Analytics from '../../pages/analytics'
 import ActivateBooking from '../bookings/activate'
+import Logout from '../../pages/accounts/logout'
+import Earnings from '../../pages/agents/earnings'
 
 
 export default function AppRouter() {
@@ -81,6 +83,7 @@ export default function AppRouter() {
             <Route path='/agents' element={<AllAgents />} />
             <Route path='/agents/new' element={<NewAgent />} />
             <Route path='/agent/:id' element={<Agent />} />
+            <Route path='/agent/:id/earnings' element={<Earnings />}/>
 
             {/* Analytic Routes  */}
             <Route path='/analytics' element={<Analytics />} />
@@ -88,6 +91,7 @@ export default function AppRouter() {
           </Route>
           <Route path='*' element={<NotFound />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/logout' element={<Logout />} />
           <Route path='/contract/:id' element={<ShowContract /> } />
           <Route path='/sign_contract/:id' element={<EditContract />} />
           <Route path='/success' element={<Success />} />
