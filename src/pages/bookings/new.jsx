@@ -7,6 +7,7 @@ import axios from "axios";
 import { baseURL } from "../../constants/url";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { Mosaic } from "react-loading-indicators";
 import Loading from "../../components/PageContent/Loading";
 import BookingNav from "../../components/navs/bookingnav";
 
@@ -156,7 +157,7 @@ export default function NewBooking() {
       ...inputs,
       start_date: formattedStartDate,
     });
-  }
+  };
 
   const endDateChange = (value) => {
     setEndDate(value);
@@ -274,7 +275,7 @@ export default function NewBooking() {
             title: "Error",
             icon: "error",
             text: response.data.message,
-            confirmButtonText: "OK"
+            confirmButtonText: "OK",
           });
           setDisabled(false);
         }
@@ -286,8 +287,8 @@ export default function NewBooking() {
 
   if (loading) {
     return (
-      <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading />
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
       </div>
     );
   }

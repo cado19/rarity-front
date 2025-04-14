@@ -248,7 +248,7 @@ export default function EditBooking() {
     return errors;
   };
 
-  // validate date  
+  // validate date
   // const validateDate = (start, end) => {
   //   const errors = {};
   //   if (start > end) {
@@ -292,7 +292,7 @@ export default function EditBooking() {
     }
     console.log(inputs);
   };
-Mosaic  if (loading) {
+  if (loading) {
     return (
       <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
         <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
@@ -317,7 +317,9 @@ Mosaic  if (loading) {
               placeholder="Select Client"
               isSearchable
             />
-            <p className="text-blue-500">Current: {booking.c_fname} {booking.c_lname}</p>
+            <p className="text-blue-500">
+              Current: {booking.c_fname} {booking.c_lname}
+            </p>
             {errors.customer_id && (
               <p className="text-red-500 text-xs mt-1">{errors.customer_id}</p>
             )}
@@ -333,7 +335,9 @@ Mosaic  if (loading) {
               placeholder="Select Vehicle"
               isSearchable
             />
-            <p className="text-blue-500">Current: {booking.make} {booking.model} {booking.number_plate}</p>
+            <p className="text-blue-500">
+              Current: {booking.make} {booking.model} {booking.number_plate}
+            </p>
             {errors.vehicle_id && (
               <p className="text-red-500 text-xs mt-1">{errors.vehicle_id}</p>
             )}
@@ -349,7 +353,9 @@ Mosaic  if (loading) {
               placeholder="Select Driver"
               isSearchable
             />
-            <p className="text-blue-500">Current: {booking.d_fname} {booking.d_lname}</p>
+            <p className="text-blue-500">
+              Current: {booking.d_fname} {booking.d_lname}
+            </p>
             {errors.driver_id && (
               <p className="text-red-500 text-xs mt-1">{errors.driver_id}</p>
             )}
