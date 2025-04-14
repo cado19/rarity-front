@@ -10,8 +10,8 @@ import BookingNav from "../../components/navs/bookingnav";
 import BookingTable from "../../components/bookings/table";
 
 export default function AllBookings() {
-
-  const [bookings, setBookings] = useState([]);
+  const bookingData = [];
+  const [bookings, setBookings] = useState(bookingData);
   const [alteredData, setAlteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,18 +20,25 @@ export default function AllBookings() {
   const bookingUrl = baseUrl + "/api/bookings/all.php";
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("loggedIn");
-    if (!loggedIn) {
-      navigate("/login");
-    }
     getBookings();
-  }, [loading]);
+  }, [bookings]);
 
   async function getBookings() {
     try {
       const response = await axios.get(bookingUrl);
-      setBookings(response.data.bookings);
-      formatBookings();
+      response.data.bookings.forEach((booking) => {
+        bookingData.push({
+          id: booking.id,
+          booking_no: booking.booking_no,
+          client: booking.c_fname + " " + booking.c_lname,
+          vehicle: booking.make + " " + booking.model,
+          number_plate: booking.number_plate,
+          start_date: booking.start_date,
+          end_date: booking.end_date,
+        });
+      })
+      // setBookings(response.data.bookings);
+      // formatBookings();
       // console.log(response);
 
       setLoading(false);
@@ -62,6 +69,21 @@ export default function AllBookings() {
     setAlteredData(alteredData);
   }
 
+  const handleSearch = (e) => {
+    let query = e.target.value;
+    const newRecords = bookingData.filter(
+      (item) =>
+        item.booking_no.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+        item.client.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+        item.vehicle.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+        item.number_plate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
+        // item.start_date.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
+      // item.rate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
+    );
+    setBookings(newRecords);
+    console.log("Filtered bookings: ", bookings)
+  };
+
   if (loading) {
     return (
       <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
@@ -83,8 +105,40 @@ export default function AllBookings() {
     <>
       <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
         <BookingNav />
+
+        {/* Search bar  */}
         {/* <h1 className="text-bold text-center">Vehicles </h1> */}
-        <BookingTable bookings={alteredData} />
+        <div className="flex justify-end">
+          <div class="relative mt-2">
+            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <svg
+                className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                />
+              </svg>
+            </div>
+            <input
+              type="search"
+              id="default-search"
+              className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Search Bookings..."
+              onChange={handleSearch}
+            />
+          </div>
+        </div>
+
+        {/* <h1 className="text-bold text-center">Vehicles </h1> */}
+        <BookingTable bookings={bookings} />
       </div>
     </>
   );

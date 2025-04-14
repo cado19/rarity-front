@@ -57,42 +57,6 @@ export default function AllVehicles() {
   const vehicleUrl = baseUrl + "/api/fleet/all.php";
 
   const handleSearch = (e) => {
-    // let searchValue;
-    // let makeValue;
-    // let modelValue;
-    // let numberPlateValue;
-    // let rateValue;
-
-    // const newRows = vehicleData.filter((row) => {
-    //   makeValue = row.make
-    //     .toString()
-    //     .toLowerCase()
-    //     .includes(e.target.value.toLowerCase());
-
-    //   modelValue = row.model
-    //     .toLowerCase()
-    //     .includes(e.target.value.toLowerCase());
-
-    //   numberPlateValue = row.number_plate
-    //     .toLowerCase()
-    //     .includes(e.target.value.toLowerCase());
-
-    //   rateValue = row.rate.toLowerCase().includes(e.target.value.toLowerCase());
-
-    //   if (makeValue) {
-    //     searchValue = makeValue;
-    //   } else if (modelValue) {
-    //     searchValue = modelValue;
-    //   } else if (numberPlateValue) {
-    //     searchValue = numberPlateValue;
-    //   } else {
-    //     searchValue = rateValue;
-    //   }
-    //   return searchValue;
-    // });
-
-    // setVehicles(newRows);
-
     let query = e.target.value;
     const newRecords = vehicleData.filter(
       (item) =>
