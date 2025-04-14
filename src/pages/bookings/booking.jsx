@@ -78,6 +78,13 @@ export default function Booking() {
           icon: "error",
           confirmButtonText: "OK",
         });
+      } else if (location.state.message = "Booking updated successfully") {
+        Swal.fire({
+          title: "Booking updated",
+          text: "Booking has been updated successfully",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
       }
     }
   };

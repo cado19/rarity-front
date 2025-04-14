@@ -279,6 +279,7 @@ export default function EditBooking() {
             state: { message: "Booking updated successfully" },
           });
         } else {
+          console.log(response.data);
           Swal.fire({
             title: "Error",
             icon: "error",

@@ -67,7 +67,7 @@ import {
       {
           key: 'logout',
           label: 'Logout',
-          path: '/settings',
+          path: '/logout',
           icon: <HiOutlineArrowRight />
           
       },
