@@ -5,44 +5,12 @@ import { baseURL } from "../../constants/url";
 import Loading from "../../components/PageContent/Loading";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
+import { Mosaic } from "react-loading-indicators";
 import BookingNav from "../../components/navs/bookingnav";
+import BookingTable from "../../components/bookings/table";
 
 export default function UpcomingBookings() {
-  const columns = [
-    {
-      name: "No",
-      selector: (row) => row.booking_no,
-      sortable: true,
-    },
-    {
-      name: "Client",
-      selector: (row) => row.client,
-      sortable: true,
-    },
-    {
-      name: "Vehicle",
-      selector: (row) => row.vehicle,
-    },
-    {
-      name: "Number Plate",
-      selector: (row) => row.number_plate,
-      sortable: true,
-    },
-    {
-      name: "Start Date",
-      selector: (row) => row.start_date,
-      sortable: true,
-    },
-    {
-      name: "End Date",
-      selector: (row) => row.end_date,
-      sortable: true,
-    },
-    {
-      name: "Options",
-      cell: (row) => <Link to={`/booking/${row.id}`}>Details</Link>,
-    },
-  ];
+
   const [bookings, setBookings] = useState([]);
   const [alteredData, setAlteredData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,9 +22,9 @@ export default function UpcomingBookings() {
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
-    if (!loggedIn){
+    if (!loggedIn) {
       navigate("/login");
-    };
+    }
     getBookings();
   }, [loading]);
 
@@ -96,8 +64,8 @@ export default function UpcomingBookings() {
 
   if (loading) {
     return (
-      <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading />
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
       </div>
     );
   }
@@ -115,12 +83,7 @@ export default function UpcomingBookings() {
     <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
       <BookingNav />
       {/* <h1 className="text-bold text-center">Vehicles </h1> */}
-      <DataTable
-        columns={columns}
-        data={alteredData}
-        pagination
-        title="Upcoming Bookings"
-      />
+      <BookingTable bookings={alteredData} />
     </div>
   );
 }
