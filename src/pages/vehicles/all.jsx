@@ -7,6 +7,7 @@ import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import VehicleNav from "../../components/navs/vehicleNav";
+import { Mosaic } from "react-loading-indicators";
 
 export default function AllVehicles() {
   const columns = [
@@ -138,8 +139,8 @@ export default function AllVehicles() {
 
   if (loading) {
     return (
-      <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading />
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
       </div>
     );
   }

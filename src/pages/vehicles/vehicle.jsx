@@ -8,6 +8,7 @@ import Loading from "../../components/PageContent/Loading";
 import VehicleInfoBoxes from "../../components/infoboxes/VehicleInfoBoxes";
 import carImg from '../../assets/car-img.png';
 import DailyRateForm from "../../components/vehicles/DailyRateForm";
+import { Mosaic } from "react-loading-indicators";
 
 export default function Vehicle() {
   const { id } = useParams();
@@ -40,8 +41,8 @@ export default function Vehicle() {
 
   if (loading) {
     return (
-      <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading />
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
       </div>
     );
   }

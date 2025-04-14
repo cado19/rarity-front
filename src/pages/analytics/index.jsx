@@ -6,6 +6,7 @@ import Loading from "../../components/PageContent/Loading";
 import axios from "axios";
 import LandingAnalyticsInfoBoxes from "../../components/infoboxes/LandingAnalyticsInfoBoxes";
 import Chart from "react-google-charts";
+import { Mosaic } from "react-loading-indicators";
 
 export default function Analytics() {
   const [popCategories, setPopCategories] = useState([]);
@@ -95,7 +96,11 @@ export default function Analytics() {
   }, []);
 
   if (loading) {
-    return <Loading />;
+    return (
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
+      </div>
+    );
   }
 
   return (

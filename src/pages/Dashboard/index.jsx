@@ -18,6 +18,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dateClick
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { Mosaic } from "react-loading-indicators";
 
 export default function Dashboard() {
   const [bookings, setBookings] = useState([]);
@@ -215,12 +216,12 @@ export default function Dashboard() {
         <h1 className="text-red-600 text-center">{error}</h1>
       </div>
     );
-  }
+  } 
 
   if (loading) {
     return (
-      <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading />
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
       </div>
     );
   }
