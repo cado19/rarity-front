@@ -21,7 +21,9 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  const loginUrl = baseURL + "/api/accounts/login.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const loginUrl = baseUrl + "/api/accounts/login.php";
   // console.log(loginUrl);
   const validateEmail = (email) => {
     // Email validation logic here
@@ -60,6 +62,7 @@ export default function Login() {
           navigate("/");
         } else {
           alert("Invalid email or password");
+          setPending(false)
         }
       });
     }
