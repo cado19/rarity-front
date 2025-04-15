@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 
 export default function Booking() {
   const { id } = useParams();
+  const [roleId, setRoleId] = useState(null);
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,7 +23,6 @@ export default function Booking() {
   const SignUrl = contractSignUrl + `${id}`; // url for signing contract
   const contractURL = contractViewUrl + `${id}`;
   const bookingVoucherURL = voucherUrl + `${id}`;
-
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,28 +57,28 @@ export default function Booking() {
           icon: "success",
           confirmButtonText: "OK",
         });
-      } else if (location.state.message = "Booking created successfully") {
+      } else if ((location.state.message = "Booking created successfully")) {
         Swal.fire({
           title: "Booking created",
           text: "The booking has been created successfully",
           icon: "success",
           confirmButtonText: "OK",
         });
-      } else if (location.state.message = "Booking activated") {
+      } else if ((location.state.message = "Booking activated")) {
         Swal.fire({
           title: "Booking activated",
           text: "The booking has been activated successfully",
           icon: "success",
           confirmButtonText: "OK",
         });
-      } else if (location.state.message = "Booking could not be activated") {
+      } else if ((location.state.message = "Booking could not be activated")) {
         Swal.fire({
           title: "Booking activated",
           text: "Booking could not be activated",
           icon: "error",
           confirmButtonText: "OK",
         });
-      } else if (location.state.message = "Booking updated successfully") {
+      } else if ((location.state.message = "Booking updated successfully")) {
         Swal.fire({
           title: "Booking updated",
           text: "Booking has been updated successfully",
@@ -86,6 +86,13 @@ export default function Booking() {
           confirmButtonText: "OK",
         });
       }
+    }
+  };
+
+  const getRoleId = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setRoleId(user.role_id);
     }
   };
 
@@ -186,6 +193,7 @@ export default function Booking() {
   };
 
   useEffect(() => {
+    getRoleId();
     getBooking();
     checkMessage();
   }, []);
@@ -267,7 +275,10 @@ export default function Booking() {
           <hr />
           <div className="flex flex-row gap-4 w-full mt-10">
             {booking.status == "upcoming" && (
-              <button className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300" onClick={() => activateBooking()}>
+              <button
+                className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300"
+                onClick={() => activateBooking()}
+              >
                 Activate Booking
               </button>
             )}
@@ -279,12 +290,15 @@ export default function Booking() {
                 Extend Booking
               </button>
             )}
-            <button
-              className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
-              onClick={() => navigate(`/bookings/edit/${id}`)}
-            >
-              Edit Booking
-            </button>
+            {roleId == 0 && (
+              <button
+                className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
+                onClick={() => navigate(`/bookings/edit/${id}`)}
+              >
+                Edit Booking
+              </button>
+            )}
+
             {booking.status != "cancelled" && (
               <button
                 className="border border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-red-400 dark:text-red-400 dark:hover:bg-red-400 dark:hover:text-black"

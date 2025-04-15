@@ -12,6 +12,7 @@ import Editpass from "./editpass";
 export default function Agent() {
   const { id } = useParams();
   const [agent, setAgent] = useState(null);
+  const [roleId, setRoleId] = useState(null);
   const [agentBookings, setAgentBookings] = useState([]);
   const [agentCommissionPlans, setAgentCommissionPlans] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,6 +32,13 @@ export default function Agent() {
     baseUrl + `/api/commissions/agent_commissions.php?agent_id=${id}`;
 
   const navigate = useNavigate();
+
+  const getRoleId = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setRoleId(user.role_id);
+    }
+  }
 
   const getAgent = async () => {
     try {
@@ -178,10 +186,14 @@ export default function Agent() {
   ];
 
   useEffect(() => {
+    getRoleId();
     getAgent();
     getAgentBookings();
     getAgentCommissionPlans();
   }, []);
+
+  console.log("role id", roleId);
+
 
   if (error) {
     return (
@@ -223,24 +235,32 @@ export default function Agent() {
               {" "}
               <span className="font-bold">Role:</span> {agent.role}.{" "}
             </p>{" "}
-            <p className="text-gray-700 text-base">
-              {" "}
-              <button
-                className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
-                onClick={() => setIsModalOpen(true)}
-              >
-                Set Commission
-              </button>
-            </p>{" "}
-            <p className="text-gray-700 text-base">
-              {" "}
-              <button
-                className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
-                onClick={() => setRateModalOpen(true)}
-              >
-                Set Rate
-              </button>
-            </p>{" "}
+
+            {roleId == 0 && (
+              <>
+                <p className="text-gray-700 text-base">
+                  {" "}
+                  <button
+                    className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    Set Commission
+                  </button>
+                </p>{" "}
+                <p className="text-gray-700 text-base">
+                  {" "}
+                  <button
+                    className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
+                    onClick={() => setRateModalOpen(true)}
+                  >
+                    Set Rate
+                  </button>
+                </p>{" "}
+              </>
+            )}
+            
+
+
             <p className="text-gray-700 text-base">
               {" "}
               <button
