@@ -6,25 +6,31 @@ import Loading from "../../components/PageContent/Loading";
 import Newcomm from "./newcomm";
 import Swal from "sweetalert2";
 import BookingTbl from "../../components/agents/bookings";
+import Newrate from "./newrate";
+import Editpass from "./editpass";
 
 export default function Agent() {
   const { id } = useParams();
   const [agent, setAgent] = useState(null);
-  const [agentBookings, setAgentBookings] = useState(null);
+  const [agentBookings, setAgentBookings] = useState([]);
   const [agentCommissionPlans, setAgentCommissionPlans] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // commission modal open close state
+  const [rateModalOpen, setRateModalOpen] = useState(false); // rate modal open close state
+  const [passModalOpen, setPassModalOpen] = useState(false); // password modal open close state
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const agentURL = baseUrl + `/api/agents/read_single.php?id=${id}`;
   const commissionURL = baseUrl + `/api/commissions/update.php?agent_id=${id}`;
+  const passwordURL = baseUrl + `/api/accounts/update_pass.php?agent_id=${id}`;
+  const rateURL = baseUrl + `/api/commissions/update_rate.php?agent_id=${id}`;
   const agentBookingsURL =
     baseUrl + `/api/bookings/agent_bookings.php?agent_id=${id}`;
   const agentCommissionPlansURL =
     baseUrl + `/api/commissions/agent_commissions.php?agent_id=${id}`;
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const getAgent = async () => {
     try {
@@ -41,8 +47,12 @@ export default function Agent() {
   const getAgentBookings = async () => {
     try {
       const response = await axios.get(agentBookingsURL);
+      if (response.data.message == "Agent has no bookings") {
+        return;
+      }
       const bookings = response.data.bookings;
       formatBookings(bookings);
+
       console.log(response);
       // setAgentBookings(response.data.bookings);
       // setLoading(false);
@@ -82,21 +92,70 @@ export default function Agent() {
     });
     setAgentBookings(alteredData);
   }
-  console.log(agentBookings);
+
+  // SUBMIT AGENT COMMISSION TO THE BACKEND
   const handleCommissionSubmit = async (data) => {
     console.log(data);
     setIsModalOpen(false);
     const response = await axios.post(commissionURL, data);
     if (response.data.status === "Success") {
       Swal.fire({
-        title: "Commission Set Successfully",
+        title: "Rate Set Successfully",
         icon: "success",
         confirmButtonText: "OK",
       });
       getAgentCommissionPlans();
     } else {
       Swal.fire({
-        title: "Error Setting Commission",
+        title: "Error Setting Rate",
+        text: response.data.message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      console.log(response);
+    }
+    getAgent();
+  };
+
+  // SUBMIT AGENT PASSWORD TO THE BACKEND
+  const handlePasswordSubmit = async (data) => {
+    console.log(data);
+    setIsModalOpen(false);
+    const response = await axios.post(passwordURL, data);
+    if (response.data.status === "Success") {
+      Swal.fire({
+        title: "Password Successfully Updated",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      getAgentCommissionPlans();
+    } else {
+      Swal.fire({
+        title: "Error updating password",
+        text: response.data.message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      console.log(response);
+    }
+    getAgent();
+  };
+
+  // SUBMIT AGENT RATE TO THE BACKEND
+  const handleRateSubmit = async (data) => {
+    console.log(data);
+    setRateModalOpen(false);
+    const response = await axios.post(rateURL, data);
+    if (response.data.status === "Success") {
+      Swal.fire({
+        title: "Rate Set Successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      getAgentCommissionPlans();
+    } else {
+      Swal.fire({
+        title: "Error Setting Rate",
         text: response.data.message,
         icon: "error",
         confirmButtonText: "OK",
@@ -173,6 +232,24 @@ export default function Agent() {
                 Set Commission
               </button>
             </p>{" "}
+            <p className="text-gray-700 text-base">
+              {" "}
+              <button
+                className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
+                onClick={() => setRateModalOpen(true)}
+              >
+                Set Rate
+              </button>
+            </p>{" "}
+            <p className="text-gray-700 text-base">
+              {" "}
+              <button
+                className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
+                onClick={() => setPassModalOpen(true)}
+              >
+                Edit password
+              </button>
+            </p>{" "}
           </div>
           {/* Commission Plans  */}
           <div className="px-6 py-4 items-center justify-center">
@@ -215,6 +292,29 @@ export default function Agent() {
         show={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCommissionSubmit}
+        animate={{
+          mount: { scale: 1, y: 0 },
+          unmount: { scale: 0.9, y: -100 },
+        }}
+      />
+
+      <Newrate
+        agent={agent}
+        categoryOptions={categoryOptions}
+        show={rateModalOpen}
+        onClose={() => setRateModalOpen(false)}
+        onSubmit={handleRateSubmit}
+        animate={{
+          mount: { scale: 1, y: 0 },
+          unmount: { scale: 0.9, y: -100 },
+        }}
+      />
+
+      <Editpass
+        agent={agent}
+        show={passModalOpen}
+        onClose={() => setPassModalOpen(false)}
+        onSubmit={handlePasswordSubmit}
         animate={{
           mount: { scale: 1, y: 0 },
           unmount: { scale: 0.9, y: -100 },

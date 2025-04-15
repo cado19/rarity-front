@@ -10,6 +10,7 @@ import { baseURL } from "../../constants/url";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AgentNav from "../../components/navs/agentnav";
+import Swal from "sweetalert2";
 
 export default function NewAgent() {
   // state
@@ -108,15 +109,22 @@ export default function NewAgent() {
       setDisabled(false);
     } else {
       // submit the form
-      // const response = axios.post(driverUrl, inputs);
-      // redirect if response is "Driver Created"
-      // if (response.data.message === "Driver Created") {
-      //   const driver_id = response.data.driver_id;
-      //   navigate(`/driver/${driver_id}`, {
-      //     state: { message: "Driver Created" },
-      //   });
-      // }
-      // console.log(response);
+      const response = await axios.post(agentURL, inputs);
+      // redirect if response status is "Success"
+      if (response.data.status === "Success") {
+        const agent_id = response.data.agent_id;
+        navigate(`/agent/${agent_id}`, {
+          state: { message: "Agent Created" },
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: response.data.message,
+          confirmButtonText: 'OK'
+        })
+      }
+      console.log(response);
       setDisabled(false);
 
       console.log(inputs);
