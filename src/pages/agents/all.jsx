@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { esES } from "@mui/x-date-pickers/locales";
 import DriverNav from "../../components/navs/drivernav";
 import AgentNav from "../../components/navs/agentnav";
+import { Mosaic } from "react-loading-indicators";
 
 export default function AllAgents() {
   const navigate = useNavigate();
@@ -142,8 +143,8 @@ export default function AllAgents() {
   }
   if (loading) {
     return (
-      <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading />
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
       </div>
     );
   }

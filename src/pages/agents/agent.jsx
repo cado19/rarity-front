@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import BookingTbl from "../../components/agents/bookings";
 import Newrate from "./newrate";
 import Editpass from "./editpass";
+import { Mosaic } from "react-loading-indicators";
 
 export default function Agent() {
   const { id } = useParams();
@@ -204,9 +205,9 @@ export default function Agent() {
   }
   if (loading) {
     return (
-      <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading />
-      </div>
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
+      </div> 
     );
   }
   return (

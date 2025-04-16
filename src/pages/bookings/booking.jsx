@@ -20,6 +20,7 @@ export default function Booking() {
   const [extendInfo, setExtendInfo] = useState(null);
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const bookingUrl = baseUrl + `/api/bookings/read_single.php?id=${id}`;
+  const extendUrl = baseUrl + `/api/bookings/extend.php`;
   const SignUrl = contractSignUrl + `${id}`; // url for signing contract
   const contractURL = contractViewUrl + `${id}`;
   const bookingVoucherURL = voucherUrl + `${id}`;
@@ -97,9 +98,25 @@ export default function Booking() {
   };
 
   // function to handle extend date of booking
-  const extendData = (data) => {
-    // const data = {id: id, endDate: endDate};
-    console.log(data);
+  const extendData = async (data) => {
+    const data = {id: id, endDate: endDate};
+    // console.log(data);
+    try {
+      const response = await axios.post(extendUrl, data);
+      Swal.fire({
+        title: "Booking extended",
+        text: "The booking has been extended successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "The booking couldn't be extended",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
   };
 
   // function to cancel booking
