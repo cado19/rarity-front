@@ -99,7 +99,7 @@ export default function Booking() {
 
   // function to handle extend date of booking
   const extendData = async (data) => {
-    const data = {id: id, endDate: endDate};
+    // const data = {id: id, endDate: endDate};
     // console.log(data);
     try {
       const response = await axios.post(extendUrl, data);
