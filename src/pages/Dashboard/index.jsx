@@ -245,11 +245,11 @@ export default function Dashboard() {
           <span>Active Booking</span>
         </div>
         <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 bg-green-500"></div>
+          <div class="w-4 h-4 bg-green-700"></div>
           <span>Upcoming Booking</span>
         </div>
         <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 bg-yellow-500"></div>
+          <div class="w-4 h-4 bg-yellow-300"></div>
           <span>Completed Booking</span>
         </div>
         <div class="flex items-center space-x-2">
