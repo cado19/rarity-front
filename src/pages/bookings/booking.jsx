@@ -101,6 +101,7 @@ export default function Booking() {
   const extendData = async (data) => {
     // const data = {id: id, endDate: endDate};
     // console.log(data);
+    setIsModalOpen(false);
     try {
       const response = await axios.post(extendUrl, data);
       Swal.fire({
@@ -109,6 +110,7 @@ export default function Booking() {
         icon: "success",
         confirmButtonText: "OK",
       });
+      getBooking();
     } catch (error) {
       Swal.fire({
         title: "Error",
