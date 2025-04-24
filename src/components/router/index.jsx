@@ -40,6 +40,8 @@ import Analytics from '../../pages/analytics'
 import ActivateBooking from '../bookings/activate'
 import Logout from '../../pages/accounts/logout'
 import Earnings from '../../pages/agents/earnings'
+import VehicleAnalytics from '../../pages/analytics/vehicle'
+import MonthStats from '../../pages/analytics/vehicle/monthstats'
 
 
 export default function AppRouter() {
@@ -87,6 +89,8 @@ export default function AppRouter() {
 
             {/* Analytic Routes  */}
             <Route path='/analytics' element={<Analytics />} />
+            <Route path='/analytics/vehicle' element={<VehicleAnalytics />} />
+            <Route path='/analytics/vehicle/month-stats' element={<MonthStats />} />
             
           </Route>
           <Route path='*' element={<NotFound />} />
