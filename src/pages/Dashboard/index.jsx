@@ -10,7 +10,7 @@ import "react-calendar-timeline/styles.css";
 import moment from "moment";
 // import { Chart } from "react-google-charts";
 import Loading from "../../components/PageContent/Loading";
-import {  userUrl } from "../../constants/url";
+import { userUrl } from "../../constants/url";
 import FullCalendar from "@fullcalendar/react";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -100,10 +100,13 @@ export default function Dashboard() {
     }
   };
 
-  // helper function to post vehicle update 
+  // helper function to post vehicle update
   const postDashVehicle = async (booking) => {
     try {
-      const response = await axios.post(baseUrl + "/api/bookings/update_dash_vehicle_booking.php", booking);
+      const response = await axios.post(
+        baseUrl + "/api/bookings/update_dash_vehicle_booking.php",
+        booking
+      );
       if (response.data.status === "Success") {
         Swal.fire({
           title: "Booking Updated",
@@ -195,8 +198,6 @@ export default function Dashboard() {
       };
       updateDates(booking);
     }
-
-    
   };
 
   useEffect(() => {
@@ -216,7 +217,7 @@ export default function Dashboard() {
         <h1 className="text-red-600 text-center">{error}</h1>
       </div>
     );
-  } 
+  }
 
   if (loading) {
     return (
@@ -235,6 +236,26 @@ export default function Dashboard() {
         >
           New Customer link
         </button>
+      </div>
+
+      {/* NEW CUSTOMER BUTTON  */}
+      <div class="flex space-x-4 mt-4">
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 bg-blue-500"></div>
+          <span>Active Booking</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 bg-green-500"></div>
+          <span>Upcoming Booking</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 bg-yellow-500"></div>
+          <span>Completed Booking</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 bg-red-500"></div>
+          <span>Cancelled Booking</span>
+        </div>
       </div>
 
       {/* CALENDAR  */}
@@ -257,7 +278,7 @@ export default function Dashboard() {
           slotLabelFormat={{
             weekday: "short", // abbreviated day names
             month: "short", // abbreviated month names
-            day: "numeric" // numeric day
+            day: "numeric", // numeric day
           }}
           slotLabelContent={(arg) => (
             <div className="custom-slot-label">
