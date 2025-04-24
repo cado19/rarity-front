@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function VehicleAnalyticsInfoBoxes() {
+export default function VehicleAnalyticsInfoBoxes({popVehicle, profVehicle}) {
 
   return (
     <div className="flex gap-4 w-full mt-2 ml-1 mr-1">
@@ -9,8 +9,9 @@ export default function VehicleAnalyticsInfoBoxes() {
           <span className="text-sm text-gray-500 font-light">Most popular vehicle</span>
           <div className="flex items-center">
             <strong className="text-xl text-gray-700 font-semibold">
-            Mazda CX-5
+            {popVehicle?.make} {" "} {popVehicle?.model} {" "} {popVehicle?.number_plate}
             </strong>
+            <span className="text-sm text-green-500 pl-2">{popVehicle?.total} bookings</span>
           </div>
         </div>
       </BoxWrapper>
@@ -19,9 +20,9 @@ export default function VehicleAnalyticsInfoBoxes() {
           <span className="text-sm text-gray-500 font-light">Most profitable vehicle</span>
           <div className="flex items-center">
             <strong className="text-xl text-gray-700 font-semibold">
-              Toyota Land Cruiser Prado
+            {profVehicle?.make} {" "} {profVehicle?.model} {" "} {profVehicle?.number_plate}
             </strong>
-            <span className="text-sm text-green-500 pl-2">+234</span>
+            <span className="text-sm text-green-500 pl-2">{Number(profVehicle?.total).toLocaleString()}/-</span>
           </div>
         </div>
       </BoxWrapper>

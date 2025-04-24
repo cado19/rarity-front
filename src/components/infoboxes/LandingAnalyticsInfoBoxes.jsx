@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function LandingAnalyticsInfoBoxes() {
 
@@ -30,9 +31,9 @@ export default function LandingAnalyticsInfoBoxes() {
           <span className="text-sm text-gray-500 font-light">More Vehicle Stats</span>
           <div className="flex items-center">
             <strong className="text-xl text-gray-700 font-semibold">
-            More Info
+            <Link to="/analytics/vehicle">More Info</Link> 
             </strong>
-            <span className="text-sm text-green-500 pl-2">+234</span>
+            <span className="text-sm text-green-500 pl-2"></span>
           </div>
         </div>
       </BoxWrapper>
