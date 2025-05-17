@@ -26,12 +26,12 @@ export default function BookingTable({ bookings }) {
     },
     {
       name: "Start Date",
-      selector: (row) => formatDate(new Date(row.start_date), "do MMMM yyyy"),
+      selector: (row) => row.start_date,
       sortable: true,
     },
     {
       name: "End Date",
-      selector: (row) => formatDate(new Date(row.end_date), "do MMMM yyyy"),
+      selector: (row) => row.end_date,
       sortable: true,
     },
     {

@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Mosaic } from "react-loading-indicators";
 import BookingNav from "../../components/navs/bookingnav";
 import BookingTable from "../../components/bookings/table";
+import { fetchBookings } from "../../components/bookings/fetch";
 
 export default function UpcomingBookings() {
   const bookingData = [];
@@ -30,19 +31,10 @@ export default function UpcomingBookings() {
 
   async function getBookings() {
     try {
-      const response = await axios.get(bookingUrl);
-      response.data.bookings.forEach((booking) => {
-        bookingData.push({
-          id: booking.id,
-          booking_no: booking.booking_no,
-          client: booking.c_fname + " " + booking.c_lname,
-          vehicle: booking.make + " " + booking.model,
-          number_plate: booking.number_plate,
-          start_date: booking.start_date,
-          end_date: booking.end_date,
-        });
-      })
-     
+      const fetchedBookings = await fetchBookings(bookingUrl);
+      console.log("Fetched bookings: ", fetchedBookings);
+      bookingData.length = 0; // Clear the bookingData array
+      bookingData.push(...fetchedBookings); // Push the fetched bookings into the bookingData array
 
       setLoading(false);
     } catch (error) {
@@ -52,21 +44,24 @@ export default function UpcomingBookings() {
     }
   }
 
-
-
   const handleSearch = (e) => {
     let query = e.target.value;
     const newRecords = bookingData.filter(
       (item) =>
-        item.booking_no.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+        item.booking_no
+          .toLocaleLowerCase()
+          .includes(query.toLocaleLowerCase()) ||
         item.client.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
         item.vehicle.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-        item.number_plate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
-        // item.start_date.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
-      // item.rate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
+        item.number_plate
+          .toLocaleLowerCase()
+          .includes(query.toLocaleLowerCase()) ||
+      item.start_date.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+      item.end_date.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+      // item.rate.toLocaleLowerCase().includes(query.toLocaleLowerCase())
     );
     setBookings(newRecords);
-    console.log("Filtered bookings: ", bookings)
+    console.log("Filtered bookings: ", bookings);
   };
 
   if (loading) {
