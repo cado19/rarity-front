@@ -127,9 +127,14 @@ export default function AllAgents() {
   };
 
   useEffect(() => {
+    const user = localStorage.getItem("user");
+    const role = user.role_id;
     const loggedIn = localStorage.getItem("loggedIn");
     if (!loggedIn) {
       navigate("/login");
+    }
+    if(role != "0" || role != "1"){
+      navigate("/", {state: {message: "You are not authorized to view this page."}});
     }
     getAgents();
   }, [agents, navigate, loading]);

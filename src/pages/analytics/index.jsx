@@ -15,6 +15,8 @@ export default function Analytics() {
   const [bookingCount, setBookingCount] = useState();
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const categoryUrl = baseUrl + "/api/analytics/landing/popular_categories.php";
   const earningsUrl = baseUrl + "/api/analytics/landing/earnings.php";
@@ -89,6 +91,11 @@ export default function Analytics() {
   }
 
   useEffect(() => {
+        const user = localStorage.getItem("user");
+    const role = user.role_id;
+        if(role != "0" || role != "1"){
+      navigate("/", {state: {message: "You are not authorized to view this page."}});
+    }
     getCategories();
     getEarnings();
     getBCount();
