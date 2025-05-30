@@ -150,8 +150,9 @@ export default function AllPayments() {
     try {
       await axios.get(paymentURL).then((response) => {
         console.log(response);
-        if (response.data.data.length === 0) {
-          setError("No payments found");
+        if (response.data.status === "Error") {
+          setError(response.data.message);
+          setLoading(false);
         } else {
           response.data.data.forEach((payment) => addPaymentData(payment));
           console.log(paymentData);
@@ -198,7 +199,6 @@ export default function AllPayments() {
 
   return (
     <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
-      <AgentNav />
       {/* <h1 className="text-bold text-center">Vehicles </h1> */}
       <DataTable
         columns={columns}

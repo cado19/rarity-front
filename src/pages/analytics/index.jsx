@@ -71,30 +71,31 @@ export default function Analytics() {
   //format revenue data for google react chart
   const revenueChartData = revenue && [
     ["Month", "Revenue"], //column headerss
-    ...revenue.map(item => [item.month, Number(item.total)])
-  ]
+    ...revenue.map((item) => [item.month, Number(item.total)]),
+  ];
 
   const categoryChartData = popCategories && [
     ["Category", "Value"],
-    ...popCategories.map(item => [item.category, Number(item.total)])
-  ]
+    ...popCategories.map((item) => [item.category, Number(item.total)]),
+  ];
 
   const categoryChartOptions = {
     title: "Most Popular Categories",
     pieHole: 0.4,
-    is3D: true
-  }
-
+    is3D: true,
+  };
 
   const revenueChartOptions = {
-    title: "Monthly Revenue"
-  }
+    title: "Monthly Revenue",
+  };
 
   useEffect(() => {
-        const user = localStorage.getItem("user");
+    const user = JSON.parse(localStorage.getItem("user"));
     const role = user.role_id;
-        if(role != "0" || role != "1"){
-      navigate("/", {state: {message: "You are not authorized to view this page."}});
+    if (role == "2" || role == "1") {
+      navigate("/", {
+        state: { message: "You are not authorized to view this page." },
+      });
     }
     getCategories();
     getEarnings();
@@ -117,10 +118,22 @@ export default function Analytics() {
 
       <div className="flex flex-row gap-4 mt-2 ml-2 mr-1 overflow-hidden">
         <div className="w-[50rem] h-[25rem] bg-white p-4 rounded-sm border border-gray flex flex-col">
-          <Chart chartType="ColumnChart" data={revenueChartData} options={revenueChartOptions} width="100%" height="350px" />
+          <Chart
+            chartType="ColumnChart"
+            data={revenueChartData}
+            options={revenueChartOptions}
+            width="100%"
+            height="350px"
+          />
         </div>
         <div className="h-[25rem] bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1">
-        <Chart chartType="PieChart" data={categoryChartData} options={categoryChartOptions} width="100%" height="350px" />
+          <Chart
+            chartType="PieChart"
+            data={categoryChartData}
+            options={categoryChartOptions}
+            width="100%"
+            height="350px"
+          />
         </div>
       </div>
     </div>
