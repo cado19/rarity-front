@@ -16,7 +16,7 @@ import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import dayGridPlugin from "@fullcalendar/daygrid";
 // import weekGridPlugin from "@fullcalendar/weekgrid";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dateClick
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { Mosaic } from "react-loading-indicators";
 
@@ -35,11 +35,21 @@ export default function Dashboard() {
   const workplanData = [];
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
   const bookingUrl = baseUrl + "/api/bookings/workplan_bookings.php";
   const vehicleUrl = baseUrl + "/api/fleet/workplan_vehicles.php";
+
+  const checkMessage = () => {
+    location.state &&
+    Swal.fire({
+      title: location.state.message,
+      icon: "info",
+      confirmButtonText: "OK",
+    })
+  }
 
   const copyNewCustomerURL = () => {
     navigator.clipboard.writeText(newCustomerUrl);
@@ -207,6 +217,7 @@ export default function Dashboard() {
     }
     getVehicles();
     getBookings();
+    checkMessage();
   }, [loading]);
 
   // console.log(vehicles);
