@@ -83,7 +83,7 @@ export default function VehicleAnalytics() {
       console.log("profVehicleData: ", response.data);
       setProfVehicle(response.data.data);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching profitable vehicle data:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -98,7 +98,7 @@ export default function VehicleAnalytics() {
       console.log("popVehicleData: ", response.data);
       setPopVehicle(response.data.data);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching popular vehicle data:", error);
       Swal.fire({
         icon: "error",
         title: "Error",

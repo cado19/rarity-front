@@ -42,6 +42,7 @@ import Logout from '../../pages/accounts/logout'
 import Earnings from '../../pages/agents/earnings'
 import VehicleAnalytics from '../../pages/analytics/vehicle'
 import MonthStats from '../../pages/analytics/vehicle/monthstats'
+import AllPayments from '../../pages/payments/all'
 
 
 export default function AppRouter() {
@@ -91,6 +92,9 @@ export default function AppRouter() {
             <Route path='/analytics' element={<Analytics />} />
             <Route path='/analytics/vehicle' element={<VehicleAnalytics />} />
             <Route path='/analytics/vehicle/month-stats' element={<MonthStats />} />
+
+            {/* Payment Routes  */}
+            <Route path='/payments' element={<AllPayments />} />
             
           </Route>
           <Route path='*' element={<NotFound />} />

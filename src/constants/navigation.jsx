@@ -13,7 +13,8 @@ import {
     HiOutlineIdentification, 
     HiOutlineChartPie,
     HiOutlineArrowRight,
-    HiOutlineArrowCircleRight
+    HiOutlineArrowCircleRight,
+    HiCash
   } from "react-icons/hi";
   
   export const DASHBOARD_SIDEBAR_LINKS = [
@@ -54,6 +55,12 @@ import {
           label: 'Bookings',
           path: '/bookings/all',
           icon: <HiOutlineDocumentText />
+      },
+      {
+          key: 'payments',
+          label: 'Payments',
+          path: '/payments',
+          icon: <HiCash />
       },
       {
           key: 'analytics',
