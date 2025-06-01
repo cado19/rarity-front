@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { Mosaic } from "react-loading-indicators";
 import Loading from "../../components/PageContent/Loading";
 import BookingNav from "../../components/navs/bookingnav";
+import { AiFillCaretRight } from "react-icons/ai";
+import { AiFillCaretDown } from "react-icons/ai";
 
 export default function NewBooking() {
   const clientOptions = [];
@@ -25,6 +27,8 @@ export default function NewBooking() {
     start_time: "",
     end_time: "",
     custom_rate: "",
+    in_capital: "0",
+    out_capital: "0",
   });
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -39,6 +43,7 @@ export default function NewBooking() {
   const [errors, setErrors] = useState({});
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [show, setShow] = useState(false);
 
   const navigate = useNavigate();
 
@@ -343,6 +348,75 @@ export default function NewBooking() {
               <p className="text-red-500 text-xs mt-1">{errors.driver_id}</p>
             )}
           </div>
+          {/* Show locations  */}
+          <div className="flex flex-row">
+            <p
+              className="text-blue-400 flex flex-row mb-4 cursor-pointer"
+              onClick={() => setShow(!show)}
+            >
+              Locations
+              {show ? (
+                <span>
+                  <AiFillCaretDown size={15} className="mt-1" />
+                </span>
+              ) : (
+                <AiFillCaretRight size={15} className="mt-1" />
+              )}
+            </p>
+          </div>
+
+          {/* Location  */}
+          {show && (
+            <div className="grid md:grid-cols-2 md:gap-6">
+              <div className="relative z-0 w-full mb-5 group">
+                <input
+                  type="text"
+                  name="in_capital"
+                  id="in_capital"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=""
+                  required
+                  value={inputs.in_capital}
+                  onChange={handleChange}
+                />
+                <label
+                  for="first_name"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  Within Nairobi
+                </label>
+                {errors.in_capital && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.in_capital}
+                  </p>
+                )}
+              </div>
+
+              <div className="relative z-0 w-full mb-5 group">
+                <input
+                  type="text"
+                  name="out_capital"
+                  id="out_capital"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=""
+                  required
+                  value={inputs.out_capital}
+                  onChange={handleChange}
+                />
+                <label
+                  for="last_name"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  Outside Nairobi
+                </label>
+                {errors.out_capital && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.last_name}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Booking dates  */}
           <div className="grid md:grid-cols-2 md:gap-6">
