@@ -258,6 +258,9 @@ export default function Booking() {
         {/* Booking details  */}
         <div className="w-[50rem] h-[25rem] bg-white p-4 rounded-sm border border-gray flex flex-col">
           <p className="leading-loose text-center">
+            <span className="font-bold">Agent:</span> {booking.agent}{" "}
+          </p>
+          <p className="leading-loose text-center">
             <span className="font-bold">Vehicle:</span> {booking.make}{" "}
             {booking.model} {booking.number_plate}
           </p>
