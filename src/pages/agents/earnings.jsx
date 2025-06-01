@@ -13,6 +13,7 @@ export default function Earnings() {
   const [hasMore, setHasMore] = useState(true); // Tracks whether more data is available
   const [page, setPage] = useState(1); // Tracks the current page
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const earningsURL =
@@ -22,6 +23,12 @@ export default function Earnings() {
   const getEarnings = async () => {
     try {
       const response = await axios.get(earningsURL);
+      console.log(response);
+      if (response.data.status === "Error") {
+        setError(response.data.message);
+        setLoading(false);
+        return;
+      }
       const bookingData = response.data.bookings;
       setBookings(bookingData);
       setTotComm(response.data.total_commission);
@@ -75,6 +82,15 @@ export default function Earnings() {
       </div>
     );
   }
+  
+  if (error) {
+    return (
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <h1 className="text-red-500 text-4xl">{error}</h1>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="w-full p-4 bg-white rounded-lg shadow-md">
