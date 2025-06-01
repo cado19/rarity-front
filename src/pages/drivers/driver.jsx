@@ -3,15 +3,36 @@ import { useParams } from "react-router-dom";
 import { baseURL } from "../../constants/url";
 import axios from "axios";
 import Loading from "../../components/PageContent/Loading";
+import NewRate from "./newrate";
+import Swal from "sweetalert2";
 
 export default function Driver() {
   const { id } = useParams();
   const [driver, setDriver] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [rateModalOpen, setRateModalOpen] = useState(false);
+  const [rate, setRate] = useState(0);
+  const [role, setRole] = useState(null);
+
+    // get category data on load
+  const locationOptions = [
+    { value: "rate_in_capital", label: "In Nairobi" },
+    { value: "rate_out_capital", label: "Outside Nairobi" },
+  ];
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const driverURL = baseUrl + `/api/drivers/read_single.php?id=${id}`;
+  const rateURL = baseUrl + `/api/drivers/update_rate.php`;
+
+  const getRole = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setRole(user.role_id);
+    } else {
+      setRole(null);
+    }
+  }
 
   const getDriver = async () => {
     try {
@@ -28,7 +49,33 @@ export default function Driver() {
 
   useEffect(() => {
     getDriver();
+    getRole();
   }, []);
+
+  // handle submit for rate
+  const handleRateSubmit = async (data) => {
+    setRateModalOpen(false);
+    console.log("Rate submitted: ", data);
+    try {
+      const response = await axios.post(rateURL, data);
+      console.log(response);
+      Swal.fire({
+        title: response.data.status,
+        text: response.data.message,
+        icon: response.data.status.toString().toLowerCase(),
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      const errorMessage = error.message;
+      setError(errorMessage);
+      Swal.fire({
+        title: "Error",
+        text: errorMessage,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  }
   
  //format dl expiry date
  const dl_expiry_date = new Date(driver?.dl_expiry);
@@ -86,8 +133,29 @@ export default function Driver() {
             <span className="font-bold">Date of Birth:</span>{" "}
             {birth_date.toString()}.{" "}
           </p>{" "}
+
+          <p className="text-gray-700 text-base m-4">
+              {" "}
+              <button
+                className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
+                onClick={() => setRateModalOpen(true)}
+              >
+                Set Rate
+              </button>
+            </p>{" "}
         </div>
     </div>
+    <NewRate
+      show={rateModalOpen}
+      onClose={() => setRateModalOpen(false)}
+      onSubmit={handleRateSubmit}
+      driverId={id}
+      locationOptions={locationOptions}
+      animate={{
+          mount: { scale: 1, y: 0 },
+          unmount: { scale: 0.9, y: -100 },
+        }}
+         />
   </div>
 );
 }
