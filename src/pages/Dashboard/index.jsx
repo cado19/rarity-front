@@ -249,7 +249,7 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* NEW CUSTOMER BUTTON  */}
+      {/* KEY / LEGEND  */}
       <div class="flex space-x-4 mt-4">
         <div class="flex items-center space-x-2">
           <div class="w-4 h-4 bg-blue-500"></div>

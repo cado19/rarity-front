@@ -8,6 +8,7 @@ import axios from "axios";
 import Extend from "./extend";
 import Loading from "../../components/PageContent/Loading";
 import Swal from "sweetalert2";
+import Fuel from "./fuel";
 
 export default function Booking() {
   const { id } = useParams();
@@ -15,12 +16,15 @@ export default function Booking() {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // this is used to control the extend date modal
+  const [fuelModalOpen, setFuelModalOpen] = useState(false); // this is used to control the fuel modal
+  const [total, setTotal] = useState(0); // this is used because total changes with driver fee
 
   const [extendInfo, setExtendInfo] = useState(null);
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const bookingUrl = baseUrl + `/api/bookings/read_single.php?id=${id}`;
   const extendUrl = baseUrl + `/api/bookings/extend.php`;
+  const fuelUrl = baseUrl + `/api/bookings/update_fuel.php`;
   const SignUrl = contractSignUrl + `${id}`; // url for signing contract
   const contractURL = contractViewUrl + `${id}`;
   const bookingVoucherURL = voucherUrl + `${id}`;
@@ -104,6 +108,7 @@ export default function Booking() {
     setIsModalOpen(false);
     try {
       const response = await axios.post(extendUrl, data);
+      // condition to check if the response is successful
       Swal.fire({
         title: "Booking extended",
         text: "The booking has been extended successfully",
@@ -115,6 +120,27 @@ export default function Booking() {
       Swal.fire({
         title: "Error",
         text: "The booking couldn't be extended",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
+  const fuelVehicle = async (data) => {
+    setFuelModalOpen(false);
+    try {
+      const response = await axios.post(fuelUrl, data);
+      Swal.fire({
+        title: "Fuel added",
+        text: "The fuel has been added successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      getBooking();
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "The fuel couldn't be added",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -202,6 +228,12 @@ export default function Booking() {
     try {
       await axios.get(bookingUrl).then((response) => {
         console.log(response);
+        if (response.data.booking.driver_fee > 0) {
+          const total =
+            Number(response.data.booking.total) +
+            Number(response.data.booking.driver_fee);
+          setTotal(total);
+        }
         setBooking(response.data.booking);
         setLoading(false);
       });
@@ -247,6 +279,17 @@ export default function Booking() {
         }}
       />
 
+      <Fuel
+        show={fuelModalOpen}
+        onClose={() => setFuelModalOpen(false)}
+        id={id}
+        onSubmit={fuelVehicle}
+        animate={{
+          mount: { scale: 1, y: 0 },
+          unmount: { scale: 0.9, y: -100 },
+        }}
+      />
+
       <h2 className="text-2xl">Booking: {booking.booking_no}</h2>
       <BookingInfoBoxes
         fname={booking.c_fname}
@@ -254,7 +297,7 @@ export default function Booking() {
         start={booking.start_date}
         end={booking.end_date}
       />
-      <div className="flex flex-row gap-4 mt-2 ml-2 mr-1 overflow-hidden">
+      <div className="flex flex-row gap-4 mt-2 ml-2 mr-1">
         {/* Booking details  */}
         <div className="w-[50rem] h-[25rem] bg-white p-4 rounded-sm border border-gray flex flex-col">
           <p className="leading-loose text-center">
@@ -278,9 +321,40 @@ export default function Booking() {
             )}
             /-
           </p>
-          <p className="leading-loose text-center">
-            <span className="font-bold">Total:</span> {booking.total}/-
-          </p>
+          {/* Total in the event that there is no driver fee  */}
+          {booking.driver_fee > 0 && (
+            <>
+              <p className="leading-loose text-center">
+                <span className="font-bold">Days In Nairobi:</span>{" "}
+                {booking.in_capital}
+              </p>
+              <p className="leading-loose text-center">
+                <span className="font-bold">Days Outside Nairobi:</span>{" "}
+                {booking.out_capital}
+              </p>
+              <p className="leading-loose text-center">
+                <span className="font-bold">Driver Fees:</span>{" "}
+                {Number(booking.driver_fee).toLocaleString()}/-
+              </p>
+              <p className="leading-loose text-center">
+                <span className="font-bold">Vehicle Fees:</span>{" "}
+                {Number(booking.total).toLocaleString()}
+                /-
+              </p>
+              <p className="leading-loose text-center">
+                <span className="font-bold">Subtotal:</span>{" "}
+                {Number(total).toLocaleString()}/-
+              </p>
+            </>
+          )}
+          {/* Total in the event that there is no driver fee  */}
+          {booking.driver_fee == 0 && (
+            <p className="leading-loose text-center">
+              <span className="font-bold">Total:</span>{" "}
+              {Number(booking.total).toLocaleString()}/-
+            </p>
+          )}
+
           <p className="leading-loose text-center">
             <span className="font-bold">Status:</span> {booking.status}
           </p>
@@ -337,6 +411,13 @@ export default function Booking() {
                 Complete Booking
               </button>
             )}
+            <button
+                className="border  border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300"
+                onClick={() => setFuelModalOpen(true)}
+              >
+                Fuel Vehicle
+              </button>
+              
           </div>
         </div>
 
