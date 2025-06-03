@@ -43,6 +43,7 @@ import Earnings from '../../pages/agents/earnings'
 import VehicleAnalytics from '../../pages/analytics/vehicle'
 import MonthStats from '../../pages/analytics/vehicle/monthstats'
 import AllPayments from '../../pages/payments/all'
+import WorkPlan from '../../pages/drivers/workplan'
 
 
 export default function AppRouter() {
@@ -68,6 +69,7 @@ export default function AppRouter() {
             <Route path='/drivers' element={<AllDrivers />} />
             <Route path='/driver/new' element={<NewDriver />} />
             <Route path='/driver/:id' element={<Driver />} />
+            <Route path='/driver/workplan' element={<WorkPlan />} />
 
             {/* Booking Routes  */}
             <Route path='/bookings/all' element={<AllBookings />} />

@@ -57,10 +57,12 @@ export default function AllDrivers() {
   const [drivers, setDrivers] = useState(driverData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [driverBookings, setDriverBookings] = useState([]);
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
   const driverURL = baseUrl + "/api/drivers/all.php";
+  
 
   const handleSearch = (e) => {
     let searchValue;
@@ -131,6 +133,8 @@ export default function AllDrivers() {
       setError(errorMessage);
     }
   };
+
+ 
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");

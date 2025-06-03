@@ -22,6 +22,13 @@ export default function DriverNav() {
               Add Driver
             </NavLink>
           </li>
+
+          <li className="me-2">
+            <NavLink to="/driver/workplan" className={classNameFunc}>
+              Workplan
+            </NavLink>
+          </li>
+
         </ul>
       </div>
     </div>
