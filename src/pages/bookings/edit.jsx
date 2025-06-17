@@ -245,6 +245,8 @@ export default function EditBooking() {
     if (!data.start_time) errors.start_time = "Start Time is required";
     if (!data.end_time) errors.end_time = "End Time is required";
 
+    setErrors(errors);
+
     return errors;
   };
 

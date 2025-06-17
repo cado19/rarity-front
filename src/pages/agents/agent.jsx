@@ -39,7 +39,7 @@ export default function Agent() {
     if (user) {
       setRoleId(user.role_id);
     }
-  }
+  };
 
   const getAgent = async () => {
     try {
@@ -195,7 +195,6 @@ export default function Agent() {
 
   console.log("role id", roleId);
 
-
   if (error) {
     return (
       <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
@@ -207,7 +206,7 @@ export default function Agent() {
     return (
       <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
         <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
-      </div> 
+      </div>
     );
   }
   return (
@@ -236,32 +235,32 @@ export default function Agent() {
               {" "}
               <span className="font-bold">Role:</span> {agent.role}.{" "}
             </p>{" "}
-
+            {/* Only super user can set commission  */}
             {roleId == 0 && (
-              <>
-                <p className="text-gray-700 text-base">
-                  {" "}
-                  <button
-                    className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    Set Commission
-                  </button>
-                </p>{" "}
-                <p className="text-gray-700 text-base">
-                  {" "}
-                  <button
-                    className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
-                    onClick={() => setRateModalOpen(true)}
-                  >
-                    Set Rate
-                  </button>
-                </p>{" "}
-              </>
+              <p className="text-gray-700 text-base">
+                {" "}
+                <button
+                  className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  Set Commission
+                </button>
+              </p>
             )}
-            
-
-
+            {/* super user can set commission  */}
+            {roleId == 0  (
+                <>
+                  <p className="text-gray-700 text-base">
+                    {" "}
+                    <button
+                      className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
+                      onClick={() => setRateModalOpen(true)}
+                    >
+                      Set Rate
+                    </button>
+                  </p>{" "}
+                </>
+              )}
             <p className="text-gray-700 text-base">
               {" "}
               <button

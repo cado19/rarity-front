@@ -6,36 +6,71 @@ import { FaCheck } from "react-icons/fa";
 import { baseURL } from "../../constants/url";
 import Loading from "../../components/PageContent/Loading";
 import VehicleInfoBoxes from "../../components/infoboxes/VehicleInfoBoxes";
-import carImg from '../../assets/car-img.png';
+import carImg from "../../assets/car-img.png";
 import DailyRateForm from "../../components/vehicles/DailyRateForm";
 import { Mosaic } from "react-loading-indicators";
+import Swal from "sweetalert2";
 
 export default function Vehicle() {
   const { id } = useParams();
-//   const carImg = require('../../assets/car-img.png');
+  //   const carImg = require('../../assets/car-img.png');
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState({});
+  const [disabled, setDisabled] = useState(false);
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const vehicleUrl = baseUrl + `/api/fleet/read_single.php?id=${id}`;
+
+  const rateUrl = baseUrl + "/api/fleet/update_rate.php";
 
   //   function to fetch vehicle from backend
   async function getVehicle() {
     try {
       const response = await axios.get(vehicleUrl);
-      //   console.log(response);
+      console.log(response);
       setVehicle(response.data);
       setLoading(false);
-      console.log(vehicle);
+      // console.log(vehicle);
     } catch (error) {
       const errorMessage = "Error: " + error.message;
       console.log(errorMessage);
     }
   }
+  const validate = (rate) => {
+    const errors = {};
+    if (!rate) {
+      errors.rate = "Rate is required";
+    }
+    setErrors(errors);
+    return errors;
+  };
+
+  const submitRate = async (data) => {
+    setDisabled(true);
+    console.log(data);
+    const validationErrors = validate(data.rate);
+    if (Object.keys(validationErrors).length > 0) {
+      console.log("Form could not be submitted");
+      console.log(validationErrors);
+      setDisabled(false);
+    } else {
+      const response = await axios.post(rateUrl, data);
+      Swal.fire({
+        title: response.data.status,
+        text: response.data.message,
+        icon: response.data.status === "Success" ? "success" : "error",
+        confirmButtonText: "OK",
+      });
+      getVehicle(); // Refresh vehicle data after updating rate
+      setDisabled(false);
+    }
+  };
+
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
-    if (!loggedIn){
+    if (!loggedIn) {
       navigate("/login");
-    };
+    }
     getVehicle();
   }, []);
 
@@ -56,30 +91,67 @@ export default function Vehicle() {
         id={vehicle.id}
         category={vehicle.category_name}
       />
-      <div className='flex flex-row gap-4 w-full'>
+      <div className="flex flex-row gap-4 w-full">
         {/* vehicle image  */}
-        <div className='w-[20rem] h-[25rem] bg-white p-4 rounded-sm border border-gray flex flex-col'>
-            <img src={carImg} />
+        <div className="w-[20rem] h-[25rem] bg-white p-4 rounded-sm border border-gray flex flex-col">
+          <img src={carImg} />
         </div>
         {/* vehicle basic details  */}
-        <div className='h-[25rem] bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1'>
-            <strong className='text-gray-700 font-medium text-4xl'>Details</strong>
-            <p className="text-sm mt-2">The {vehicle.make} {vehicle.model} is a {vehicle.drive_train} car loved by many. It can carry {vehicle.seats} people. It's transmission is {vehicle.transmission} and it uses {vehicle.fuel} fuel</p>
-            <div className="mt-4 text-2xl">
-                {vehicle.daily_rate}/-
-                <span className="text-amber-600">(Per Day)</span>
-            </div>
-            {/* daily rate form  */}
-            <strong className='text-gray-700 font-medium text-xl mt-4 italic'>Update Daily Rate</strong>
-            <DailyRateForm vehicle_id={vehicle.id} />
-            {/* Key Features  */}
-            <strong className='text-gray-700 font-medium text-xl mt-4'>Key Features</strong>
-            <ul className="ml-3">
-                <li className="text-md italic flex flex-row"><span><FaCheck className="text-amber-400" /></span> {vehicle.seats} seater</li>
-                <li className="text-md italic flex flex-row"><span><FaCheck className="text-amber-400" /></span>{vehicle.category_name} </li>
-                <li className="text-md italic flex flex-row"><span><FaCheck className="text-amber-400" /></span>{vehicle.drive_train} </li>
-                <li className="text-md italic flex flex-row"><span><FaCheck className="text-amber-400" /></span>{vehicle.color} </li>
-            </ul>
+        <div className="h-[25rem] bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1">
+          <strong className="text-gray-700 font-medium text-4xl">
+            Details
+          </strong>
+          <p className="text-sm mt-2">
+            The {vehicle.make} {vehicle.model} is a {vehicle.drive_train} car
+            loved by many. It can carry {vehicle.seats} people. It's
+            transmission is {vehicle.transmission} and it uses {vehicle.fuel}{" "}
+            fuel
+          </p>
+          <div className="mt-4 text-2xl">
+            {vehicle.daily_rate}/-
+            <span className="text-amber-600">(Per Day)</span>
+          </div>
+          {/* daily rate form  */}
+          <strong className="text-gray-700 font-medium text-xl mt-4 italic">
+            Update Daily Rate
+          </strong>
+
+          <DailyRateForm
+            vehicle_id={vehicle.id}
+            onSubmit={submitRate}
+            errors={errors}
+            disabled={disabled}
+          />
+          {/* Key Features  */}
+          <strong className="text-gray-700 font-medium text-xl mt-4">
+            Key Features
+          </strong>
+          <ul className="ml-3">
+            <li className="text-md italic flex flex-row">
+              <span>
+                <FaCheck className="text-amber-400" />
+              </span>{" "}
+              {vehicle.seats} seater
+            </li>
+            <li className="text-md italic flex flex-row">
+              <span>
+                <FaCheck className="text-amber-400" />
+              </span>
+              {vehicle.category_name}{" "}
+            </li>
+            <li className="text-md italic flex flex-row">
+              <span>
+                <FaCheck className="text-amber-400" />
+              </span>
+              {vehicle.drive_train}{" "}
+            </li>
+            <li className="text-md italic flex flex-row">
+              <span>
+                <FaCheck className="text-amber-400" />
+              </span>
+              {vehicle.color}{" "}
+            </li>
+          </ul>
         </div>
       </div>
       {/* Vehicle will show up here */}

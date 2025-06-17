@@ -115,12 +115,27 @@ export default function NewBooking() {
     fetchClients();
     fetchVehicles();
     fetchDrivers();
-    setAccountId();
+    // setAccountId();
+    initFormValues();
   }, []);
 
   // Change functions
   // set account_id
 
+  //initialize account id and start date 
+  const initFormValues = () => {
+    const today = new Date();
+    setStartDate(today);
+    const day = today.getDate().toString().padStart(2, "0");
+    const month = (today.getMonth() + 1).toString().padStart(2, "0");
+    const year = today.getFullYear().toString();
+    const formattedStartDate = `${year}-${month}-${day}`;
+    setInputs({
+      ...inputs,
+      account_id: userId,
+      start_date: formattedStartDate,
+    });
+  }
   const setAccountId = () => {
     setInputs({
       ...inputs,
@@ -153,7 +168,7 @@ export default function NewBooking() {
 
   const initStartDate = () => {
     const today = new Date();
-    setStartDate(today);
+    // setStartDate(today);
     const day = today.getDate().toString().padStart(2, "0");
     const month = (today.getMonth() + 1).toString().padStart(2, "0");
     const year = today.getFullYear().toString();
@@ -270,6 +285,7 @@ export default function NewBooking() {
       setDisabled(false);
     } else {
       axios.post(bookingURL, inputs).then((response) => {
+        console.log(response);
         if (response.data.status == "Success") {
           const id = response.data.booking_id;
           navigate(`/booking/${id}`, {

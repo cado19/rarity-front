@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Timeline, {
-  TimelineHeaders,
-  SidebarHeader,
-  DateHeader,
-} from "react-calendar-timeline";
+// import Timeline, {
+//   TimelineHeaders,
+//   SidebarHeader,
+//   DateHeader,
+// } from "react-calendar-timeline";
 // import 'react-calendar-timeline/lib/Timeline.css';
-import "react-calendar-timeline/styles.css";
+// import "react-calendar-timeline/styles.css";
 import moment from "moment";
 // import { Chart } from "react-google-charts";
 import Loading from "../../components/PageContent/Loading";
@@ -123,7 +123,7 @@ const WorkPlan = () => {
 
       {/* CALENDAR  */}
       <div className="mt-3">
-        <FullCalendar
+        {/* <FullCalendar
           initialView="resourceTimelineMonth"
           schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
           plugins={[resourceTimelinePlugin, dayGridPlugin, interactionPlugin]}
@@ -167,7 +167,7 @@ const WorkPlan = () => {
           //   eventDrop={(arg) => {
           //     updateBooking(arg);
           //   }}
-        />
+        /> */}
       </div>
     </div>
   );
