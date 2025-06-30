@@ -19,10 +19,20 @@ import interactionPlugin from "@fullcalendar/interaction"; // needed for dateCli
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { Mosaic } from "react-loading-indicators";
+import {
+  get_active_vehicles,
+  get_returning_vehicles,
+  get_reserved_vehicles,
+  get_all_vehicles,
+} from "../../api/fetch";
 
 export default function Dashboard() {
   const [bookings, setBookings] = useState([]);
   const [vehicles, setVehicles] = useState([]);
+  const [activeVehicles, setActiveVehicles] = useState();
+  const [reservedVehicles, setReservedVehicles] = useState();
+  const [totVehicles, setTotVehicles] = useState();
+  const [returnVehicles, setReturnVehicles] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [inputs, setInputs] = useState({
@@ -44,12 +54,36 @@ export default function Dashboard() {
 
   const checkMessage = () => {
     location.state &&
-    Swal.fire({
-      title: location.state.message,
-      icon: "info",
-      confirmButtonText: "OK",
-    })
-  }
+      Swal.fire({
+        title: location.state.message,
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+  };
+
+  const initActiveVehicles = async () => {
+    const result = await get_active_vehicles();
+    console.log(result);
+    setActiveVehicles(result.data.active_count);
+  };
+
+  const initReservedVehicles = async () => {
+    const result = await get_reserved_vehicles();
+    console.log(result);
+    setReservedVehicles(result.data.reserved_count);
+  };
+
+  const initReturningVehicles = async () => {
+    const result = await get_returning_vehicles();
+    console.log(result);
+    setReturnVehicles(result.data.due_out_count);
+  };
+
+  const initTotalVehicles = async () => {
+    const result = await get_all_vehicles();
+    console.log(result);
+    setTotVehicles(result.data.total_count);
+  };
 
   const copyNewCustomerURL = () => {
     navigator.clipboard.writeText(newCustomerUrl);
@@ -218,6 +252,10 @@ export default function Dashboard() {
     getVehicles();
     getBookings();
     checkMessage();
+    initActiveVehicles();
+    initReservedVehicles();
+    initReturningVehicles();
+    initTotalVehicles();
   }, [loading]);
 
   // console.log(vehicles);
@@ -239,39 +277,64 @@ export default function Dashboard() {
   }
   return (
     <div className="bg-white px-4 py-6 pb-4 rounded border-gray-200 flex-1 shadow-md h-screen">
-      {/* NEW CUSTOMER BUTTON  */}
-      <div className="mt-3">
-        <button
-          className="border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
-          onClick={copyNewCustomerURL}
-        >
-          New Customer link
-        </button>
+      {/* Vehicle Booking Basic Stats  */}
+      <div className="flex space-x-4 mt-3">
+        <div className="flex items-center space-x-2">
+          All
+          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded ml-2">
+            {totVehicles}
+          </span>
+        </div>
+        <div className="flex items-center space-x-2">
+          Vacant
+          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded ml-2">
+            {totVehicles - activeVehicles - reservedVehicles - returnVehicles}
+          </span>
+        </div>
+        <div className="flex items-center space-x-2">
+          Occupied
+          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded ml-2">
+            {activeVehicles}
+          </span>
+        </div>
+        <div className="flex items-center space-x-2">
+          Reserved
+          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded ml-2">
+            {reservedVehicles}
+          </span>
+        </div>
+        <div className="flex items-center space-x-2">
+          Due out
+          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded ml-2">
+            {returnVehicles}
+          </span>
+        </div>
       </div>
 
       {/* KEY / LEGEND  */}
-      <div class="flex space-x-4 mt-4">
-        <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 bg-blue-500"></div>
+      <div className="flex space-x-4 mt-4">
+        <div className="flex items-center space-x-2">
+          <div className="w-4 h-4 bg-blue-500"></div>
           <span>Active Booking</span>
         </div>
-        <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 bg-green-700"></div>
+        <div className="flex items-center space-x-2">
+          <div className="w-4 h-4 bg-green-700"></div>
           <span>Upcoming Booking</span>
         </div>
-        <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 bg-yellow-300"></div>
+        <div className="flex items-center space-x-2">
+          <div className="w-4 h-4 bg-yellow-300"></div>
           <span>Completed Booking</span>
         </div>
-        <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 bg-red-500"></div>
+        <div className="flex items-center space-x-2">
+          <div className="w-4 h-4 bg-red-500"></div>
           <span>Cancelled Booking</span>
         </div>
       </div>
 
       {/* CALENDAR  */}
-      <div className="mt-3">
+      <div className="mt-3 bg-white">
         {/* <FullCalendar
+          height="auto"
           initialView="resourceTimelineMonth"
           schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
           plugins={[resourceTimelinePlugin, dayGridPlugin, interactionPlugin]}

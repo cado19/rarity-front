@@ -179,6 +179,7 @@ export default function NewBooking() {
     });
   };
 
+    // change booking end date
   const endDateChange = (value) => {
     setEndDate(value);
     const day = value.getDate().toString().padStart(2, "0");
@@ -193,6 +194,7 @@ export default function NewBooking() {
     // console.log(inputs);
   };
 
+    // change booking start time 
   const startTimeChange = (value) => {
     setStartTime(value);
     const hours = value.getHours().toString().padStart(2, "0");
@@ -208,6 +210,7 @@ export default function NewBooking() {
     // console.log(inputs);
   };
 
+  // change booking end time 
   const endTimeChange = (value) => {
     setEndTime(value);
     const hours = value.getHours().toString().padStart(2, "0");
@@ -223,6 +226,7 @@ export default function NewBooking() {
     // console.log(inputs);
   };
 
+    // change customer 
   const customerChange = (value) => {
     setSelectedClient(value);
     // const idTypeValue = selectedOption.value;
@@ -318,8 +322,8 @@ export default function NewBooking() {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
         <BookingNav />
-        <h1 className="4xl my-2 text-center font-bold">New Booking</h1>
-        <form onSubmit={handleSubmit}>
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-4xl my-5 text-center ">New Booking</h1>
+        <form onSubmit={handleSubmit} className="w-4/5 mx-auto">
           {/* Client select  */}
           <div className=" mb-5 group">
             <Select

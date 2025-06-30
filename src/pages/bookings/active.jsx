@@ -18,7 +18,8 @@ export default function ActiveBookings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const renderCount = useRef(0);
-  const bookingUrl = baseURL + "/api/bookings/active.php";
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const bookingUrl = baseUrl + "/api/bookings/active.php";
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");

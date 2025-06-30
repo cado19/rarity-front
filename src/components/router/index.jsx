@@ -44,6 +44,7 @@ import VehicleAnalytics from '../../pages/analytics/vehicle'
 import MonthStats from '../../pages/analytics/vehicle/monthstats'
 import AllPayments from '../../pages/payments/all'
 import WorkPlan from '../../pages/drivers/workplan'
+import EditRate from '../../pages/vehicles/edit_rate'
 
 
 export default function AppRouter() {
@@ -58,6 +59,7 @@ export default function AppRouter() {
             <Route path='/vehicles' element={<AllVehicles />} />
             <Route path='/vehicle/:id' element={<Vehicle />} />
             <Route path='/vehicle/new' element={<NewVehicle />} />
+            <Route path='/vehicle/edit_rate' element={<EditRate />} />
 
             {/* Customer Routes  */}
             <Route path='/customers' element={<AllCustomers />} />

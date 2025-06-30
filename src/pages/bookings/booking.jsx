@@ -9,6 +9,7 @@ import Extend from "./extend";
 import Loading from "../../components/PageContent/Loading";
 import Swal from "sweetalert2";
 import Fuel from "./fuel";
+import { Mosaic } from "react-loading-indicators";
 
 export default function Booking() {
   const { id } = useParams();
@@ -100,7 +101,7 @@ export default function Booking() {
       setRoleId(user.role_id);
     }
   };
-
+  console.log("Role ID: ", roleId);
   // function to handle extend date of booking
   const extendData = async (data) => {
     // const data = {id: id, endDate: endDate};
@@ -251,8 +252,8 @@ export default function Booking() {
 
   if (loading) {
     return (
-      <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading />
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
       </div>
     );
   }
@@ -389,15 +390,14 @@ export default function Booking() {
                 Extend Booking
               </button>
             )}
-            {roleId == 0 ||
-              (roleId == 1 && (
-                <button
-                  className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
-                  onClick={() => navigate(`/bookings/edit/${id}`)}
-                >
-                  Edit Booking
-                </button>
-              ))}
+            {(roleId == 0 || roleId == 1) && (
+              <button
+                className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
+                onClick={() => navigate(`/bookings/edit/${id}`)}
+              >
+                Edit Booking
+              </button>
+            )}
 
             {booking.status != "cancelled" && (
               <button

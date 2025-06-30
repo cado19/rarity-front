@@ -7,6 +7,7 @@ import {
 } from "../../constants/navigation";
 import SidebarLink from "./SidebarLink";
 import { motion } from "motion/react";
+import Logo from "../../assets/rarity_logo.png";
 
 const Sidebar = () => {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
@@ -21,8 +22,12 @@ const Sidebar = () => {
     >
       {/* Brand and Logo  */}
       <div className="flex items-center gap-2 px-1 py-3">
-        <FcBullish fontSize={24} />
-        <span className="text-neutral-100 text-lg ">Rarity Cars</span>
+        <img
+          src={Logo}
+          alt="Rarity Cars Logo"
+          className={` rounded-full transition-all duration-300 ease-in-out ${
+              isSideBarOpen ? "h-20 w-25" : "h-12 w-12"}`} />
+        {/* <span className={`text-neutral-100 text-lg `}>Rarity Cars</span> */}
       </div>
 
       {/* Links  */}

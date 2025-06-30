@@ -10,6 +10,7 @@ import carImg from "../../assets/car-img.png";
 import DailyRateForm from "../../components/vehicles/DailyRateForm";
 import { Mosaic } from "react-loading-indicators";
 import Swal from "sweetalert2";
+import { deleteVehicle } from "../../api/delete";
 
 export default function Vehicle() {
   const { id } = useParams();
@@ -66,6 +67,44 @@ export default function Vehicle() {
     }
   };
 
+  const handleDelete = async () => {
+    setDisabled(true);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Deleting this vehicle will remove it from the system.",
+      confirmButtonText: "Yes",
+      denyButtonText: "No",
+      showDenyButton: true,
+      showConfirmButton: true,
+    }).then((decision) => {
+      if (decision.isConfirmed) {
+        deleteVehicle(id).then((result) => {
+
+          console.log(result);
+          console.log(result.status);
+          if (result.status === "Success") {
+            Swal.fire({
+              title: "Success",
+              text: "Vehicle deleted successfully",
+              icon: "success",
+              confirmButtonText: "OK",
+            }).then(() => {
+              navigate("/vehicles");
+            });
+          } else {
+            Swal.fire({
+              title: "Error",
+              text: result.message,
+              icon: "error",
+              confirmButtonText: "OK",
+            });
+          }
+        });
+      }
+    });
+    setDisabled(false);
+  };
+
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
     if (!loggedIn) {
@@ -97,7 +136,7 @@ export default function Vehicle() {
           <img src={carImg} />
         </div>
         {/* vehicle basic details  */}
-        <div className="h-[25rem] bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1">
+        <div className=" bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1">
           <strong className="text-gray-700 font-medium text-4xl">
             Details
           </strong>
@@ -152,6 +191,15 @@ export default function Vehicle() {
               {vehicle.color}{" "}
             </li>
           </ul>
+          <p className="mt-4">
+            <button
+              onClick={handleDelete}
+              disabled={disabled}
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded shadow-md transition duration-300 ease-in-out"
+            >
+              Delete
+            </button>
+          </p>
         </div>
       </div>
       {/* Vehicle will show up here */}

@@ -248,7 +248,7 @@ export default function Agent() {
               </p>
             )}
             {/* super user can set commission  */}
-            {roleId == 0  (
+            {roleId == 0 && (
                 <>
                   <p className="text-gray-700 text-base">
                     {" "}

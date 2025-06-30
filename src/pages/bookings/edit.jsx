@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../components/PageContent/Loading";
 import BookingNav from "../../components/navs/bookingnav";
 import { Mosaic } from "react-loading-indicators";
+import { format, formatDate } from "date-fns"; // Import format function for date formatting
 
 export default function EditBooking() {
   const navigate = useNavigate();
@@ -35,14 +36,14 @@ export default function EditBooking() {
   const [inputs, setInputs] = useState({
     booking_id: id,
     account_id: "",
-    customer_id: booking?.customer_id,
-    vehicle_id: booking?.vehicle_id,
-    driver_id: booking?.driver_id,
-    start_date: booking?.start_date,
-    end_date: booking?.end_date,
-    start_time: booking?.start_time,
-    end_time: booking?.end_time,
-    custom_rate: booking?.custom_rate,
+    customer: "",
+    vehicle: "",
+    driver: "",
+    start_date: "",
+    end_date: "",
+    start_time: "",
+    end_time: "",
+    custom_rate: "",
   });
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -112,6 +113,27 @@ export default function EditBooking() {
       await axios.get(bookingFetchURL).then((response) => {
         console.log(response);
         setBooking(response.data.booking);
+        setStartDate(new Date(response.data.booking.start_date));
+        setEndDate(new Date(response.data.booking.end_date));
+        setStartTime(response.data.booking.start_time);
+        setEndTime(response.data.booking.end_time);
+        setInputs({
+          account_id: response.data.booking.account_id,
+          customer: clientOptions.find(
+            (client) => client.value === response.data.booking.customer_id
+          ),
+          vehicle: carOptions.find(
+            (vehicle) => vehicle.value === response.data.booking.vehicle_id
+          ),
+          driver: driverOptions.find(
+            (driver) => driver.value === response.data.booking.driver_id
+          ),
+          start_date: response.data.booking.start_date,
+          end_date: response.data.booking.end_date,
+          start_time: response.data.booking.start_time,
+          end_time: response.data.booking.end_time,
+          custom_rate: response.data.booking.custom_rate,
+        });
         setLoading(false);
       });
     } catch (error) {
@@ -266,16 +288,23 @@ export default function EditBooking() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setDisabled(true);
-    const validationErrors = validate(inputs);
-    if (Object.keys(validationErrors).length > 0) {
-      Swal.fire({
-        title: "Validation Error",
-        icon: "error",
-        text: "Check form fields for highlighted errors",
-      });
-      setDisabled(false);
-    } else {
-      axios.post(bookingURL, inputs).then((response) => {
+    // const validationErrors = validate(inputs);
+
+    setDisabled(false);
+
+    axios
+      .post(bookingURL, {
+        booking_id: id,
+        customer_id: inputs.customer.value,
+        vehicle_id: inputs.vehicle.value,
+        driver_id: inputs.driver.value,
+        start_date: inputs.start_date,
+        end_date:  inputs.end_date,
+        start_time: inputs.start_time,
+        end_time: inputs.end_time,
+        custom_rate: inputs.custom_rate,
+      })
+      .then((response) => {
         if (response.data.status == "Success") {
           // const id = response.data.booking_id;
           navigate(`/booking/${id}`, {
@@ -291,8 +320,19 @@ export default function EditBooking() {
           setDisabled(false);
         }
       });
-    }
-    console.log(inputs);
+
+    console.log({
+        booking_id: id,
+        customer_id: inputs.customer.value,
+        vehicle_id: inputs.vehicle.value,
+        driver_id: inputs.driver.value,
+        start_date: inputs.start_date,
+        end_date:  inputs.end_date,
+        start_time: inputs.start_time,
+        end_time: inputs.end_time,
+        custom_rate: inputs.custom_rate,
+      });
+    setDisabled(false);
   };
   if (loading) {
     return (
@@ -305,23 +345,21 @@ export default function EditBooking() {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
         <BookingNav />
-        <h1 className="4xl my-2 text-center font-bold">
-          Editing Booking {booking.booking_no}
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-4xl my-5 text-center ">
+          Editing Booking {booking?.booking_no}
         </h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="w-4/5 mx-auto">
           {/* Client select  */}
           <div className=" mb-5 group">
             <Select
               options={bookingClients}
               defaultValue={bookingClients[0]}
-              value={selectedClient}
+              value={inputs.customer}
               onChange={customerChange}
               placeholder="Select Client"
               isSearchable
             />
-            <p className="text-blue-500">
-              Current: {booking.c_fname} {booking.c_lname}
-            </p>
+
             {errors.customer_id && (
               <p className="text-red-500 text-xs mt-1">{errors.customer_id}</p>
             )}
@@ -332,14 +370,12 @@ export default function EditBooking() {
             <Select
               options={bookingVehicles}
               defaultValue={bookingVehicles[0]}
-              value={selectedVehicle}
+              value={inputs.vehicle}
               onChange={vehicleChange}
               placeholder="Select Vehicle"
               isSearchable
             />
-            <p className="text-blue-500">
-              Current: {booking.make} {booking.model} {booking.number_plate}
-            </p>
+
             {errors.vehicle_id && (
               <p className="text-red-500 text-xs mt-1">{errors.vehicle_id}</p>
             )}
@@ -350,14 +386,12 @@ export default function EditBooking() {
             <Select
               options={bookingDrivers}
               defaultValue={bookingDrivers[0]}
-              value={selectedDriver}
+              value={inputs.driver}
               onChange={driverChange}
               placeholder="Select Driver"
               isSearchable
             />
-            <p className="text-blue-500">
-              Current: {booking.d_fname} {booking.d_lname}
-            </p>
+
             {errors.driver_id && (
               <p className="text-red-500 text-xs mt-1">{errors.driver_id}</p>
             )}
