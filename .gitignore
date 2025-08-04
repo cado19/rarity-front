@@ -25,4 +25,4 @@ dist-ssr
 src/assets/car-img.png
 .env.production
 .env
-dist/index.html
+dist/

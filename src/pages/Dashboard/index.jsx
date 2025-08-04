@@ -333,7 +333,7 @@ export default function Dashboard() {
 
       {/* CALENDAR  */}
       <div className="mt-3 bg-white">
-        {/* <FullCalendar
+        <FullCalendar
           height="auto"
           initialView="resourceTimelineMonth"
           schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
@@ -378,7 +378,7 @@ export default function Dashboard() {
           eventDrop={(arg) => {
             updateBooking(arg);
           }}
-        /> */}
+        />
       </div>
     </div>
   );

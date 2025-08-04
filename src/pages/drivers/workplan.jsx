@@ -123,7 +123,7 @@ const WorkPlan = () => {
 
       {/* CALENDAR  */}
       <div className="mt-3">
-        {/* <FullCalendar
+        <FullCalendar
           initialView="resourceTimelineMonth"
           schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
           plugins={[resourceTimelinePlugin, dayGridPlugin, interactionPlugin]}
@@ -167,7 +167,7 @@ const WorkPlan = () => {
           //   eventDrop={(arg) => {
           //     updateBooking(arg);
           //   }}
-        /> */}
+        />
       </div>
     </div>
   );
