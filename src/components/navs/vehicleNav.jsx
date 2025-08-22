@@ -2,8 +2,8 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 export default function VehicleNav() {
-  const activeLink = `inline-block p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500`;
-  const inActiveLink = `inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300`;
+  const activeLink = `inline-block p-4 text-yellow-600 border-b-2 border-yellow-600 rounded-t-lg active dark:text-yellow-500 dark:border-yellow-500`;
+  const inActiveLink = `inline-block p-4 text-yellow-500 border-b-2 border-transparent rounded-t-lg hover:text-yellow-600 hover:border-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300`;
 
   const classNameFunc = ({ isActive }) =>
     isActive ? activeLink : inActiveLink;
