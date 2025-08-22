@@ -21,6 +21,7 @@
     "@mui/material": "^6.4.0",
     "@mui/x-date-pickers": "^7.24.0",
     "@rollup/rollup-win32-x64-msvc": "^4.43.0",
+    "@tanstack/react-table": "^8.21.3",
     "axios": "^1.7.9",
     "browser-image-compression": "^2.0.2",
     "date-fns": "^4.1.0",
