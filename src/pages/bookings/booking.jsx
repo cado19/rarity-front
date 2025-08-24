@@ -19,6 +19,7 @@ export default function Booking() {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // this is used to control the extend date modal
   const [fuelModalOpen, setFuelModalOpen] = useState(false); // this is used to control the fuel modal
+  const [voucherBtnOpen, setVoucherBtnOpen] = useState(false); // this is used to control the voucher links dropdown
   const [total, setTotal] = useState(0); // this is used because total changes with driver fee
 
   const [extendInfo, setExtendInfo] = useState(null);
@@ -28,7 +29,11 @@ export default function Booking() {
   const fuelUrl = baseUrl + `/api/bookings/update_fuel.php`;
   const SignUrl = contractSignUrl + `${id}`; // url for signing contract
   const contractURL = contractViewUrl + `${id}`;
-  const bookingVoucherURL = voucherUrl + `${id}`;
+  // const bookingVoucherURL = voucherUrl + `${id}`;
+  // const bookingVoucherURL = import.meta.env.VITE_OUR_URL + `/booking/voucher/${id}`;
+
+  const bookingVoucherUrl = import.meta.env.VITE_VOUCHER_URL + `${id}`;
+  const bookingVoucherUsdUrl = import.meta.env.VITE_VOUCHER_USD_URL + `${id}`;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -195,7 +200,7 @@ export default function Booking() {
       }
     });
   };
-
+  // copy signature url
   const copySignatureLink = () => {
     navigator.clipboard.writeText(SignUrl);
     Swal.fire({
@@ -205,8 +210,9 @@ export default function Booking() {
       confirmButtonText: "OK",
     });
   };
+  // copy kes voucher url
   const copyVoucherLink = () => {
-    navigator.clipboard.writeText(bookingVoucherURL);
+    navigator.clipboard.writeText(bookingVoucherUrl);
     Swal.fire({
       title: "Link copied",
       text: "Voucher link has been copied to your clipboard",
@@ -214,6 +220,17 @@ export default function Booking() {
       confirmButtonText: "OK",
     });
   };
+  // copy usd voucher url
+  const copyVoucherLinkUsd = () => {
+    navigator.clipboard.writeText(bookingVoucherUsdUrl);
+    Swal.fire({
+      title: "Link copied",
+      text: "Voucher link has been copied to your clipboard",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+  };
+  // copy contract url
   const copyContractLink = () => {
     navigator.clipboard.writeText(contractURL);
     Swal.fire({
@@ -438,12 +455,31 @@ export default function Booking() {
             Contract status is{" "}
             <span className="font-bold">{booking.ct_status}</span>
           </p>
+          {/* voucher button  */}
           <button
             className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300"
-            onClick={() => copyVoucherLink()}
+            onClick={() => setVoucherBtnOpen(!voucherBtnOpen)}
           >
             Copy voucher link
           </button>
+          {voucherBtnOpen && (
+            <div className="absolute mt-2 w-48 bg-white border rounded shadow-lg z-10">
+              <button
+                className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300"
+                onClick={() => copyVoucherLink()}
+              >
+                Copy voucher link (KES)
+              </button>
+
+              <button
+                className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300"
+                onClick={() => copyVoucherLinkUsd()}
+              >
+                Copy voucher link (USD)
+              </button>
+            </div>
+          )}
+          {/* contract button  */}
           <button
             className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold mt-2 py-2 px-4 rounded transition duration-300"
             onClick={() => copyContractLink()}
