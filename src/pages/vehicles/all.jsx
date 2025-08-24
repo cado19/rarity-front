@@ -2,53 +2,58 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { baseURL } from "../../constants/url";
-import Loading from "../../components/PageContent/Loading";
-import DataTable from "react-data-table-component";
+
 import { Link } from "react-router-dom";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import VehicleNav from "../../components/navs/vehicleNav";
 import { Mosaic } from "react-loading-indicators";
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import BasicTable from "../../components/utility/basicTable";
 
 export default function AllVehicles() {
   const columns = [
     {
-      name: "Make",
-      selector: (row) => row.make,
-      sortable: true,
+      accessorKey: "make",
+      header: "Make",
+      cell: (info) => info.getValue(),
     },
     {
-      name: "Model",
-      selector: (row) => row.model,
-      sortable: true,
+      accessorKey: "model",
+      header: "Model",
+      cell: (info) => info.getValue(),
     },
     {
-      name: "Number Plate",
-      selector: (row) => row.number_plate,
+      accessorKey: "number_plate",
+      header: "Number Plate",
+      cell: (info) => info.getValue(),
     },
     {
-      name: "Rate",
-      selector: (row) => row.rate,
-      sortable: true,
+      accessorKey: "rate",
+      header: "Rate",
+      cell: (info) => info.getValue(),
     },
     {
-      name: "Options",
-      cell: (row) => <Link to={`/vehicle/${row.id}`}>Details</Link>,
+      id: "details",
+      header: "Details",
+      cell: (info) => {
+        const vehicle = info.row.original;
+        return <Link to={`/vehicle/${vehicle.id}`}>Details</Link>;
+      },
     },
   ];
 
-  const vehicleData = [];
-
-  const addVehicle = (vehicle) => {
-    vehicleData.push({
-      id: vehicle.id,
-      make: vehicle.make,
-      model: vehicle.model,
-      number_plate: vehicle.number_plate,
-      rate: vehicle.daily_rate,
-    });
-    // console.log(vehicleData);
-  };
-  const [vehicles, setVehicles] = useState(vehicleData);
+  const [vehicles, setVehicles] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -62,7 +67,9 @@ export default function AllVehicles() {
       (item) =>
         item.make.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
         item.model.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-        item.number_plate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
+        item.number_plate
+          .toLocaleLowerCase()
+          .includes(query.toLocaleLowerCase())
       // item.rate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
     );
     setVehicles(newRecords);
@@ -70,16 +77,21 @@ export default function AllVehicles() {
 
   const getVehicles = async () => {
     try {
-      await axios.get(vehicleUrl).then((response) => {
-        // console.log(response);
-        response.data.vehicles.forEach((vehicle) => addVehicle(vehicle));
-        console.log(vehicles);
-        setLoading(false);
-      });
+      const response = await axios.get(vehicleUrl);
+      const fetchedVehicles = response.data.vehicles.map((vehicle) => ({
+        id: vehicle.id,
+        make: vehicle.make,
+        model: vehicle.model,
+        number_plate: vehicle.number_plate,
+        rate: vehicle.daily_rate,
+      }));
+      setVehicles(fetchedVehicles);
     } catch (error) {
       const errorMessage = "Error: " + error.message;
       setError(errorMessage);
       console.log(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
   // console.log("vehicles: " + vehicles);
@@ -91,7 +103,21 @@ export default function AllVehicles() {
       navigate("/login");
     }
     getVehicles();
-  }, [vehicles]);
+  }, []);
+
+  const table = useReactTable({
+    data: vehicles,
+    columns,
+    state: {
+      columnFilters,
+    },
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  console.log(table.getHeaderGroups());
 
   if (error) {
     return (
@@ -113,43 +139,11 @@ export default function AllVehicles() {
     <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
       <VehicleNav />
 
-      {/* <h1 className="text-bold text-center">Vehicles </h1> */}
-      <div className="flex justify-end">
-        <div class="relative mt-2">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-            <svg
-              className="w-4 h-4 text-gray-500 dark:text-gray-400"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-              />
-            </svg>
-          </div>
-          <input
-            type="search"
-            id="default-search"
-            className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Search Vehicles..."
-            onChange={handleSearch}
-          />
-        </div>
-      </div>
-      <DataTable
-        columns={columns}
-        data={vehicles}
-        pagination
-        highlightOnHover
-        progressPending={loading}
-        title="Vehicles"
-      />
+      <h1 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-4 mt-2">
+        Vehicles
+      </h1>
+      <BasicTable columns={columns} columnFilters={columnFilters} data={vehicles} />
+
     </div>
   );
 }

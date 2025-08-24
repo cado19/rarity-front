@@ -85,6 +85,7 @@ export default function AppRouter() {
             <Route path='/booking/:id/cancel' element={<CancelBooking />} />
             <Route path='/booking/:id/complete' element={<CompleteBooking />} />
             <Route path='/booking/:id/activate' element={<ActivateBooking />} />
+            <Route path='/bookings/voucher/:id' element={<BookingVoucher />} />
 
             {/* Agent Routes  */}
             <Route path='/agents' element={<AllAgents />} />

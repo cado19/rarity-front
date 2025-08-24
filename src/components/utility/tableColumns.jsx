@@ -41,3 +41,39 @@ export const bookingColumns = [
       },
     }
   ];
+
+export const clientColumns = [
+    {
+      accessorKey: "first_name",
+      header: "First Name",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "last_name",
+      header: "Last Name",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "id_no",
+      header: "ID",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "phone_no",
+      header: "Tel",
+      cell: (info) => info.getValue(),
+    },
+    {
+      id: "details",
+      header: "Details",
+      cell: (info) => {
+        const customer = info.row.original;
+        return <Link to={`/customer/${customer.id}`}>Details</Link>;
+      },
+    }
+  ];
