@@ -11,6 +11,7 @@ import DailyRateForm from "../../components/vehicles/DailyRateForm";
 import { Mosaic } from "react-loading-indicators";
 import Swal from "sweetalert2";
 import { deleteVehicle } from "../../api/delete";
+import AddImage from "./add_image";
 
 export default function Vehicle() {
   const { id } = useParams();
@@ -19,8 +20,10 @@ export default function Vehicle() {
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [disabled, setDisabled] = useState(false);
+  const [show, setShow] = useState(false); // used to open and close the image upload modal
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const vehicleUrl = baseUrl + `/api/fleet/read_single.php?id=${id}`;
+  const imageUploadUrl = baseUrl + `/api/fleet/upload.php`;
 
   const rateUrl = baseUrl + "/api/fleet/update_rate.php";
 
@@ -66,7 +69,27 @@ export default function Vehicle() {
       setDisabled(false);
     }
   };
+  // upload image function
+  const handleUpload = async (data) => {
+    if (!data) return;
 
+    const formData = new FormData();
+    formData.append("image", data);
+    formData.append("vehicle_id", id);
+
+    // push to server
+    try {
+      const response = await axios.post(imageUploadUrl, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("Upload success: ", response.data);
+    } catch (error) {
+      console.error("Upload error:", error);
+    } finally {
+      setShow(false);
+    }
+  };
+  // Delete vehicle function
   const handleDelete = async () => {
     setDisabled(true);
     Swal.fire({
@@ -79,7 +102,6 @@ export default function Vehicle() {
     }).then((decision) => {
       if (decision.isConfirmed) {
         deleteVehicle(id).then((result) => {
-
           console.log(result);
           console.log(result.status);
           if (result.status === "Success") {
@@ -134,6 +156,7 @@ export default function Vehicle() {
         {/* vehicle image  */}
         <div className="w-[20rem] h-[25rem] bg-white p-4 rounded-sm border border-gray flex flex-col">
           <img src={carImg} />
+          <button className="border  border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300" onClick={() => setShow(!show)}>Upload Image(s)</button>
         </div>
         {/* vehicle basic details  */}
         <div className=" bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1">
@@ -203,6 +226,11 @@ export default function Vehicle() {
         </div>
       </div>
       {/* Vehicle will show up here */}
+      <AddImage
+        show={show}
+        onSubmit={handleUpload}
+        onClose={() => setShow(false)}
+      />
     </div>
   );
 }

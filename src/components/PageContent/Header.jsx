@@ -15,8 +15,7 @@ export default function Header() {
   const userName = userData ? JSON.parse(userData).name : "Guest";
   const userId = userData ? JSON.parse(userData).id : null;
 
-  const newCustomerUrl = userUrl  + "/new"
-  
+  const newCustomerUrl = userUrl + "/new";
 
   const copyNewCustomerURL = () => {
     navigator.clipboard.writeText(newCustomerUrl);
@@ -48,7 +47,8 @@ export default function Header() {
           data-tooltip-id="upcoming-booking-tooltip"
           data-tooltip-content="Reservations"
           className="text-gray-700 hover:text-blue-500inline-flex justify-center"
-          rel="Upcoming bookings">
+          rel="Upcoming bookings"
+        >
           <FaCalendar size={14} />
         </Link>
 
@@ -57,12 +57,18 @@ export default function Header() {
           data-tooltip-id="change-rate-tooltip"
           data-tooltip-content="Change category rate"
           className="text-gray-700 hover:text-blue-500inline-flex justify-center"
-          rel="Upcoming bookings">
+          rel="Upcoming bookings"
+        >
           <BiSolidBadgeDollar size={15} />
         </Link>
 
         <div className="relative inline-block text-left">
-          <button onClick={() => setIsOpen(!isOpen)} className="mt-1 " data-tooltip-id="new-customer-tooltip" data-tooltip-content="New Customer">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="mt-1 "
+            data-tooltip-id="new-customer-tooltip"
+            data-tooltip-content="New Customer"
+          >
             <BsPersonPlusFill size={15} />
           </button>
 
@@ -86,12 +92,15 @@ export default function Header() {
             </div>
           )}
         </div>
-
- 
       </div>
       {/* Display the user's name on the right side */}
       <div className="text-gray-700">
-        <Link to={`/agent/${userId}`}>{userName}</Link>
+        <Link
+          to={`/agent/${userId}`}
+          className="inline-block p-4 text-yellow-500 border-b-2 border-transparent rounded-t-lg hover:text-yellow-600 hover:border-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300"
+        >
+          {userName}
+        </Link>
       </div>
       <Tooltip id="new-booking-tooltip" place="bottom" />
       <Tooltip id="upcoming-booking-tooltip" place="bottom" />

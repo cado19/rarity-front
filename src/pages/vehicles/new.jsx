@@ -196,7 +196,7 @@ export default function NewVehicle() {
   return (
     <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
       <VehicleNav />
-      <h1 className="text-2xl text-gray-800 border-b-2 border-gray-200 p-2">
+      <h1 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-4 mt-2">
         Add New Vehicle
       </h1>
       <form className="max-w-md mx-auto p-3" onSubmit={handleSubmit}>

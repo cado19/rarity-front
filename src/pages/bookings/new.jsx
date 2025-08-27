@@ -44,6 +44,7 @@ export default function NewBooking() {
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [show, setShow] = useState(false);
+  const [oneday, setOneDay] = useState(false);
 
   const navigate = useNavigate();
 
@@ -53,6 +54,7 @@ export default function NewBooking() {
   const vehiclesURL = baseUrl + "/api/fleet/booking_vehicles.php";
   const driversURL = baseUrl + "/api/drivers/booking_drivers.php";
   const bookingURL = baseUrl + "/api/bookings/create.php";
+  const oneDayBookingUrl = baseUrl + "/api/bookings/create_one_day.php";
 
   const userData = JSON.parse(localStorage.getItem("user"));
   const userId = userData.id;
@@ -122,7 +124,7 @@ export default function NewBooking() {
   // Change functions
   // set account_id
 
-  //initialize account id and start date 
+  //initialize account id and start date
   const initFormValues = () => {
     const today = new Date();
     setStartDate(today);
@@ -135,7 +137,7 @@ export default function NewBooking() {
       account_id: userId,
       start_date: formattedStartDate,
     });
-  }
+  };
   const setAccountId = () => {
     setInputs({
       ...inputs,
@@ -179,7 +181,7 @@ export default function NewBooking() {
     });
   };
 
-    // change booking end date
+  // change booking end date
   const endDateChange = (value) => {
     setEndDate(value);
     const day = value.getDate().toString().padStart(2, "0");
@@ -194,7 +196,7 @@ export default function NewBooking() {
     // console.log(inputs);
   };
 
-    // change booking start time 
+  // change booking start time
   const startTimeChange = (value) => {
     setStartTime(value);
     const hours = value.getHours().toString().padStart(2, "0");
@@ -210,7 +212,7 @@ export default function NewBooking() {
     // console.log(inputs);
   };
 
-  // change booking end time 
+  // change booking end time
   const endTimeChange = (value) => {
     setEndTime(value);
     const hours = value.getHours().toString().padStart(2, "0");
@@ -226,7 +228,7 @@ export default function NewBooking() {
     // console.log(inputs);
   };
 
-    // change customer 
+  // change customer
   const customerChange = (value) => {
     setSelectedClient(value);
     // const idTypeValue = selectedOption.value;
@@ -274,9 +276,24 @@ export default function NewBooking() {
     return errors;
   };
 
-  // submit function
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // validation one day booking function
+  const validateOneDay = (data) => {
+    const errors = {};
+
+    if (!data.vehicle_id) errors.vehicle_id = "Vehicle is required";
+    if (!data.customer_id) errors.customer_id = "Client is required";
+    if (!data.driver_id) errors.driver_id = "Driver is required";
+    if (!data.start_date) initStartDate();
+    if (!data.start_time) errors.start_time = "Start Time is required";
+    if (!data.end_time) errors.end_time = "End Time is required";
+
+    setErrors(errors);
+
+    return errors;
+  };
+
+  // submit normal booking
+  const saveNormalBooking = () => {
     setDisabled(true);
     const errors = validate(inputs);
     if (Object.keys(errors).length > 0) {
@@ -306,8 +323,52 @@ export default function NewBooking() {
         }
       });
     }
+  };
+
+  //save one day booking
+  const saveOneDayBooking = () => {
+    setDisabled(true);
+    const errors = validateOneDay(inputs);
+    if (Object.keys(errors).length > 0) {
+      Swal.fire({
+        title: "Validation Error",
+        icon: "error",
+        text: "Check form fields for highlighted errors",
+      });
+      console.log("Validation Errors: ", errors);
+      setDisabled(false);
+    } else {
+      axios.post(oneDayBookingUrl, inputs).then((response) => {
+        console.log(response);
+        if (response.data.status == "Success") {
+          const id = response.data.booking_id;
+          navigate(`/booking/${id}`, {
+            state: { message: "Booking created successfully" },
+          });
+        } else {
+          Swal.fire({
+            title: "Error",
+            icon: "error",
+            text: response.data.message,
+            confirmButtonText: "OK",
+          });
+          setDisabled(false);
+        }
+      });
+    }
+  };
+
+  // submit function
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (oneday) {
+      saveOneDayBooking();
+    } else {
+      saveNormalBooking();
+    }
     console.log(inputs);
   };
+
   // console.log(typeof startTime);
 
   if (loading) {
@@ -322,8 +383,27 @@ export default function NewBooking() {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
         <BookingNav />
-        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-4xl my-5 text-center ">New Booking</h1>
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-4xl my-5 text-center ">
+          New Booking
+        </h1>
         <form onSubmit={handleSubmit} className="w-4/5 mx-auto">
+          {/* Checkbox for one day  */}
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={oneday}
+              onChange={() => {
+                setOneDay(!oneday);
+              }}
+              className="form-checkbox h-5 w-5 text-blue-600 m-3"
+            />
+            <span className=" text-gray-500 dark:text-gray-400">
+              {oneday
+                ? "One Day Booking Turned On"
+                : "One Day Booking Turned Off"}
+            </span>
+          </label>
+
           {/* Client select  */}
           <div className=" mb-5 group">
             <Select
@@ -369,74 +449,77 @@ export default function NewBooking() {
             )}
           </div>
           {/* Show locations  */}
-          <div className="flex flex-row">
-            <p
-              className="text-blue-400 flex flex-row mb-4 cursor-pointer"
-              onClick={() => setShow(!show)}
-            >
-              Locations
-              {show ? (
-                <span>
-                  <AiFillCaretDown size={15} className="mt-1" />
-                </span>
-              ) : (
-                <AiFillCaretRight size={15} className="mt-1" />
-              )}
-            </p>
-          </div>
-
-          {/* Location  */}
-          {show && (
-            <div className="grid md:grid-cols-2 md:gap-6">
-              <div className="relative z-0 w-full mb-5 group">
-                <input
-                  type="text"
-                  name="in_capital"
-                  id="in_capital"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                  placeholder=""
-                  required
-                  value={inputs.in_capital}
-                  onChange={handleChange}
-                />
-                <label
-                  for="first_name"
-                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                >
-                  Within Nairobi
-                </label>
-                {errors.in_capital && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.in_capital}
-                  </p>
+          {!oneday && (
+            <div className="flex flex-row">
+              <p
+                className="text-blue-400 flex flex-row mb-4 cursor-pointer"
+                onClick={() => setShow(!show)}
+              >
+                Locations
+                {show ? (
+                  <span>
+                    <AiFillCaretDown size={15} className="mt-1" />
+                  </span>
+                ) : (
+                  <AiFillCaretRight size={15} className="mt-1" />
                 )}
-              </div>
-
-              <div className="relative z-0 w-full mb-5 group">
-                <input
-                  type="text"
-                  name="out_capital"
-                  id="out_capital"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                  placeholder=""
-                  required
-                  value={inputs.out_capital}
-                  onChange={handleChange}
-                />
-                <label
-                  for="last_name"
-                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                >
-                  Outside Nairobi
-                </label>
-                {errors.out_capital && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.last_name}
-                  </p>
-                )}
-              </div>
+              </p>
             </div>
           )}
+
+          {/* Location  */}
+          {show &&
+            !oneday(
+              <div className="grid md:grid-cols-2 md:gap-6">
+                <div className="relative z-0 w-full mb-5 group">
+                  <input
+                    type="text"
+                    name="in_capital"
+                    id="in_capital"
+                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=""
+                    required
+                    value={inputs.in_capital}
+                    onChange={handleChange}
+                  />
+                  <label
+                    for="first_name"
+                    className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                  >
+                    Within Nairobi
+                  </label>
+                  {errors.in_capital && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.in_capital}
+                    </p>
+                  )}
+                </div>
+
+                <div className="relative z-0 w-full mb-5 group">
+                  <input
+                    type="text"
+                    name="out_capital"
+                    id="out_capital"
+                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=""
+                    required
+                    value={inputs.out_capital}
+                    onChange={handleChange}
+                  />
+                  <label
+                    for="last_name"
+                    className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                  >
+                    Outside Nairobi
+                  </label>
+                  {errors.out_capital && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.last_name}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
 
           {/* Booking dates  */}
           <div className="grid md:grid-cols-2 md:gap-6">
@@ -452,19 +535,20 @@ export default function NewBooking() {
                 <p className="text-red-500 text-xs mt-1">{errors.start_date}</p>
               )}
             </div>
-
-            <div className="relative z-0 w-full mb-5 group">
-              <label>End Date</label>
-              <DatePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder="End Date"
-                value={endDate}
-                onChange={(value) => endDateChange(value)}
-              />
-              {errors.end_date && (
-                <p className="text-red-500 text-xs mt-1">{errors.end_date}</p>
-              )}
-            </div>
+            {!oneday && (
+              <div className="relative z-0 w-full mb-5 group">
+                <label>End Date</label>
+                <DatePicker
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder="End Date"
+                  value={endDate}
+                  onChange={(value) => endDateChange(value)}
+                />
+                {errors.end_date && (
+                  <p className="text-red-500 text-xs mt-1">{errors.end_date}</p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Booking times  */}
