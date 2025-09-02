@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FaCheck } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import { baseURL } from "../../constants/url";
 import Loading from "../../components/PageContent/Loading";
 import VehicleInfoBoxes from "../../components/infoboxes/VehicleInfoBoxes";
@@ -175,6 +176,14 @@ export default function Vehicle() {
 
   return (
     <div className="flex flex-col gap-4 ml-1">
+      {/* Back Button  */}
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 transition"
+      >
+        <FaArrowLeft className="text-[#9ACD32]" /> {/* YellowGreen tone */}
+        <span className="text-[#9ACD32] font-medium">Go Back</span>
+      </button>
       <VehicleInfoBoxes
         make={vehicle.make}
         model={vehicle.model}

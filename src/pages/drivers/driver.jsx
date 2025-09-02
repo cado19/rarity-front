@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { baseURL } from "../../constants/url";
 import axios from "axios";
 import Loading from "../../components/PageContent/Loading";
 import NewRate from "./newrate";
 import Swal from "sweetalert2";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function Driver() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [driver, setDriver] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -106,6 +109,14 @@ export default function Driver() {
   return (
     <>
       <div className=" rounded overflow-hidden shadow-lg flex flex-row bg-white">
+        {/* Back Button  */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 transition"
+        >
+          <FaArrowLeft className="text-[#9ACD32]" /> {/* YellowGreen tone */}
+          <span className="text-[#9ACD32] font-medium">Go Back</span>
+        </button>
         <div className="flex items-center justify-center">
           <div className="px-6 py-4">
             <div className="font-bold text-xl mb-2">Driver Details</div>{" "}
@@ -153,8 +164,12 @@ export default function Driver() {
         </div>
         <div className="flex items-center justify-center">
           <div className="px-6 py-4 ml-4">
-            <p className="text-lg"><b>Rate in Nairobi:</b> {" "} {driver.rate_in_capital}/-</p>
-            <p className="text-lg"><b>Rate outside Nairobi:</b> {" "} {driver.rate_out_capital}/-</p>
+            <p className="text-lg">
+              <b>Rate in Nairobi:</b> {driver.rate_in_capital}/-
+            </p>
+            <p className="text-lg">
+              <b>Rate outside Nairobi:</b> {driver.rate_out_capital}/-
+            </p>
           </div>
         </div>
 
@@ -171,41 +186,40 @@ export default function Driver() {
         />
       </div>
       <div className=" rounded overflow-hidden shadow-lg flex flex-row bg-white">
-          <div className="px-6 py-4">
-            {bookingError ? (
-              <h2 className="text-red-500 text-lg font-bold">{bookingError}</h2>
-            ) : (
-              <>
-                <h2 className="text-lg font-bold mb-4">Upcoming Bookings</h2>
-                
-                  {bookings.map((booking) => (
-                    <div
-                      key={booking.id}
-                      className="border border-gray-300 rounded p-4 mb-4"
-                    >
-                      <p>
-                        <span className="font-bold">Booking ID:</span>{" "}
-                        {booking.booking_no}
-                      </p>
-                      <p>
-                        <span className="font-bold">Vehicle:</span>{" "}
-                        {booking.vehicle}
-                      </p>
-                      
-                      <p>
-                        <span className="font-bold">Pickup Date:</span>{" "}
-                        {new Date(booking.start_date).toLocaleDateString()}
-                      </p>
-                      <p>
-                        <span className="font-bold">Dropoff Date:</span>{" "}
-                        {new Date(booking.end_date).toLocaleDateString()}
-                      </p>
-                    </div>
-                  ))}
-                 
-              </>
-            )}
-          </div>
+        <div className="px-6 py-4">
+          {bookingError ? (
+            <h2 className="text-red-500 text-lg font-bold">{bookingError}</h2>
+          ) : (
+            <>
+              <h2 className="text-lg font-bold mb-4">Upcoming Bookings</h2>
+
+              {bookings.map((booking) => (
+                <div
+                  key={booking.id}
+                  className="border border-gray-300 rounded p-4 mb-4"
+                >
+                  <p>
+                    <span className="font-bold">Booking ID:</span>{" "}
+                    {booking.booking_no}
+                  </p>
+                  <p>
+                    <span className="font-bold">Vehicle:</span>{" "}
+                    {booking.vehicle}
+                  </p>
+
+                  <p>
+                    <span className="font-bold">Pickup Date:</span>{" "}
+                    {new Date(booking.start_date).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <span className="font-bold">Dropoff Date:</span>{" "}
+                    {new Date(booking.end_date).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
       </div>
     </>
   );

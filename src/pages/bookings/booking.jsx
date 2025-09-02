@@ -8,6 +8,7 @@ import axios from "axios";
 import Extend from "./extend";
 import Loading from "../../components/PageContent/Loading";
 import Swal from "sweetalert2";
+import { FaArrowLeft } from "react-icons/fa";
 import Fuel from "./fuel";
 import { Mosaic } from "react-loading-indicators";
 
@@ -318,6 +319,14 @@ export default function Booking() {
       <div className="flex flex-row gap-4 mt-2 ml-2 mr-1">
         {/* Booking details  */}
         <div className="w-[50rem]  bg-white p-4 rounded border border-gray flex flex-col ">
+          {/* Back Button  */}
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 transition"
+          >
+            <FaArrowLeft className="text-[#9ACD32]" /> {/* YellowGreen tone */}
+            <span className="text-[#9ACD32] font-medium">Go Back</span>
+          </button>
           <p className="leading-loose text-center">
             <span className="font-bold">Agent:</span> {booking.agent}{" "}
           </p>

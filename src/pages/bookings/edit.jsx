@@ -6,6 +6,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import axios from "axios";
 import { baseURL } from "../../constants/url";
 import Swal from "sweetalert2";
+import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../components/PageContent/Loading";
 import BookingNav from "../../components/navs/bookingnav";
@@ -299,7 +300,7 @@ export default function EditBooking() {
         vehicle_id: inputs.vehicle.value,
         driver_id: inputs.driver.value,
         start_date: inputs.start_date,
-        end_date:  inputs.end_date,
+        end_date: inputs.end_date,
         start_time: inputs.start_time,
         end_time: inputs.end_time,
         custom_rate: inputs.custom_rate,
@@ -322,16 +323,16 @@ export default function EditBooking() {
       });
 
     console.log({
-        booking_id: id,
-        customer_id: inputs.customer.value,
-        vehicle_id: inputs.vehicle.value,
-        driver_id: inputs.driver.value,
-        start_date: inputs.start_date,
-        end_date:  inputs.end_date,
-        start_time: inputs.start_time,
-        end_time: inputs.end_time,
-        custom_rate: inputs.custom_rate,
-      });
+      booking_id: id,
+      customer_id: inputs.customer.value,
+      vehicle_id: inputs.vehicle.value,
+      driver_id: inputs.driver.value,
+      start_date: inputs.start_date,
+      end_date: inputs.end_date,
+      start_time: inputs.start_time,
+      end_time: inputs.end_time,
+      custom_rate: inputs.custom_rate,
+    });
     setDisabled(false);
   };
   if (loading) {
@@ -345,6 +346,14 @@ export default function EditBooking() {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
         <BookingNav />
+        {/* Back Button  */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 transition"
+        >
+          <FaArrowLeft className="text-[#9ACD32]" /> {/* YellowGreen tone */}
+          <span className="text-[#9ACD32] font-medium">Go Back</span>
+        </button>
         <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-4xl my-5 text-center ">
           Editing Booking {booking?.booking_no}
         </h1>
