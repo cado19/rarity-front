@@ -35,6 +35,16 @@ export const get_all_vehicles = async () => {
   return response;
 };
 
+export const get_vehicle_extras = async (id) => {
+  const response = await axios.get(baseUrl + `/api/fleet/read_extras.php?id=${id}`);
+  return response;
+}
+
+export const get_vehicle_base = async (id) => {
+  const response = await axios.get(baseUrl + `/api/fleet/read_base.php?id=${id}`);
+  return response;
+}
+
 // BOOKINGS FETCH
 // get all bookings
 export const fetchBookings = async () => {
