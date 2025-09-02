@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import imageCompression from "browser-image-compression";
 
-export default function AddImage({ show, onClose, onSubmit }) {
+export default function AddImage({ show, onClose, onSubmit, setUploading }) {
   const [file, setFile] = useState(null);
 
   const handleSubmit = async () => {
+    setUploading(true);
     const options = {
       maxSizeMB: 1, // target size
       maxWidthOrHeight: 1024, // resize if needed

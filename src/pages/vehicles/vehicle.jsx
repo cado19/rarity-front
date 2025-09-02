@@ -1,6 +1,6 @@
 // This component renders all vehicles
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FaCheck } from "react-icons/fa";
 import { baseURL } from "../../constants/url";
@@ -8,24 +8,38 @@ import Loading from "../../components/PageContent/Loading";
 import VehicleInfoBoxes from "../../components/infoboxes/VehicleInfoBoxes";
 import carImg from "../../assets/car-img.png";
 import DailyRateForm from "../../components/vehicles/DailyRateForm";
-import { Mosaic } from "react-loading-indicators";
+import { BlinkBlur, Mosaic } from "react-loading-indicators";
 import Swal from "sweetalert2";
 import { deleteVehicle } from "../../api/delete";
 import AddImage from "./add_image";
+import StyledButton from "../../components/styled/StyledButton";
 
 export default function Vehicle() {
   const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   //   const carImg = require('../../assets/car-img.png');
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [disabled, setDisabled] = useState(false);
   const [show, setShow] = useState(false); // used to open and close the image upload modal
+  const [uploading, setUploading] = useState(false);
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const vehicleUrl = baseUrl + `/api/fleet/read_single.php?id=${id}`;
   const imageUploadUrl = baseUrl + `/api/fleet/upload.php`;
+  const imageDisplayUrl = import.meta.env.VITE_IMAGE_URL;
 
   const rateUrl = baseUrl + "/api/fleet/update_rate.php";
+
+  const checkMessage = () => {
+    location.state &&
+      Swal.fire({
+        title: location.state.message,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+  };
 
   //   function to fetch vehicle from backend
   async function getVehicle() {
@@ -72,7 +86,8 @@ export default function Vehicle() {
   // upload image function
   const handleUpload = async (data) => {
     if (!data) return;
-
+    setUploading(true);
+    setShow(false);
     const formData = new FormData();
     formData.append("image", data);
     formData.append("vehicle_id", id);
@@ -86,7 +101,8 @@ export default function Vehicle() {
     } catch (error) {
       console.error("Upload error:", error);
     } finally {
-      setShow(false);
+      // setShow(false);
+      setUploading(false);
     }
   };
   // Delete vehicle function
@@ -133,12 +149,26 @@ export default function Vehicle() {
       navigate("/login");
     }
     getVehicle();
+    checkMessage();
   }, []);
 
   if (loading) {
     return (
       <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
         <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
+      </div>
+    );
+  }
+
+  if (uploading) {
+    return (
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <BlinkBlur
+          color="#32cd32"
+          size="large"
+          text="Uploading..."
+          textColor=""
+        />
       </div>
     );
   }
@@ -155,8 +185,20 @@ export default function Vehicle() {
       <div className="flex flex-row gap-4 w-full">
         {/* vehicle image  */}
         <div className="w-[20rem] h-[25rem] bg-white p-4 rounded-sm border border-gray flex flex-col">
-          <img src={carImg} />
-          <button className="border  border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300" onClick={() => setShow(!show)}>Upload Image(s)</button>
+          {vehicle.url ? (
+            <img
+              src={`${imageDisplayUrl}/${vehicle.url}`}
+              className="rounded-sm shadow-md"
+            />
+          ) : (
+            <img src={carImg} />
+          )}
+          <button
+            className="border  border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-bold mt-3 py-2 px-4 rounded transition duration-300"
+            onClick={() => setShow(!show)}
+          >
+            Upload Image(s)
+          </button>
         </div>
         {/* vehicle basic details  */}
         <div className=" bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1">
@@ -214,7 +256,7 @@ export default function Vehicle() {
               {vehicle.color}{" "}
             </li>
           </ul>
-          <p className="mt-4">
+          <div className="mt-4 flex gap-4">
             <button
               onClick={handleDelete}
               disabled={disabled}
@@ -222,13 +264,25 @@ export default function Vehicle() {
             >
               Delete
             </button>
-          </p>
+
+            <StyledButton
+              to={`/vehicle/edit_basics/${id}`}
+              label="Edit Vehicle Basics"
+              variant="amber"
+            />
+            <StyledButton
+              to={`/vehicle/edit_extras/${id}`}
+              label="Edit Vehicle Extras"
+              variant="lime"
+            />
+          </div>
         </div>
       </div>
       {/* Vehicle will show up here */}
       <AddImage
         show={show}
         onSubmit={handleUpload}
+        setUploading={setUploading}
         onClose={() => setShow(false)}
       />
     </div>
