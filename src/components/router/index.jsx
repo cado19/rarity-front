@@ -45,6 +45,11 @@ import MonthStats from '../../pages/analytics/vehicle/monthstats'
 import AllPayments from '../../pages/payments/all'
 import WorkPlan from '../../pages/drivers/workplan'
 import EditRate from '../../pages/vehicles/edit_rate'
+import EditBasics from '../../pages/vehicles/edit_basics'
+import EditExtras from '../../pages/vehicles/edit_extras'
+import AllIssues from '../../pages/issues/all'
+import NewIssue from '../../pages/issues/new'
+import Issue from '../../pages/issues/issue'
 
 
 export default function AppRouter() {
@@ -60,6 +65,11 @@ export default function AppRouter() {
             <Route path='/vehicle/:id' element={<Vehicle />} />
             <Route path='/vehicle/new' element={<NewVehicle />} />
             <Route path='/vehicle/edit_rate' element={<EditRate />} />
+            <Route path='/vehicle/edit_basics/:id' element={<EditBasics />} />
+            <Route path='/vehicle/edit_extras/:id' element={<EditExtras />} />
+            <Route path='/issues' element={<AllIssues />} />
+            <Route path='/issues/new' element={<NewIssue />}  />
+            <Route path='/issues/:id' element={<Issue />} />
 
             {/* Customer Routes  */}
             <Route path='/customers' element={<AllCustomers />} />
