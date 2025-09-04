@@ -4,13 +4,13 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FaCheck } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa";
-import { baseURL } from "../../constants/url";
-import Loading from "../../components/PageContent/Loading";
 import VehicleInfoBoxes from "../../components/infoboxes/VehicleInfoBoxes";
 import carImg from "../../assets/car-img.png";
 import DailyRateForm from "../../components/vehicles/DailyRateForm";
 import { BlinkBlur, Mosaic } from "react-loading-indicators";
 import Swal from "sweetalert2";
+import { FaShare } from "react-icons/fa";
+import { Tooltip } from "react-tooltip";
 import { deleteVehicle } from "../../api/delete";
 import AddImage from "./add_image";
 import StyledButton from "../../components/styled/StyledButton";
@@ -32,6 +32,7 @@ export default function Vehicle() {
   const imageDisplayUrl = import.meta.env.VITE_IMAGE_URL;
 
   const rateUrl = baseUrl + "/api/fleet/update_rate.php";
+  const catalogUrl = import.meta.env.VITE_CATALOG_VEHICLE_URL + id; // url of catalog vehicle, not to be confused with the entire catalog.
 
   const checkMessage = () => {
     location.state &&
@@ -40,6 +41,17 @@ export default function Vehicle() {
         icon: "success",
         confirmButtonText: "OK",
       });
+  };
+
+  const copyCatalogURL = () => {
+    navigator.clipboard.writeText(catalogUrl);
+    Swal.fire({
+      title: "Link copied",
+      text: "Vehicle catalog Link copied to clipboard",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+    // setIsOpen(!isOpen);
   };
 
   //   function to fetch vehicle from backend
@@ -202,13 +214,28 @@ export default function Vehicle() {
           ) : (
             <img src={carImg} />
           )}
+
+          {/* Upload images button  */}
           <button
             className="border  border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-bold mt-3 py-2 px-4 rounded transition duration-300"
             onClick={() => setShow(!show)}
           >
             Upload Image(s)
           </button>
+
+          {/* Catalog share button  */}
+          <div className="p-4 flex justify-center">
+            <button
+              onClick={copyCatalogURL}
+              className="text-yellow-600 hover:text-blue-500 inline-flex justify-center gap-2"
+              data-tooltip-id="catalog-tooltip"
+              data-tooltip-content="Catalog Link"
+            >
+              <FaShare size={20} /> <span>Share Vehicle</span>
+            </button>
+          </div>
         </div>
+
         {/* vehicle basic details  */}
         <div className=" bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1">
           <strong className="text-gray-700 font-medium text-4xl">
@@ -294,6 +321,7 @@ export default function Vehicle() {
         setUploading={setUploading}
         onClose={() => setShow(false)}
       />
+      <Tooltip id="catalog-tooltip" place="bottom" />
     </div>
   );
 }
