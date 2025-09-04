@@ -15,6 +15,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import BasicTable from "../../components/utility/basicTable";
+import { get_all_vehicles } from "../../api/fetch";
 
 export default function AllVehicles() {
   const columns = [
@@ -61,31 +62,18 @@ export default function AllVehicles() {
 
   const vehicleUrl = baseUrl + "/api/fleet/all.php";
 
-  const handleSearch = (e) => {
-    let query = e.target.value;
-    const newRecords = vehicleData.filter(
-      (item) =>
-        item.make.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-        item.model.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-        item.number_plate
-          .toLocaleLowerCase()
-          .includes(query.toLocaleLowerCase())
-      // item.rate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-    );
-    setVehicles(newRecords);
-  };
 
-  const getVehicles = async () => {
+const getVehicles = async () => {
     try {
-      const response = await axios.get(vehicleUrl);
-      const fetchedVehicles = response.data.vehicles.map((vehicle) => ({
-        id: vehicle.id,
-        make: vehicle.make,
-        model: vehicle.model,
-        number_plate: vehicle.number_plate,
-        rate: vehicle.daily_rate,
-      }));
-      setVehicles(fetchedVehicles);
+      const response = await get_all_vehicles();
+      // const fetchedVehicles = response.data.vehicles.map((vehicle) => ({
+      //   id: vehicle.id,
+      //   make: vehicle.make,
+      //   model: vehicle.model,
+      //   number_plate: vehicle.number_plate,
+      //   rate: vehicle.daily_rate,
+      // }));
+      setVehicles(response.data.vehicles);
     } catch (error) {
       const errorMessage = "Error: " + error.message;
       setError(errorMessage);
@@ -93,7 +81,7 @@ export default function AllVehicles() {
     } finally {
       setLoading(false);
     }
-  };
+  };  
   // console.log("vehicles: " + vehicles);
   // console.log(vehicleData);
 
@@ -105,19 +93,7 @@ export default function AllVehicles() {
     getVehicles();
   }, []);
 
-  const table = useReactTable({
-    data: vehicles,
-    columns,
-    state: {
-      columnFilters,
-    },
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  });
 
-  console.log(table.getHeaderGroups());
 
   if (error) {
     return (
