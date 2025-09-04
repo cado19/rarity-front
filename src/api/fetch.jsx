@@ -27,13 +27,18 @@ export const get_returning_vehicles = async () => {
   return response;
 };
 
-export const get_all_vehicles = async () => {
+export const get_vehicle_count = async () => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const vehicleUrl = baseUrl + "/api/dashboard/vehicle_count.php";
 
   const response = await axios.get(vehicleUrl);
   return response;
 };
+
+export const get_all_vehicles = async () => {
+  const response = await axios.get(baseUrl + `/api/fleet/all.php`);
+  return response;
+}
 
 export const get_vehicle_extras = async (id) => {
   const response = await axios.get(baseUrl + `/api/fleet/read_extras.php?id=${id}`);
@@ -42,6 +47,16 @@ export const get_vehicle_extras = async (id) => {
 
 export const get_vehicle_base = async (id) => {
   const response = await axios.get(baseUrl + `/api/fleet/read_base.php?id=${id}`);
+  return response;
+}
+
+export const get_all_issues = async () => {
+  const response = await axios.get(baseUrl + `/api/fleet/read_issues.php`);
+  return response;
+}
+
+export const get_issue = async (id) => {
+  const response = await axios.get(baseUrl + `/api/fleet/read_issue.php?id=${id}`);
   return response;
 }
 

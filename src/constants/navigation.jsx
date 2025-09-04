@@ -16,7 +16,7 @@ import {
     HiOutlineArrowCircleRight,
     HiCash
   } from "react-icons/hi";
-  
+import { HiMiniWrenchScrewdriver } from "react-icons/hi2";  
   export const DASHBOARD_SIDEBAR_LINKS = [
       {
           key: 'dashboard',
@@ -43,6 +43,12 @@ import {
           label: 'Vehicles',
           path: '/vehicles',
           icon:  <HiOutlineTruck />
+      },
+      {
+          key: 'issues',
+          label: 'Fleet Maintenance',
+          path: '/issues',
+          icon:  <HiMiniWrenchScrewdriver />
       },
       {
           key: 'drivers',
