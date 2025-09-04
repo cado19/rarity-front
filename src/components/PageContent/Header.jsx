@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FaCalendarPlus, FaCalendar } from "react-icons/fa";
 import { BsPersonPlusFill } from "react-icons/bs";
 import { BiSolidBadgeDollar } from "react-icons/bi";
+import { PiCarSimpleFill } from "react-icons/pi";
 import { Tooltip } from "react-tooltip";
 import { userUrl } from "../../constants/url";
 import Swal from "sweetalert2";
@@ -17,6 +18,8 @@ export default function Header() {
 
   const newCustomerUrl = userUrl + "/new";
 
+  const catalogUrl = import.meta.env.VITE_CATALOG_URL;
+
   const copyNewCustomerURL = () => {
     navigator.clipboard.writeText(newCustomerUrl);
     Swal.fire({
@@ -28,10 +31,29 @@ export default function Header() {
     setIsOpen(!isOpen);
   };
 
+  const copyCatalogURL = () => {
+    navigator.clipboard.writeText(catalogUrl);
+    Swal.fire({
+      title: "Link copied",
+      text: "Vehicle catalog Link copied to clipboard",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+    // setIsOpen(!isOpen);
+  };
+
   return (
     <div className="bg-white h-16 px-4 flex justify-end items-center border-b border-gray-200">
       {/* Utility Links  */}
       <div className="flex items-center space-x-4 mr-5">
+        <button
+          onClick={copyCatalogURL}
+          className="text-gray-700 hover:text-blue-500inline-flex justify-center"
+          data-tooltip-id="catalog-tooltip"
+          data-tooltip-content="Catalog Link"
+        >
+          <PiCarSimpleFill />
+        </button>
         <Link
           to="/bookings/new"
           data-tooltip-id="new-booking-tooltip"
@@ -106,6 +128,7 @@ export default function Header() {
       <Tooltip id="upcoming-booking-tooltip" place="bottom" />
       <Tooltip id="new-customer-tooltip" place="bottom" />
       <Tooltip id="change-rate-tooltip" place="bottom" />
+      <Tooltip id="catalog-tooltip" place="bottom" />
     </div>
   );
 }
