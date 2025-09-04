@@ -48,7 +48,7 @@ export default function Header() {
       <div className="flex items-center space-x-4 mr-5">
         <button
           onClick={copyCatalogURL}
-          className="text-gray-700 hover:text-blue-500inline-flex justify-center"
+          className="text-yellow-600 hover:text-blue-500inline-flex justify-center"
           data-tooltip-id="catalog-tooltip"
           data-tooltip-content="Catalog Link"
         >
@@ -58,7 +58,7 @@ export default function Header() {
           to="/bookings/new"
           data-tooltip-id="new-booking-tooltip"
           data-tooltip-content="New Booking"
-          className="text-gray-700 hover:text-blue-500inline-flex justify-center"
+          className="text-yellow-600  hover:text-blue-500inline-flex justify-center"
           rel="New booking"
         >
           <FaCalendarPlus size={14} />
@@ -68,7 +68,7 @@ export default function Header() {
           to="/bookings/upcoming"
           data-tooltip-id="upcoming-booking-tooltip"
           data-tooltip-content="Reservations"
-          className="text-gray-700 hover:text-blue-500inline-flex justify-center"
+          className="text-yellow-600  hover:text-blue-500inline-flex justify-center"
           rel="Upcoming bookings"
         >
           <FaCalendar size={14} />
@@ -78,7 +78,7 @@ export default function Header() {
           to="/vehicle/edit_rate"
           data-tooltip-id="change-rate-tooltip"
           data-tooltip-content="Change category rate"
-          className="text-gray-700 hover:text-blue-500inline-flex justify-center"
+          className="text-yellow-600  hover:text-blue-500inline-flex justify-center"
           rel="Upcoming bookings"
         >
           <BiSolidBadgeDollar size={15} />
@@ -87,7 +87,7 @@ export default function Header() {
         <div className="relative inline-block text-left">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="mt-1 "
+            className="mt-1 text-yellow-600 "
             data-tooltip-id="new-customer-tooltip"
             data-tooltip-content="New Customer"
           >
