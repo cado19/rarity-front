@@ -10,32 +10,37 @@ import Loading from "../../components/PageContent/Loading";
 import Swal from "sweetalert2";
 import { FaArrowLeft } from "react-icons/fa";
 import Fuel from "./fuel";
-import { Mosaic } from "react-loading-indicators";
+import { Mosaic, BlinkBlur } from "react-loading-indicators";
+import AddMedia from "./add_media";
 
 export default function Booking() {
   const { id } = useParams();
   const [roleId, setRoleId] = useState(null);
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false); // state for loading when media is being uploaded
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // this is used to control the extend date modal
   const [fuelModalOpen, setFuelModalOpen] = useState(false); // this is used to control the fuel modal
+  const [mediaModalOpen, setMediaModalOpen] = useState(false); // this is used to control the fuel modal
   const [voucherBtnOpen, setVoucherBtnOpen] = useState(false); // this is used to control the voucher links dropdown
   const [total, setTotal] = useState(0); // this is used because total changes with driver fee
 
   const [extendInfo, setExtendInfo] = useState(null);
   const baseUrl = import.meta.env.VITE_BASE_URL;
+  const videoDisplayUrl = import.meta.env.VITE_VIDEO_URL;
   const bookingUrl = baseUrl + `/api/bookings/read_single.php?id=${id}`;
   const extendUrl = baseUrl + `/api/bookings/extend.php`;
   const fuelUrl = baseUrl + `/api/bookings/update_fuel.php`;
-  const SignUrl = contractSignUrl + `${id}`; // url for signing contract
+  const SignUrl = contractSignUrl + `${id}`; // url
+  //  for signing contract
   const contractURL = contractViewUrl + `${id}`;
   // const bookingVoucherURL = voucherUrl + `${id}`;
   // const bookingVoucherURL = import.meta.env.VITE_OUR_URL + `/booking/voucher/${id}`;
 
   const bookingVoucherUrl = import.meta.env.VITE_VOUCHER_URL + `${id}`;
   const bookingVoucherUsdUrl = import.meta.env.VITE_VOUCHER_USD_URL + `${id}`;
-
+  const videoUploadUrl = baseUrl + `/api/bookings/upload.php`;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -133,6 +138,30 @@ export default function Booking() {
     }
   };
 
+  // upload image function
+  const handleUpload = async (data) => {
+    if (!data) return;
+    setUploading(true);
+    setMediaModalOpen(false);
+    const formData = new FormData();
+    formData.append("video", data);
+    formData.append("booking_id", id);
+
+    // push to server
+    try {
+      const response = await axios.post(videoUploadUrl, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("Upload success: ", response.data);
+    } catch (error) {
+      console.error("Upload error:", error);
+    } finally {
+      // setShow(false);
+      setUploading(false);
+    }
+  };
+
+  // function to handle saving of fuel data
   const fuelVehicle = async (data) => {
     setFuelModalOpen(false);
     try {
@@ -201,6 +230,18 @@ export default function Booking() {
       }
     });
   };
+
+  // copy video url
+  const copyVideoLink = () => {
+    navigator.clipboard.writeText(videoDisplayUrl + "/" + booking.url);
+    Swal.fire({
+      title: "Link copied",
+      text: "Video link has been copied to your clipboard",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+  };
+
   // copy signature url
   const copySignatureLink = () => {
     navigator.clipboard.writeText(SignUrl);
@@ -268,6 +309,19 @@ export default function Booking() {
     checkMessage();
   }, []);
 
+  if (uploading) {
+    return (
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <BlinkBlur
+          color="#32cd32"
+          size="large"
+          text="Uploading..."
+          textColor=""
+        />
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
@@ -303,6 +357,16 @@ export default function Booking() {
         onClose={() => setFuelModalOpen(false)}
         id={id}
         onSubmit={fuelVehicle}
+        animate={{
+          mount: { scale: 1, y: 0 },
+          unmount: { scale: 0.9, y: -100 },
+        }}
+      />
+
+      <AddMedia
+        show={mediaModalOpen}
+        onClose={() => setMediaModalOpen(false)}
+        onSubmit={handleUpload}
         animate={{
           mount: { scale: 1, y: 0 },
           unmount: { scale: 0.9, y: -100 },
@@ -447,6 +511,26 @@ export default function Booking() {
             >
               Fuel Vehicle
             </button>
+            {booking.url ? (
+              <>
+                <button
+                  className="border  border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300"
+                  onClick={() => copyVideoLink()}
+                >
+                  Copy Vehicle Video Link
+                </button>
+                )
+              </>
+            ) : (
+              <>
+                <button
+                  className="border  border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300"
+                  onClick={() => setMediaModalOpen(true)}
+                >
+                  Upload Vehicle Video
+                </button>
+              </>
+            )}
           </div>
         </div>
 
