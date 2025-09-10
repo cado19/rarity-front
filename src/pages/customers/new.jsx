@@ -164,41 +164,6 @@ export default function NewCustomer() {
     } else if (!/\S+@\S+\.\S+/.test(data.email)) {
       errors.email = "Email is invalid";
     }
-
-    // validate date of birth
-    // if (!data.date_of_birth) {
-    //   errors.date_of_birth = "Date of birth is required";
-    // }
-
-    // validate id type
-    // if (!data.id_type) {
-    //   errors.id_type = "Id type is required";
-    // }
-
-    // validate id number
-    // if (!data.id_number) {
-    //   errors.id_number = "Id number is required";
-    // }
-
-    // validate dl number
-    // if (!data.dl_number) {
-    //   errors.dl_number = "DL number is required";
-    // }
-
-    // validate dl expiry
-    // if (!data.dl_expiry) {
-    //   errors.dl_expiry = "DL expiry is required";
-    // }
-
-    // validate residential address
-    // if (!data.residential_address) {
-    //   errors.residential_address = "Residential address is required";
-    // }
-
-    // validate work address
-    // if (!data.work_address) {
-    //   errors.work_address = "Work address is required";
-    // }
     setErrors(errors);
     return errors;
   };
