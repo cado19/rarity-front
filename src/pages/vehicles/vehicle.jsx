@@ -25,7 +25,7 @@ export default function Vehicle() {
   const [errors, setErrors] = useState({});
   const [disabled, setDisabled] = useState(false);
   const [show, setShow] = useState(false); // used to open and close the image upload modal
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState(false); // state for loading when media is being uploaded
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const vehicleUrl = baseUrl + `/api/fleet/read_single.php?id=${id}`;
   const imageUploadUrl = baseUrl + `/api/fleet/upload.php`;
