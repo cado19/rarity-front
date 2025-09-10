@@ -96,3 +96,8 @@ export const fetchCustomers = async () => {
   const response = await axios.get(baseUrl + "/api/customers/all.php");
   return response;
 };
+
+export const fetchCustomer = async (id) => {
+  const response = await axios.get(baseUrl + `/api/customers/read_single.php?id=${id}`);
+  return response;
+};
