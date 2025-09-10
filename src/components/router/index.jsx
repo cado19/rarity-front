@@ -50,6 +50,7 @@ import EditExtras from '../../pages/vehicles/edit_extras'
 import AllIssues from '../../pages/issues/all'
 import NewIssue from '../../pages/issues/new'
 import Issue from '../../pages/issues/issue'
+import EditCustomer from '../../pages/customers/edit'
 
 
 export default function AppRouter() {
@@ -76,6 +77,7 @@ export default function AppRouter() {
             <Route path='/recent_clients' element={<RecentCustomers />} />
             <Route path='/customer/:id' element={<Customer />} />
             <Route path='/customer/new' element={<NewCustomer />} />
+            <Route path='/customer/edit/:id' element={<EditCustomer />} />
 
             {/* Driver Routes  */}
             <Route path='/drivers' element={<AllDrivers />} />

@@ -23,7 +23,7 @@ import {
   get_active_vehicles,
   get_returning_vehicles,
   get_reserved_vehicles,
-  get_all_vehicles,
+  get_vehicle_count,
 } from "../../api/fetch";
 
 export default function Dashboard() {
@@ -80,7 +80,7 @@ export default function Dashboard() {
   };
 
   const initTotalVehicles = async () => {
-    const result = await get_all_vehicles();
+    const result = await get_vehicle_count();
     console.log(result);
     setTotVehicles(result.data.total_count);
   };
