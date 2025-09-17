@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import { baseURL, feUrl, userUrl } from "../../constants/url";
 import { useParams } from "react-router-dom";
+import { Mosaic } from "react-loading-indicators";
 import Loading from "../../components/PageContent/Loading";
 import Swal from "sweetalert2";
 import userAvatar from "../../assets/anonymous_avatars_grey_circles.jpg";
 import LicenseModal from "./license_modal";
 import IDmodal from "./id_modal";
+import { fetchCustomer } from "../../api/fetch";
+import DeleteButton from "../../components/styled/DeleteButton";
+import useMessageAlert from "../../components/utility/useMessageAlert";
 
 export default function Customer() {
   const { id } = useParams();
+  useMessageAlert();
+  const navigate = useNavigate();
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const customerUrl = baseUrl + `/api/customers/read_single.php?id=${id}`;
   const licenseURL = userUrl + `/dl_form&id=${id}`;
@@ -52,21 +59,38 @@ export default function Customer() {
     });
   };
 
-  async function getCustomer() {
+    // function to delete customer
+    const deleteCustomer = () => {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Delete customer",
+        confirmButtonText: "Yes",
+        denyButtonText: "No",
+        showDenyButton: true,
+        showConfirmButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate(`/customer/${id}/delete`);
+        }
+      });
+    };
+
+  const getCustomer = async () => {
     try {
-      const response = await axios.get(customerUrl);
-      setCustomer(response.data);
-      setLoading(false);
-      console.log(response.data);
+      const response = await fetchCustomer(id);
+      console.log(response.data.customer)
+      setCustomer(response.data.customer);
     } catch (error) {
       setError(true);
       console.error(error);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     getCustomer();
-  }, [loading]);
+  }, []);
 
   //format dl expiry date
   const dl_expiry_date = new Date(customer?.dl_expiry);
@@ -74,8 +98,8 @@ export default function Customer() {
 
   if (loading) {
     return (
-      <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading />
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
       </div>
     );
   }
@@ -205,6 +229,15 @@ export default function Customer() {
               Profile Link
             </button>
           </span>{" "}
+          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+            <Link
+              to={`/customer/edit/${id}`}
+              className="border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
+            >
+              Edit client
+            </Link> 
+          </span>{" "}
+          <DeleteButton onClick={deleteCustomer} />
         </div>{" "}
       </div>
     </div>
