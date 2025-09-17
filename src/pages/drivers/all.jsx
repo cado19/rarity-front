@@ -2,7 +2,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { baseURL } from "../../constants/url";
-import Loading from "../../components/PageContent/Loading";
+import { Mosaic } from "react-loading-indicators";
 import DataTable from "react-data-table-component";
 import { Link, useNavigate } from "react-router-dom";
 import { esES } from "@mui/x-date-pickers/locales";
@@ -153,8 +153,8 @@ export default function AllDrivers() {
   }
   if (loading) {
     return (
-      <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading />
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
       </div>
     );
   }

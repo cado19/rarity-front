@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { baseURL } from "../../constants/url";
 import axios from "axios";
-import Loading from "../../components/PageContent/Loading";
+import { Mosaic } from "react-loading-indicators";
 import NewRate from "./newrate";
 import Swal from "sweetalert2";
 import { FaArrowLeft } from "react-icons/fa";
@@ -100,8 +100,8 @@ export default function Driver() {
   }
   if (loading) {
     return (
-      <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md">
-        <Loading />
+      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
+        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
       </div>
     );
   }
