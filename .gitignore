@@ -26,3 +26,5 @@ src/assets/car-img.png
 .env.production
 .env
 dist/index.html
+src/components/PageContent/stuff.js
+src/components/utility/stuff.jsx
