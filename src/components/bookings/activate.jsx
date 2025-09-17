@@ -10,7 +10,7 @@ export default function ActivateBooking() {
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const activateURL = baseUrl + `/api/bookings/activate.php?id=${id}`;
     axios.post(activateURL).then((response) => {
-        if(response.data.message = "Successfully activated booking"){
+        if(response.data.message == "Successfully activated booking"){
             navigate(`/booking/${id}`, { state: { message: "Booking activated" } });
         } else {
             navigate(`/booking/${id}`, { state: { message: "Booking could not be activated" } });

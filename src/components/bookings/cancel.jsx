@@ -10,7 +10,7 @@ export default function CancelBooking() {
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const cancelURL = baseUrl + `/api/bookings/cancel.php?id=${id}`;
     axios.post(cancelURL).then((response) => {
-        if(response.data.message = "Successfully cancelled booking"){
+        if(response.data.message == "Successfully cancelled booking"){
             navigate(`/booking/${id}`, { state: { message: "Booking cancelled" } });
         } else {
             navigate(`/booking/${id}`, { state: { message: "Booking could not be cancelled" } });

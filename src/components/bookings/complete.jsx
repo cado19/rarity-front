@@ -10,7 +10,7 @@ export default function CompleteBooking() {
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const completeURL = baseUrl + `/api/bookings/complete.php?id=${id}`;
     axios.post(completeURL).then((response) => {
-        if(response.data.message = "Successfully completed booking"){
+        if(response.data.message == "Successfully completed booking"){
             navigate(`/booking/${id}`, { state: { message: "Booking completed" } });
         } else {
             navigate(`/booking/${id}`, { state: { message: "Booking could not be completed" } });
