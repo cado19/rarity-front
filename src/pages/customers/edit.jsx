@@ -147,7 +147,7 @@ export default function EditCustomer() {
         ...inputs,
       };
       const response = await update_customer_details(payload);
-      console.log(payload);
+      // console.log(payload);
       if (response.data.status === "Success") {
         navigate(`/customer/${id}`, { state: { message: "Customer Updated" } });
       } else {

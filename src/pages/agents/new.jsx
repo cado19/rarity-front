@@ -104,8 +104,8 @@ export default function NewAgent() {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
-      console.log("Form could not be submitted");
-      console.log(validationErrors);
+      // console.log("Form could not be submitted");
+      // console.log(validationErrors);
       setDisabled(false);
     } else {
       // submit the form
@@ -124,10 +124,10 @@ export default function NewAgent() {
           confirmButtonText: 'OK'
         })
       }
-      console.log(response);
+      // console.log(response);
       setDisabled(false);
 
-      console.log(inputs);
+      // console.log(inputs);
       // console.log("Form submitted");
     }
   };

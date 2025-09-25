@@ -78,7 +78,7 @@ export default function Customer() {
   const getCustomer = async () => {
     try {
       const response = await fetchCustomer(id);
-      console.log(response.data.customer)
+      // console.log(response.data.customer)
       setCustomer(response.data.customer);
     } catch (error) {
       setError(true);

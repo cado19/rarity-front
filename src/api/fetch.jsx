@@ -91,6 +91,12 @@ export const fetchActiveBookings = async () => {
   return response;
 };
 
+// get single booking 
+export const fetchBooking = async (id) => {
+  const response = await axios.get(baseUrl + `/api/bookings/read_single.php?id=${id}`);
+  return response;
+}
+
 // CUSTOMERS FETCH
 export const fetchCustomers = async () => {
   const response = await axios.get(baseUrl + "/api/customers/all.php");

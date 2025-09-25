@@ -63,25 +63,25 @@ export default function Dashboard() {
 
   const initActiveVehicles = async () => {
     const result = await get_active_vehicles();
-    console.log(result);
+    // console.log(result);
     setActiveVehicles(result.data.active_count);
   };
 
   const initReservedVehicles = async () => {
     const result = await get_reserved_vehicles();
-    console.log(result);
+    // console.log(result);
     setReservedVehicles(result.data.reserved_count);
   };
 
   const initReturningVehicles = async () => {
     const result = await get_returning_vehicles();
-    console.log(result);
+    // console.log(result);
     setReturnVehicles(result.data.due_out_count);
   };
 
   const initTotalVehicles = async () => {
     const result = await get_vehicle_count();
-    console.log(result);
+    // console.log(result);
     setTotVehicles(result.data.total_count);
   };
 
@@ -127,7 +127,7 @@ export default function Dashboard() {
     } catch (error) {
       const errorMessage = "Error: " + error.message;
       setError(errorMessage);
-      console.log(errorMessage);
+      // console.log(errorMessage);
     }
   };
 
@@ -139,7 +139,7 @@ export default function Dashboard() {
       setVehicles(response.data.vehicles);
     } catch (error) {
       const errorMessage = "Error: " + error.message;
-      console.error("Error: ", error);
+      // console.error("Error: ", error);
       setError(errorMessage);
     }
   };
@@ -167,7 +167,7 @@ export default function Dashboard() {
         });
       }
     } catch (error) {
-      console.error("Error: ", error);
+      // console.error("Error: ", error);
       Swal.fire({
         title: "An Error Occured",
         text: "Try again or contact support",
@@ -201,7 +201,7 @@ export default function Dashboard() {
       }
     } catch (error) {
       const errorMessage = "Error: " + error.message;
-      console.error("Error: ", error);
+      // console.error("Error: ", error);
     }
   };
 
@@ -372,7 +372,7 @@ export default function Dashboard() {
           editable={true}
           // droppable={true}
           eventClick={(arg) => {
-            console.log(arg.event);
+            // console.log(arg.event);
             navigate("/booking/" + arg.event.id);
           }}
           eventDrop={(arg) => {

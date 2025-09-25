@@ -110,13 +110,13 @@ export default function AllAgents() {
   const getAgents = async () => {
     try {
       await axios.get(agentURL).then((response) => {
-        console.log(response);
+        // console.log(response);
         if (response.data.data.length === 0) {
           setError("No agents found");
         } else {
           response.data.data.forEach((agent) => addAgentData(agent));
           // setAgents(response.data.data);
-          console.log(agentData);
+          // console.log(agentData);
           setLoading(false);
         }
       });

@@ -23,7 +23,7 @@ export default function Earnings() {
   const getEarnings = async () => {
     try {
       const response = await axios.get(earningsURL);
-      console.log(response);
+      // console.log(response);
       if (response.data.status === "Error") {
         setError(response.data.message);
         setLoading(false);
@@ -32,7 +32,7 @@ export default function Earnings() {
       const bookingData = response.data.bookings;
       setBookings(bookingData);
       setTotComm(response.data.total_commission);
-      console.log(response);
+      // console.log(response);
       setLoading(false);
     } catch (error) {
       console.log("error fetching earnings: ", error.message);
@@ -43,7 +43,7 @@ export default function Earnings() {
     try {
       const response = await axios.get(earningsURL);
       const bookingData = response.data.bookings;
-      console.log(bookingData);
+      // console.log(bookingData);
       if (bookingData.length === 0) {
         setHasMore(false);
       } else {
@@ -51,17 +51,17 @@ export default function Earnings() {
         setPage((prev) => prev + 1); // Increment page
       }
       setTotComm(response.data.total_commission);
-      console.log(response);
+      // console.log(response);
       setLoading(false);
     } catch (error) {
-      console.log("error fetching earnings: ", error.message);
+      // console.log("error fetching earnings: ", error.message);
     }
   };
 
   const getAgent = async () => {
     try {
       const response = await axios.get(agentURL);
-      console.log(response);
+      // console.log(response);
       setAgent(response.data.agent);
       // setLoading(false);
     } catch (error) {

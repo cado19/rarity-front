@@ -12,6 +12,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import Fuel from "./fuel";
 import { Mosaic, BlinkBlur } from "react-loading-indicators";
 import AddMedia from "./add_media";
+import { fetchBooking } from "../../api/fetch";
 
 export default function Booking() {
   const { id } = useParams();
@@ -29,7 +30,6 @@ export default function Booking() {
   const [extendInfo, setExtendInfo] = useState(null);
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const videoDisplayUrl = import.meta.env.VITE_VIDEO_URL;
-  const bookingUrl = baseUrl + `/api/bookings/read_single.php?id=${id}`;
   const extendUrl = baseUrl + `/api/bookings/extend.php`;
   const fuelUrl = baseUrl + `/api/bookings/update_fuel.php`;
   const SignUrl = contractSignUrl + `${id}`; // url
@@ -43,6 +43,9 @@ export default function Booking() {
   const videoUploadUrl = baseUrl + `/api/bookings/upload.php`;
   const navigate = useNavigate();
   const location = useLocation();
+
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData.id;
 
   const checkMessage = () => {
     if (location.state) {
@@ -112,7 +115,7 @@ export default function Booking() {
       setRoleId(user.role_id);
     }
   };
-  console.log("Role ID: ", roleId);
+  // console.log("Role ID: ", roleId);
   // function to handle extend date of booking
   const extendData = async (data) => {
     // const data = {id: id, endDate: endDate};
@@ -152,7 +155,7 @@ export default function Booking() {
       const response = await axios.post(videoUploadUrl, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log("Upload success: ", response.data);
+      // console.log("Upload success: ", response.data);
     } catch (error) {
       console.error("Upload error:", error);
     } finally {
@@ -286,20 +289,20 @@ export default function Booking() {
   // function to get booking data
   const getBooking = async () => {
     try {
-      await axios.get(bookingUrl).then((response) => {
-        console.log(response);
-        if (response.data.booking.driver_fee > 0) {
-          const total =
-            Number(response.data.booking.total) +
-            Number(response.data.booking.driver_fee);
-          setTotal(total);
-        }
-        setBooking(response.data.booking);
-        setLoading(false);
-      });
+      const response = await fetchBooking(id);
+      // console.log(response);
+      if (response.data.booking.driver_fee > 0) {
+        const total =
+          Number(response.data.booking.total) +
+          Number(response.data.booking.driver_fee);
+        setTotal(total);
+      }
+      setBooking(response.data.booking);
     } catch (error) {
       const errorMessage = "Error: " + error.message;
       setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
