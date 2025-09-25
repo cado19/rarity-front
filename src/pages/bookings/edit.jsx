@@ -12,6 +12,8 @@ import Loading from "../../components/PageContent/Loading";
 import BookingNav from "../../components/navs/bookingnav";
 import { Mosaic } from "react-loading-indicators";
 import { format, formatDate } from "date-fns"; // Import format function for date formatting
+import { fetchBooking } from "../../api/fetch";
+import { update_booking_details } from "../../api/put";
 
 export default function EditBooking() {
   const navigate = useNavigate();
@@ -37,9 +39,9 @@ export default function EditBooking() {
   const [inputs, setInputs] = useState({
     booking_id: id,
     account_id: "",
-    customer: "",
-    vehicle: "",
-    driver: "",
+    customer_id: "",
+    vehicle_id: "",
+    driver_id: "",
     start_date: "",
     end_date: "",
     start_time: "",
@@ -49,7 +51,6 @@ export default function EditBooking() {
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
-  const bookingFetchURL = baseUrl + `/api/bookings/read_single.php?id=${id}`;
   const customersURL = baseUrl + "/api/customers/booking_customers.php";
   const vehiclesURL = baseUrl + "/api/fleet/booking_vehicles.php";
   const driversURL = baseUrl + "/api/drivers/booking_drivers.php";
@@ -87,7 +88,13 @@ export default function EditBooking() {
         // console.log(response);
         response.data.clients.forEach((client) => addClientOptions(client));
       });
-    } catch (error) {}
+    } catch (error) {
+      Swal.fire({
+        title: "Error fetching clients",
+        text: "Refresh",
+        timer: 2000,
+      });
+    }
   };
 
   const fetchVehicles = async () => {
@@ -97,46 +104,72 @@ export default function EditBooking() {
         response.data.vehicles.forEach((vehicle) => addVehicleOptions(vehicle));
         setLoading(false);
       });
-    } catch (error) {}
+    } catch (error) {
+      Swal.fire({
+        title: "Error fetching vehicles",
+        text: "Refresh",
+        timer: 2000,
+      });
+    }
   };
 
   const fetchDrivers = async () => {
     try {
       axios.get(driversURL).then((response) => {
-        console.log(response.data.drivers);
+        // console.log(response.data.drivers);
         response.data.drivers.forEach((driver) => addDriverOptions(driver));
       });
-    } catch (error) {}
+    } catch (error) {
+      Swal.fire({
+        title: "Error fetching drivers",
+        text: "Refresh",
+        timer: 2000,
+      });
+    }
   };
 
   const getBooking = async () => {
     try {
-      await axios.get(bookingFetchURL).then((response) => {
-        console.log(response);
-        setBooking(response.data.booking);
-        setStartDate(new Date(response.data.booking.start_date));
-        setEndDate(new Date(response.data.booking.end_date));
-        setStartTime(response.data.booking.start_time);
-        setEndTime(response.data.booking.end_time);
-        setInputs({
-          account_id: response.data.booking.account_id,
-          customer: clientOptions.find(
-            (client) => client.value === response.data.booking.customer_id
-          ),
-          vehicle: carOptions.find(
+      const response = await fetchBooking(id);
+      // console.log(response);
+      setBooking(response.data.booking);
+      setStartDate(new Date(response.data.booking.start_date));
+      setEndDate(new Date(response.data.booking.end_date));
+      setStartTime(response.data.booking.start_time);
+      setEndTime(response.data.booking.end_time);
+      // console.log('Start Date Type: ', typeof(response.data.booking.start_date));
+
+      // set client state for dropdown
+      setSelectedClient(
+        clientOptions.find(
+          (client) => client.value === response.data.booking.customer_id
+        )
+      ),
+        // set vehicle state for dropdown
+        setSelectedVehicle(
+          carOptions.find(
             (vehicle) => vehicle.value === response.data.booking.vehicle_id
-          ),
-          driver: driverOptions.find(
-            (driver) => driver.value === response.data.booking.driver_id
-          ),
+          )
+        );
+      // set driver state for dropdown
+      setSelectedDriver(
+        driverOptions.find(
+          (driver) => driver.value === response.data.booking.driver_id
+        )
+      ),
+        setInputs((prev) => ({
+          ...prev,
+          account_id: userId,
+          customer_id: response.data.booking.customer_id,
+          vehicle_id: response.data.booking.vehicle_id,
+          driver_id: response.data.booking.driver_id,
           start_date: response.data.booking.start_date,
           end_date: response.data.booking.end_date,
           start_time: response.data.booking.start_time,
           end_time: response.data.booking.end_time,
           custom_rate: response.data.booking.custom_rate,
-        });
-        setLoading(false);
-      });
+        }));
+      setLoading(false);
     } catch (error) {
       const errorMessage = error.message;
       setError(errorMessage);
@@ -144,10 +177,10 @@ export default function EditBooking() {
   };
 
   useEffect(() => {
-    getBooking();
     fetchClients();
     fetchVehicles();
     fetchDrivers();
+    getBooking();
     setAccountId();
   }, []);
 
@@ -286,53 +319,37 @@ export default function EditBooking() {
   const booking_end_date = new Date(booking?.end_date).toString();
 
   // submit function
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setDisabled(true);
     // const validationErrors = validate(inputs);
 
     setDisabled(false);
-
-    axios
-      .post(bookingURL, {
-        booking_id: id,
-        customer_id: inputs.customer.value,
-        vehicle_id: inputs.vehicle.value,
-        driver_id: inputs.driver.value,
-        start_date: inputs.start_date,
-        end_date: inputs.end_date,
-        start_time: inputs.start_time,
-        end_time: inputs.end_time,
-        custom_rate: inputs.custom_rate,
-      })
-      .then((response) => {
-        if (response.data.status == "Success") {
-          // const id = response.data.booking_id;
-          navigate(`/booking/${id}`, {
-            state: { message: "Booking updated successfully" },
-          });
-        } else {
-          console.log(response.data);
-          Swal.fire({
-            title: "Error",
-            icon: "error",
-            text: "An error occured while updating booking",
-          });
-          setDisabled(false);
+    const response = await update_booking_details(inputs);
+    if (response.data.status == "Success") {
+      // const id = response.data.booking_id;
+      Swal.fire({
+        title: "Success",
+        text: "Booking updated successfully!",
+        icon: "success",
+        confirmButtonText: "Go to Booking",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate(`/booking/${id}`);
         }
       });
+    } else {
+      // console.log(response.data);
+      Swal.fire({
+        title: "Error",
+        icon: "error",
+        text: "An error occured while updating booking",
+      });
+      setDisabled(false);
+    }
 
-    console.log({
-      booking_id: id,
-      customer_id: inputs.customer.value,
-      vehicle_id: inputs.vehicle.value,
-      driver_id: inputs.driver.value,
-      start_date: inputs.start_date,
-      end_date: inputs.end_date,
-      start_time: inputs.start_time,
-      end_time: inputs.end_time,
-      custom_rate: inputs.custom_rate,
-    });
+    // console.log(inputs);
+
     setDisabled(false);
   };
   if (loading) {
@@ -363,7 +380,7 @@ export default function EditBooking() {
             <Select
               options={bookingClients}
               defaultValue={bookingClients[0]}
-              value={inputs.customer}
+              value={selectedClient}
               onChange={customerChange}
               placeholder="Select Client"
               isSearchable
@@ -379,7 +396,7 @@ export default function EditBooking() {
             <Select
               options={bookingVehicles}
               defaultValue={bookingVehicles[0]}
-              value={inputs.vehicle}
+              value={selectedVehicle}
               onChange={vehicleChange}
               placeholder="Select Vehicle"
               isSearchable
@@ -395,7 +412,7 @@ export default function EditBooking() {
             <Select
               options={bookingDrivers}
               defaultValue={bookingDrivers[0]}
-              value={inputs.driver}
+              value={selectedDriver}
               onChange={driverChange}
               placeholder="Select Driver"
               isSearchable

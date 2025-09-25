@@ -9,3 +9,9 @@ export const update_customer_details = async (customer) => {
     const response = await axios.post(endPoint, customer);
     return response;
 }
+
+export const update_booking_details = async (booking) => {
+    const endPoint = baseUrl + `/api/bookings/update.php`;
+    const response = await axios.post(endPoint,booking);
+    return response;
+}
