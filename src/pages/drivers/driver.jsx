@@ -111,7 +111,7 @@ export default function Driver() {
       <div className=" rounded overflow-hidden shadow-lg flex flex-row bg-white">
         {/* Back Button  */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/drivers')}
           className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 transition"
         >
           <FaArrowLeft className="text-[#9ACD32]" /> {/* YellowGreen tone */}

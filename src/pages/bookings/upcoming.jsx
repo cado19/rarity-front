@@ -10,6 +10,10 @@ import { bookingColumns } from "../../components/utility/tableColumns";
 import { fetchUpcomingBookings } from "../../api/fetch";
 
 export default function UpcomingBookings() {
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData.id;
+  const roleId = userData.role_id;
+
   const [bookings, setBookings] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +32,15 @@ export default function UpcomingBookings() {
   const getBookings = async () => {
     try {
       const response = await fetchUpcomingBookings();
-      const bookingData = response.data.data.map((booking) => ({
+
+      let bookings = response.data.data;
+
+      // filter only if roleId is not 0
+      if (roleId !== "0") {
+        bookings = bookings.filter((booking) => booking.agent_id === userId);
+      }
+
+      const bookingData = bookings.map((booking) => ({
         id: booking.id,
         booking_no: booking.booking_no,
         client: booking.client,
@@ -68,7 +80,7 @@ export default function UpcomingBookings() {
     <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
       <BookingNav />
       {/* <h1 className="text-bold text-center">Vehicles </h1> */}
-     <h1 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-4 mt-2">
+      <h1 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-4 mt-2">
         Upcoming Bookings
       </h1>
       <BasicTable

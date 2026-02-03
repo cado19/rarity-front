@@ -12,17 +12,60 @@ import Loading from "../../components/PageContent/Loading";
 import BookingNav from "../../components/navs/bookingnav";
 import { AiFillCaretRight } from "react-icons/ai";
 import { AiFillCaretDown } from "react-icons/ai";
+import {
+  fetchBookingCustomers,
+  fetchBookingDrivers,
+  get_booking_vehicles,
+} from "../../api/fetch";
+import { save_booking, save_one_day_booking } from "../../api/post";
 
 export default function NewBooking() {
-  const clientOptions = [];
-  const carOptions = [];
-  const driverOptions = [];
+  // Format date helper
+  const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString();
+    return `${year}-${month}-${day}`;
+  };
+
+  // Format time helper
+  const formatTime = (date) => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const suffix = hours >= 12 ? "pm" : "am";
+    const formattedHours = hours % 12 || 12;
+    return `${formattedHours}:${minutes} ${suffix}`;
+  };
+
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData.id;
+
+  const today = new Date();
+
+  // state
+
+  const [clients, setClients] = useState([]);
+  const [drivers, setDrivers] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedDriver, setSelectedDriver] = useState(null);
+  const [startDate, setStartDate] = useState(new Date(today));
+  const [endDate, setEndDate] = useState(new Date(today));
+  const [startTime, setStartTime] = useState(new Date(today));
+  const [endTime, setEndTime] = useState(new Date(today));
+  const [errors, setErrors] = useState({});
+  const [disabled, setDisabled] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [show, setShow] = useState(false);
+  const [oneday, setOneDay] = useState(false);
+
   const [inputs, setInputs] = useState({
-    account_id: "",
+    account_id: userId,
     customer_id: "",
     vehicle_id: "",
     driver_id: "",
-    start_date: "",
+    start_date: formatDate(today),
     end_date: "",
     start_time: "",
     end_time: "",
@@ -30,83 +73,45 @@ export default function NewBooking() {
     in_capital: "0",
     out_capital: "0",
   });
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [selectedDriver, setSelectedDriver] = useState(null);
-  const [bookingClients, setBookingClients] = useState(clientOptions);
-  const [bookingVehicles, setBookingVehicles] = useState(carOptions);
-  const [bookingDrivers, setBookingDrivers] = useState(driverOptions);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
-  const [errors, setErrors] = useState({});
-  const [disabled, setDisabled] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [show, setShow] = useState(false);
-  const [oneday, setOneDay] = useState(false);
 
   const navigate = useNavigate();
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
-  const customersURL = baseUrl + "/api/customers/booking_customers.php";
-  const vehiclesURL = baseUrl + "/api/fleet/booking_vehicles.php";
-  const driversURL = baseUrl + "/api/drivers/booking_drivers.php";
-  const bookingURL = baseUrl + "/api/bookings/create.php";
   const oneDayBookingUrl = baseUrl + "/api/bookings/create_one_day.php";
 
-  const userData = JSON.parse(localStorage.getItem("user"));
-  const userId = userData.id;
-
-  // data fetch functions
-  const addClientOptions = (client) => {
-    clientOptions.push({
-      value: client.id,
-      label: `${client.first_name} ${client.last_name}`,
-    });
-  };
-
-  const addDriverOptions = (driver) => {
-    driverOptions.push({
-      value: driver.id,
-      label: `${driver.first_name} ${driver.last_name}`,
-    });
-  };
-
-  const addVehicleOptions = (vehicle) => {
-    carOptions.push({
-      value: vehicle.id,
-      label: `${vehicle.make} ${vehicle.model} ${vehicle.number_plate}`,
-    });
-  };
-
-  const fetchClients = async () => {
+  // fetch dropdown data
+  const fetchDropdowns = async () => {
     try {
-      axios.get(customersURL).then((response) => {
-        // console.log(response);
-        response.data.clients.forEach((client) => addClientOptions(client));
-      });
-    } catch (error) {}
-  };
-
-  const fetchVehicles = async () => {
-    try {
-      axios.get(vehiclesURL).then((response) => {
-        // console.log(response);
-        response.data.vehicles.forEach((vehicle) => addVehicleOptions(vehicle));
-        setLoading(false);
-      });
-    } catch (error) {}
-  };
-
-  const fetchDrivers = async () => {
-    try {
-      axios.get(driversURL).then((response) => {
-        // console.log(response.data.drivers);
-        response.data.drivers.forEach((driver) => addDriverOptions(driver));
-      });
-    } catch (error) {}
+      const [cRes, dRes, vRes] = await Promise.all([
+        fetchBookingCustomers(),
+        fetchBookingDrivers(),
+        get_booking_vehicles(),
+      ]);
+      // set state
+      setClients(
+        cRes.clients.map((c) => ({
+          value: c.id,
+          label: `${c.first_name} ${c.last_name}`,
+        })),
+      );
+      setDrivers(
+        dRes.drivers.map((d) => ({
+          value: d.id,
+          label: `${d.first_name} ${d.last_name}`,
+        })),
+      );
+      setVehicles(
+        vRes.vehicles.map((v) => ({
+          value: v.id,
+          label: `${v.make} ${v.model} ${v.number_plate}`,
+        })),
+      );
+    } catch (error) {
+      console.error("Error fetching dropdown data: ", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -114,36 +119,21 @@ export default function NewBooking() {
     if (!loggedIn) {
       navigate("/login");
     }
-    fetchClients();
-    fetchVehicles();
-    fetchDrivers();
+    fetchDropdowns();
     // setAccountId();
-    initFormValues();
+    // initFormValues();
   }, []);
 
   // Change functions
-  // set account_id
 
-  //initialize account id and start date
-  const initFormValues = () => {
-    const today = new Date();
-    setStartDate(today);
-    const day = today.getDate().toString().padStart(2, "0");
-    const month = (today.getMonth() + 1).toString().padStart(2, "0");
-    const year = today.getFullYear().toString();
-    const formattedStartDate = `${year}-${month}-${day}`;
-    setInputs({
-      ...inputs,
-      account_id: userId,
-      start_date: formattedStartDate,
-    });
+  const handleDateTimeChange = (setter, field, value, type = "date") => {
+    setter(value);
+    setInputs((prev) => ({
+      ...prev,
+      [field]: type === "date" ? formatDate(value) : formatTime(value),
+    }));
   };
-  const setAccountId = () => {
-    setInputs({
-      ...inputs,
-      account_id: userId,
-    });
-  };
+
   // handle change function
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -154,109 +144,12 @@ export default function NewBooking() {
     // console.log(inputs);
   };
 
-  const startDateChange = (value) => {
-    setStartDate(value);
-    const day = value.getDate().toString().padStart(2, "0");
-    const month = (value.getMonth() + 1).toString().padStart(2, "0");
-    const year = value.getFullYear().toString();
-    const formattedStartDate = `${year}-${month}-${day}`;
-    setInputs({
-      ...inputs,
-      start_date: formattedStartDate,
-    });
-
-    // console.log(inputs);
-  };
-
-  const initStartDate = () => {
-    const today = new Date();
-    // setStartDate(today);
-    const day = today.getDate().toString().padStart(2, "0");
-    const month = (today.getMonth() + 1).toString().padStart(2, "0");
-    const year = today.getFullYear().toString();
-    const formattedStartDate = `${year}-${month}-${day}`;
-    setInputs({
-      ...inputs,
-      start_date: formattedStartDate,
-    });
-  };
-
-  // change booking end date
-  const endDateChange = (value) => {
-    setEndDate(value);
-    const day = value.getDate().toString().padStart(2, "0");
-    const month = (value.getMonth() + 1).toString().padStart(2, "0");
-    const year = value.getFullYear().toString();
-    const formattedEndDate = `${year}-${month}-${day}`;
-    setInputs({
-      ...inputs,
-      end_date: formattedEndDate,
-    });
-
-    // console.log(inputs);
-  };
-
-  // change booking start time
-  const startTimeChange = (value) => {
-    setStartTime(value);
-    const hours = value.getHours().toString().padStart(2, "0");
-    const minutes = value.getMinutes().toString().padStart(2, "0");
-    const suffix = hours >= 12 ? "pm" : "am";
-    const formattedHours = hours % 12 || 12;
-    const formattedStartTime = `${formattedHours}:${minutes} ${suffix}`;
-    setInputs({
-      ...inputs,
-      start_time: formattedStartTime,
-    });
-
-    // console.log(inputs);
-  };
-
-  // change booking end time
-  const endTimeChange = (value) => {
-    setEndTime(value);
-    const hours = value.getHours().toString().padStart(2, "0");
-    const minutes = value.getMinutes().toString().padStart(2, "0");
-    const suffix = hours >= 12 ? "pm" : "am";
-    const formattedHours = hours % 12 || 12;
-    const formattedEndTime = `${formattedHours}:${minutes} ${suffix}`;
-    setInputs({
-      ...inputs,
-      end_time: formattedEndTime,
-    });
-
-    // console.log(inputs);
-  };
-
-  // change customer
-  const customerChange = (value) => {
-    setSelectedClient(value);
-    // const idTypeValue = selectedOption.value;
-    setInputs({
-      ...inputs,
-      customer_id: value.value,
-    });
-    // console.log(value.value);
-  };
-
-  const vehicleChange = (value) => {
-    setSelectedVehicle(value);
-    // const idTypeValue = selectedOption.value;
-    setInputs({
-      ...inputs,
-      vehicle_id: value.value,
-    });
-    // console.log(value.value);
-  };
-
-  const driverChange = (value) => {
-    setSelectedDriver(value);
-    // const idTypeValue = selectedOption.value;
-    setInputs({
-      ...inputs,
-      driver_id: value.value,
-    });
-    // console.log(value.value);
+  // handle the select change
+  const handleSelectChange = (name, value) => {
+    setInputs((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   // validation function
@@ -266,7 +159,6 @@ export default function NewBooking() {
     if (!data.vehicle_id) errors.vehicle_id = "Vehicle is required";
     if (!data.customer_id) errors.customer_id = "Client is required";
     if (!data.driver_id) errors.driver_id = "Driver is required";
-    if (!data.start_date) initStartDate();
     if (!data.end_date) errors.end_date = "End Date is required";
     if (!data.start_time) errors.start_time = "Start Time is required";
     if (!data.end_time) errors.end_time = "End Time is required";
@@ -283,7 +175,6 @@ export default function NewBooking() {
     if (!data.vehicle_id) errors.vehicle_id = "Vehicle is required";
     if (!data.customer_id) errors.customer_id = "Client is required";
     if (!data.driver_id) errors.driver_id = "Driver is required";
-    if (!data.start_date) initStartDate();
     if (!data.start_time) errors.start_time = "Start Time is required";
     if (!data.end_time) errors.end_time = "End Time is required";
 
@@ -293,7 +184,7 @@ export default function NewBooking() {
   };
 
   // submit normal booking
-  const saveNormalBooking = () => {
+  const saveNormalBooking = async () => {
     setDisabled(true);
     const errors = validate(inputs);
     if (Object.keys(errors).length > 0) {
@@ -305,28 +196,28 @@ export default function NewBooking() {
       console.log("Validation Errors: ", errors);
       setDisabled(false);
     } else {
-      axios.post(bookingURL, inputs).then((response) => {
-        console.log(response);
-        if (response.data.status == "Success") {
-          const id = response.data.booking_id;
-          navigate(`/booking/${id}`, {
-            state: { message: "Booking created successfully" },
-          });
-        } else {
-          Swal.fire({
-            title: "Error",
-            icon: "error",
-            text: response.data.message,
-            confirmButtonText: "OK",
-          });
-          setDisabled(false);
-        }
-      });
+      console.log("Inputs: ", inputs);
+      const res = await save_booking(inputs);
+      // console.log(response);
+      if (res.data.status == "Success") {
+        const id = res.data.booking_id;
+        navigate(`/booking/${id}`, {
+          state: { message: "Booking created successfully" },
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          icon: "error",
+          text: response.data.message,
+          confirmButtonText: "OK",
+        });
+        setDisabled(false);
+      }
     }
   };
 
   //save one day booking
-  const saveOneDayBooking = () => {
+  const saveOneDayBooking = async () => {
     setDisabled(true);
     const errors = validateOneDay(inputs);
     if (Object.keys(errors).length > 0) {
@@ -338,23 +229,22 @@ export default function NewBooking() {
       console.log("Validation Errors: ", errors);
       setDisabled(false);
     } else {
-      axios.post(oneDayBookingUrl, inputs).then((response) => {
-        console.log(response);
-        if (response.data.status == "Success") {
-          const id = response.data.booking_id;
-          navigate(`/booking/${id}`, {
-            state: { message: "Booking created successfully" },
-          });
-        } else {
-          Swal.fire({
-            title: "Error",
-            icon: "error",
-            text: response.data.message,
-            confirmButtonText: "OK",
-          });
-          setDisabled(false);
-        }
-      });
+      const res = await save_one_day_booking(inputs);
+      console.log(res);
+      if (res.data.status == "Success") {
+        const id = res.data.booking_id;
+        navigate(`/booking/${id}`, {
+          state: { message: "Booking created successfully" },
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          icon: "error",
+          text: response.data.message,
+          confirmButtonText: "OK",
+        });
+        setDisabled(false);
+      }
     }
   };
 
@@ -372,11 +262,7 @@ export default function NewBooking() {
   // console.log(typeof startTime);
 
   if (loading) {
-    return (
-      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
-        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
@@ -407,10 +293,13 @@ export default function NewBooking() {
           {/* Client select  */}
           <div className=" mb-5 group">
             <Select
-              options={bookingClients}
-              defaultValue={bookingClients[0]}
+              options={clients}
+              defaultValue={clients[0]}
               value={selectedClient}
-              onChange={customerChange}
+              onChange={(option) => {
+                setSelectedClient(option);
+                handleSelectChange("customer_id", option.value);
+              }}
               placeholder="Select Client"
               isSearchable
             />
@@ -422,10 +311,13 @@ export default function NewBooking() {
           {/* Vehicle select  */}
           <div className=" mb-5 group">
             <Select
-              options={bookingVehicles}
-              defaultValue={bookingVehicles[0]}
+              options={vehicles}
+              defaultValue={vehicles[0]}
               value={selectedVehicle}
-              onChange={vehicleChange}
+              onChange={(option) => {
+                setSelectedVehicle(option);
+                handleSelectChange("vehicle_id", option.value);
+              }}
               placeholder="Select Vehicle"
               isSearchable
             />
@@ -437,10 +329,13 @@ export default function NewBooking() {
           {/* Driver select  */}
           <div className=" mb-5 group">
             <Select
-              options={bookingDrivers}
-              defaultValue={bookingDrivers[0]}
+              options={drivers}
+              defaultValue={drivers[0]}
               value={selectedDriver}
-              onChange={driverChange}
+              onChange={(option) => {
+                setSelectedDriver(option);
+                handleSelectChange("driver_id", option.value);
+              }}
               placeholder="Select Driver"
               isSearchable
             />
@@ -518,7 +413,7 @@ export default function NewBooking() {
                     </p>
                   )}
                 </div>
-              </div>
+              </div>,
             )}
 
           {/* Booking dates  */}
@@ -526,10 +421,15 @@ export default function NewBooking() {
             <div className="relative z-0 w-full mb-5 group">
               <label>Start Date</label>
               <DatePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                className="block py-2.5 px-0 w-full text-sm text-gray-900
+              bg-transparent border-0 border-b-2 border-gray-300 appearance-none
+              dark:text-white dark:border-gray-600 dark:focus:border-blue-500
+              focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 placeholder="Start Date"
                 value={startDate}
-                onChange={(value) => startDateChange(value)}
+                onChange={(val) =>
+                  handleDateTimeChange(setStartDate, "start_date", val, "date")
+                }
               />
               {errors.start_date && (
                 <p className="text-red-500 text-xs mt-1">{errors.start_date}</p>
@@ -542,7 +442,9 @@ export default function NewBooking() {
                   className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                   placeholder="End Date"
                   value={endDate}
-                  onChange={(value) => endDateChange(value)}
+                  onChange={(val) =>
+                    handleDateTimeChange(setEndDate, "end_date", val, "date")
+                  }
                 />
                 {errors.end_date && (
                   <p className="text-red-500 text-xs mt-1">{errors.end_date}</p>
@@ -559,7 +461,9 @@ export default function NewBooking() {
                 className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 placeholder="Start Time"
                 value={startTime}
-                onChange={(value) => startTimeChange(value)}
+                onChange={(val) =>
+                  handleDateTimeChange(setStartTime, "start_time", val, "time")
+                }
                 name="start_time"
               />
               {errors.start_time && (
@@ -573,7 +477,9 @@ export default function NewBooking() {
                 className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 placeholder="End Time"
                 value={endTime}
-                onChange={(value) => endTimeChange(value)}
+                onChange={(val) =>
+                  handleDateTimeChange(setEndTime, "end_time", val, "time")
+                }
                 name="end_time"
               />
               {errors.end_time && (

@@ -11,46 +11,10 @@ import {
 import { get_all_issues } from "../../api/fetch";
 import IssueNav from "../../components/navs/issueNav";
 import BasicTable from "../../components/utility/basicTable";
+import { issueColumns } from "../../components/utility/tableColumns";
 
 export default function AllIssues() {
-  const columns = [
-    {
-      accessorKey: "vehicle",
-      header: "Vehicle",
-      cell: (info) => info.getValue(),
-    },
-    {
-      accessorKey: "title",
-      header: "Title",
-      cell: (info) => info.getValue(),
-    },
-    {
-      accessorKey: "cost",
-      header: "Cost",
-      cell: (info) => info.getValue(),
-    },
-    {
-      accessorKey: "date",
-      header: "Date",
-      cell: (info) => {
-        const timestamp = info.getValue();
-        const date = new Date(timestamp);
-        return date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
-      },
-    },
-    {
-      id: "details",
-      header: "Details",
-      cell: (info) => {
-        const issue = info.row.original;
-        return <Link to={`/issues/${issue.id}`}>Details</Link>;
-      },
-    },
-  ];
+
 
   const [issues, setIssues] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -105,7 +69,7 @@ export default function AllIssues() {
       </h1>
 
       <BasicTable
-        columns={columns}
+        columns={issueColumns}
         data={issues}
         columnFilters={columnFilters}
       />

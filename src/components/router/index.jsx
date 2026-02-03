@@ -52,6 +52,7 @@ import NewIssue from '../../pages/issues/new'
 import Issue from '../../pages/issues/issue'
 import EditCustomer from '../../pages/customers/edit'
 import DeleteCustomer from '../customers/delete'
+import Reservations from '../../pages/bookings/reservations'
 
 
 export default function AppRouter() {
@@ -100,6 +101,8 @@ export default function AppRouter() {
             <Route path='/booking/:id/complete' element={<CompleteBooking />} />
             <Route path='/booking/:id/activate' element={<ActivateBooking />} />
             <Route path='/bookings/voucher/:id' element={<BookingVoucher />} />
+            <Route path='/bookings/reservations' element={<Reservations />} />
+            {/* <Route path='/bookings/reservations' element={<Reservations />} /> */}
 
             {/* Agent Routes  */}
             <Route path='/agents' element={<AllAgents />} />

@@ -312,6 +312,21 @@ export default function Booking() {
     checkMessage();
   }, []);
 
+  // handle back button redirection based on booking state 
+  const handleBack = () => {
+    if (booking.status == "complete"){
+      navigate('/bookings/completed')
+    } else if (booking.status == "active") {
+      navigate('/bookings/active')
+    } else if (booking.status == "upcoming") {
+      navigate('/bookings/upcoming')
+    } else if (booking.status == "cancelled") {
+      navigate('/bookings/cancelled')
+    } else {
+      navigate('/bookings/all')
+    }
+  }
+
   if (uploading) {
     return (
       <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
@@ -388,7 +403,7 @@ export default function Booking() {
         <div className="w-[50rem]  bg-white p-4 rounded border border-gray flex flex-col ">
           {/* Back Button  */}
           <button
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
             className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 transition"
           >
             <FaArrowLeft className="text-[#9ACD32]" /> {/* YellowGreen tone */}

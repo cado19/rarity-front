@@ -1,44 +1,56 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"; // Import the DatePicker component
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
-import axios from "axios";
-import { baseURL } from "../../constants/url";
-import Swal from "sweetalert2";
-import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
+
+import {
+  fetchBooking,
+  fetchBookingDrivers,
+  get_booking_vehicles,
+} from "../../api/fetch";
+import { save_booking } from "../../api/post";
 import Loading from "../../components/PageContent/Loading";
 import BookingNav from "../../components/navs/bookingnav";
-import { Mosaic } from "react-loading-indicators";
-import { format, formatDate } from "date-fns"; // Import format function for date formatting
-import { fetchBooking } from "../../api/fetch";
 import { update_booking_details } from "../../api/put";
 
 export default function EditBooking() {
+  const { id } = useParams(); // booking id from route
   const navigate = useNavigate();
-  const { id } = useParams();
-  const clientOptions = [];
-  const carOptions = [];
-  const driverOptions = [];
+
+  // Helpers
+  const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString();
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatTime = (date) => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const suffix = hours >= 12 ? "pm" : "am";
+    const formattedHours = hours % 12 || 12;
+    return `${formattedHours}:${minutes} ${suffix}`;
+  };
+
+  // get userId from local storage to set as accountId
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData.id;
+
+  // State
+  const [drivers, setDrivers] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
-  const [selectedClient, setSelectedClient] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
-  const [bookingClients, setBookingClients] = useState(clientOptions);
-  const [bookingVehicles, setBookingVehicles] = useState(carOptions);
-  const [bookingDrivers, setBookingDrivers] = useState(driverOptions);
-  const [booking, setBooking] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
-  const [loading, setLoading] = useState(true);
-  const [disabled, setDisabled] = useState(false);
-  const [error, setError] = useState(null);
-  const [errors, setErrors] = useState({});
   const [inputs, setInputs] = useState({
-    booking_id: id,
-    account_id: "",
+    account_id: userId,
     customer_id: "",
     vehicle_id: "",
     driver_id: "",
@@ -48,392 +60,199 @@ export default function EditBooking() {
     end_time: "",
     custom_rate: "",
   });
+  const [customerName, setCustomerName] = useState(""); // display only
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [disabled, setDisabled] = useState(false);
 
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-
-  const customersURL = baseUrl + "/api/customers/booking_customers.php";
-  const vehiclesURL = baseUrl + "/api/fleet/booking_vehicles.php";
-  const driversURL = baseUrl + "/api/drivers/booking_drivers.php";
-  const bookingURL = baseUrl + "/api/bookings/update.php";
-
-  // get user from local storage and get user id
-  const userData = JSON.parse(localStorage.getItem("user"));
-  const userId = userData.id;
-
-  // data fetch functions
-  const addClientOptions = (client) => {
-    clientOptions.push({
-      value: client.id,
-      label: `${client.first_name} ${client.last_name}`,
-    });
-  };
-
-  const addDriverOptions = (driver) => {
-    driverOptions.push({
-      value: driver.id,
-      label: `${driver.first_name} ${driver.last_name}`,
-    });
-  };
-
-  const addVehicleOptions = (vehicle) => {
-    carOptions.push({
-      value: vehicle.id,
-      label: `${vehicle.make} ${vehicle.model} ${vehicle.number_plate}`,
-    });
-  };
-
-  const fetchClients = async () => {
-    try {
-      axios.get(customersURL).then((response) => {
-        // console.log(response);
-        response.data.clients.forEach((client) => addClientOptions(client));
-      });
-    } catch (error) {
-      Swal.fire({
-        title: "Error fetching clients",
-        text: "Refresh",
-        timer: 2000,
-      });
+  // Handlers
+  const handleChange = (eOrName, maybeValue) => {
+    if (typeof eOrName === "string") {
+      setInputs((prev) => ({ ...prev, [eOrName]: maybeValue }));
+    } else {
+      const { name, value } = eOrName.target;
+      setInputs((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  const fetchVehicles = async () => {
-    try {
-      axios.get(vehiclesURL).then((response) => {
-        // console.log(response);
-        response.data.vehicles.forEach((vehicle) => addVehicleOptions(vehicle));
-        setLoading(false);
-      });
-    } catch (error) {
-      Swal.fire({
-        title: "Error fetching vehicles",
-        text: "Refresh",
-        timer: 2000,
-      });
-    }
+  const handleDateTimeChange = (setter, field, value, type = "date") => {
+    setter(value);
+    setInputs((prev) => ({
+      ...prev,
+      [field]: type === "date" ? formatDate(value) : formatTime(value),
+    }));
   };
 
-  const fetchDrivers = async () => {
-    try {
-      axios.get(driversURL).then((response) => {
-        // console.log(response.data.drivers);
-        response.data.drivers.forEach((driver) => addDriverOptions(driver));
-      });
-    } catch (error) {
-      Swal.fire({
-        title: "Error fetching drivers",
-        text: "Refresh",
-        timer: 2000,
-      });
-    }
-  };
-
-  const getBooking = async () => {
-    try {
-      const response = await fetchBooking(id);
-      // console.log(response);
-      setBooking(response.data.booking);
-      setStartDate(new Date(response.data.booking.start_date));
-      setEndDate(new Date(response.data.booking.end_date));
-      setStartTime(response.data.booking.start_time);
-      setEndTime(response.data.booking.end_time);
-      // console.log('Start Date Type: ', typeof(response.data.booking.start_date));
-
-      // set client state for dropdown
-      setSelectedClient(
-        clientOptions.find(
-          (client) => client.value === response.data.booking.customer_id
-        )
-      ),
-        // set vehicle state for dropdown
-        setSelectedVehicle(
-          carOptions.find(
-            (vehicle) => vehicle.value === response.data.booking.vehicle_id
-          )
-        );
-      // set driver state for dropdown
-      setSelectedDriver(
-        driverOptions.find(
-          (driver) => driver.value === response.data.booking.driver_id
-        )
-      ),
-        setInputs((prev) => ({
-          ...prev,
-          account_id: userId,
-          customer_id: response.data.booking.customer_id,
-          vehicle_id: response.data.booking.vehicle_id,
-          driver_id: response.data.booking.driver_id,
-          start_date: response.data.booking.start_date,
-          end_date: response.data.booking.end_date,
-          start_time: response.data.booking.start_time,
-          end_time: response.data.booking.end_time,
-          custom_rate: response.data.booking.custom_rate,
-        }));
-      setLoading(false);
-    } catch (error) {
-      const errorMessage = error.message;
-      setError(errorMessage);
-    }
-  };
-
+  // Fetch booking + dropdowns
   useEffect(() => {
-    fetchClients();
-    fetchVehicles();
-    fetchDrivers();
-    getBooking();
-    setAccountId();
-  }, []);
+    const loadData = async () => {
+      try {
+        const [bookingRes, dRes, vRes] = await Promise.all([
+          fetchBooking(id),
+          fetchBookingDrivers(),
+          get_booking_vehicles(),
+        ]);
 
-  const setAccountId = () => {
-    setInputs({
-      ...inputs,
-      account_id: userId,
-    });
-  };
+        const booking = bookingRes.data.booking;
 
-  // handle change function
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setInputs({
-      ...inputs,
-      [name]: value,
-    });
-    // console.log(inputs);
-  };
+        // Populate inputs
+        setInputs({
+          ...inputs,
+          customer_id: booking.customer_id,
+          vehicle_id: booking.vehicle_id,
+          driver_id: booking.driver_id,
+          start_date: booking.start_date,
+          end_date: booking.end_date,
+          start_time: booking.start_time,
+          end_time: booking.end_time,
+          custom_rate: booking.custom_rate,
+        });
 
-  const startDateChange = (value) => {
-    setStartDate(value);
-    const day = value.getDate().toString().padStart(2, "0");
-    const month = (value.getMonth() + 1).toString().padStart(2, "0");
-    const year = value.getFullYear().toString();
-    const formattedStartDate = `${year}-${month}-${day}`;
-    setInputs({
-      ...inputs,
-      start_date: formattedStartDate,
-    });
+        // Customer name (read-only)
+        setCustomerName(`${booking.c_fname} ${booking.c_lname}`);
 
-    // console.log(inputs);
-  };
+        // Dropdowns
+        setDrivers(
+          dRes.drivers.map((d) => ({
+            value: booking.driver_id,
+            label: `${booking.d_fname} ${booking.d_lname}`,
+          })),
+        );
+        setVehicles(
+          vRes.vehicles.map((v) => ({
+            value: booking.vehicle_id,
+            label: `${booking.make} ${booking.model} ${booking.number_plate}`,
+          })),
+        );
 
-  const endDateChange = (value) => {
-    setEndDate(value);
-    const day = value.getDate().toString().padStart(2, "0");
-    const month = (value.getMonth() + 1).toString().padStart(2, "0");
-    const year = value.getFullYear().toString();
-    const formattedEndDate = `${year}-${month}-${day}`;
-    setInputs({
-      ...inputs,
-      end_date: formattedEndDate,
-    });
+        // Preselect driver/vehicle
+        setSelectedDriver({
+          value: booking.driver_id,
+          label: `${booking.d_fname} ${booking.d_lname}`,
+        });
+        setSelectedVehicle({
+          value: booking.vehicle_id,
+          label: `${booking.make} ${booking.model} ${booking.number_plate}`,
+        });
 
-    // console.log(inputs);
-  };
+        // Dates/times
+        setStartDate(new Date(booking.start_date));
+        setEndDate(new Date(booking.end_date));
+        // You may need to parse times into Date objects if backend returns strings
+      } catch (err) {
+        console.error("Error loading booking:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const startTimeChange = (value) => {
-    setStartTime(value);
-    const hours = value.getHours().toString().padStart(2, "0");
-    const minutes = value.getMinutes().toString().padStart(2, "0");
-    const suffix = hours >= 12 ? "pm" : "am";
-    const formattedHours = hours % 12 || 12;
-    const formattedStartTime = `${formattedHours}:${minutes} ${suffix}`;
-    setInputs({
-      ...inputs,
-      start_time: formattedStartTime,
-    });
+    loadData();
+  }, [id]);
 
-    // console.log(inputs);
-  };
-
-  const endTimeChange = (value) => {
-    setEndTime(value);
-    const hours = value.getHours().toString().padStart(2, "0");
-    const minutes = value.getMinutes().toString().padStart(2, "0");
-    const suffix = hours >= 12 ? "pm" : "am";
-    const formattedHours = hours % 12 || 12;
-    const formattedEndTime = `${formattedHours}:${minutes} ${suffix}`;
-    setInputs({
-      ...inputs,
-      end_time: formattedEndTime,
-    });
-
-    // console.log(inputs);
-  };
-
-  const customerChange = (value) => {
-    setSelectedClient(value);
-    // const idTypeValue = selectedOption.value;
-    setInputs({
-      ...inputs,
-      customer_id: value.value,
-    });
-    // console.log(value.value);
-  };
-
-  const vehicleChange = (value) => {
-    setSelectedVehicle(value);
-    // const idTypeValue = selectedOption.value;
-    setInputs({
-      ...inputs,
-      vehicle_id: value.value,
-    });
-    // console.log(value.value);
-  };
-
-  const driverChange = (value) => {
-    setSelectedDriver(value);
-    // const idTypeValue = selectedOption.value;
-    setInputs({
-      ...inputs,
-      driver_id: value.value,
-    });
-    // console.log(value.value);
-  };
-
-  // validation function
+  // Validation
   const validate = (data) => {
     const errors = {};
-
     if (!data.vehicle_id) errors.vehicle_id = "Vehicle is required";
-    if (!data.customer_id) errors.customer_id = "Client is required";
     if (!data.driver_id) errors.driver_id = "Driver is required";
-    if (!data.start_date) errors.start_date = "Start Date is required";
     if (!data.end_date) errors.end_date = "End Date is required";
     if (!data.start_time) errors.start_time = "Start Time is required";
     if (!data.end_time) errors.end_time = "End Time is required";
-
     setErrors(errors);
-
     return errors;
   };
 
-  // validate date
-  // const validateDate = (start, end) => {
-  //   const errors = {};
-  //   if (start > end) {
-  //     errors.start_date = "Start date cannot be greater than end date";
-  //   }
-  //   return errors
-  // }
-
-  const booking_start_date = new Date(booking?.start_date).toString();
-  const booking_end_date = new Date(booking?.end_date).toString();
-
-  // submit function
+  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setDisabled(true);
-    // const validationErrors = validate(inputs);
-
-    setDisabled(false);
-    const response = await update_booking_details(inputs);
-    if (response.data.status == "Success") {
-      // const id = response.data.booking_id;
+    const errors = validate(inputs);
+    if (Object.keys(errors).length > 0) {
       Swal.fire({
-        title: "Success",
-        text: "Booking updated successfully!",
-        icon: "success",
-        confirmButtonText: "Go to Booking",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate(`/booking/${id}`);
-        }
-      });
-    } else {
-      // console.log(response.data);
-      Swal.fire({
-        title: "Error",
+        title: "Validation Error",
         icon: "error",
-        text: "An error occured while updating booking",
+        text: "Check form fields",
       });
       setDisabled(false);
+      return;
     }
-
-    // console.log(inputs);
-
+    // console.log("Inputs: ", inputs);
+    const res = await update_booking_details(inputs);
+    if (res.data.status === "Success") {
+      navigate(`/booking/${id}`, { state: { message: "Booking updated successfully" } });
+    } else {
+      Swal.fire({ title: "Error", icon: "error", text: res.data.message });
+      setDisabled(false);
+    }
     setDisabled(false);
   };
-  if (loading) {
-    return (
-      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
-        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
-      </div>
-    );
-  }
+
+  if (loading) return <Loading />;
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
+      <div className="bg-white px-4 pb-4 pt-4 rounded shadow-md mt-2 mx-3">
         <BookingNav />
-        {/* Back Button  */}
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 transition"
-        >
-          <FaArrowLeft className="text-[#9ACD32]" /> {/* YellowGreen tone */}
-          <span className="text-[#9ACD32] font-medium">Go Back</span>
-        </button>
-        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-4xl my-5 text-center ">
-          Editing Booking {booking?.booking_no}
-        </h1>
-        <form onSubmit={handleSubmit} className="w-4/5 mx-auto">
-          {/* Client select  */}
-          <div className=" mb-5 group">
-            <Select
-              options={bookingClients}
-              defaultValue={bookingClients[0]}
-              value={selectedClient}
-              onChange={customerChange}
-              placeholder="Select Client"
-              isSearchable
-            />
+        <h1 className="text-2xl sm:text-4xl my-5 text-center">Edit Booking</h1>
 
-            {errors.customer_id && (
-              <p className="text-red-500 text-xs mt-1">{errors.customer_id}</p>
-            )}
+        <form onSubmit={handleSubmit} className="w-4/5 mx-auto">
+          {/* Customer (read-only) */}
+          <div className="mb-5 group">
+            <input
+              type="text"
+              value={customerName}
+              readOnly
+              className="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-300 appearance-none"
+            />
           </div>
 
-          {/* Vehicle select  */}
-          <div className=" mb-5 group">
+          {/* Vehicle select */}
+          <div className="mb-5 group">
             <Select
-              options={bookingVehicles}
-              defaultValue={bookingVehicles[0]}
+              options={vehicles}
               value={selectedVehicle}
-              onChange={vehicleChange}
+              onChange={(option) => {
+                setSelectedVehicle(option);
+                handleChange("vehicle_id", option.value);
+              }}
               placeholder="Select Vehicle"
               isSearchable
             />
-
             {errors.vehicle_id && (
               <p className="text-red-500 text-xs mt-1">{errors.vehicle_id}</p>
             )}
           </div>
 
-          {/* Driver select  */}
-          <div className=" mb-5 group">
+          {/* Driver select */}
+          <div className="mb-5 group">
             <Select
-              options={bookingDrivers}
-              defaultValue={bookingDrivers[0]}
+              options={drivers}
               value={selectedDriver}
-              onChange={driverChange}
+              onChange={(option) => {
+                setSelectedDriver(option);
+                handleChange("driver_id", option.value);
+              }}
               placeholder="Select Driver"
               isSearchable
             />
-
             {errors.driver_id && (
               <p className="text-red-500 text-xs mt-1">{errors.driver_id}</p>
             )}
           </div>
 
-          {/* Booking dates  */}
+          {/* Booking dates */}
           <div className="grid md:grid-cols-2 md:gap-6">
             <div className="relative z-0 w-full mb-5 group">
               <label>Start Date</label>
               <DatePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder="Start Date"
+                className="block py-2.5 px-0 w-full text-sm text-gray-900
+              bg-transparent border-0 border-b-2 border-gray-300 appearance-none
+              dark:text-white dark:border-gray-600 dark:focus:border-blue-500
+              focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 value={startDate}
-                onChange={(value) => startDateChange(value)}
+                onChange={(val) =>
+                  handleDateTimeChange(setStartDate, "start_date", val, "date")
+                }
               />
-              <p className="text-blue-500">Current: {booking_start_date} </p>
               {errors.start_date && (
                 <p className="text-red-500 text-xs mt-1">{errors.start_date}</p>
               )}
@@ -442,30 +261,35 @@ export default function EditBooking() {
             <div className="relative z-0 w-full mb-5 group">
               <label>End Date</label>
               <DatePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder="End Date"
+                className="block py-2.5 px-0 w-full text-sm text-gray-900
+              bg-transparent border-0 border-b-2 border-gray-300 appearance-none
+              dark:text-white dark:border-gray-600 dark:focus:border-blue-500
+              focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 value={endDate}
-                onChange={(value) => endDateChange(value)}
+                onChange={(val) =>
+                  handleDateTimeChange(setEndDate, "end_date", val, "date")
+                }
               />
-              <p className="text-blue-500">Current: {booking_end_date}</p>
               {errors.end_date && (
                 <p className="text-red-500 text-xs mt-1">{errors.end_date}</p>
               )}
             </div>
           </div>
 
-          {/* Booking times  */}
+          {/* Booking times */}
           <div className="grid md:grid-cols-2 md:gap-6">
             <div className="relative z-0 w-full mb-5 group">
               <label>Start Time</label>
               <TimePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder="Start Time"
+                className="block py-2.5 px-0 w-full text-sm text-gray-900
+              bg-transparent border-0 border-b-2 border-gray-300 appearance-none
+              dark:text-white dark:border-gray-600 dark:focus:border-blue-500
+              focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 value={startTime}
-                onChange={(value) => startTimeChange(value)}
-                name="start_time"
+                onChange={(val) =>
+                  handleDateTimeChange(setStartTime, "start_time", val, "time")
+                }
               />
-              <p className="text-blue-500">Current: {booking.start_time}</p>
               {errors.start_time && (
                 <p className="text-red-500 text-xs mt-1">{errors.start_time}</p>
               )}
@@ -474,42 +298,46 @@ export default function EditBooking() {
             <div className="relative z-0 w-full mb-5 group">
               <label>End Time</label>
               <TimePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder="End Time"
+                className="block py-2.5 px-0 w-full text-sm text-gray-900
+              bg-transparent border-0 border-b-2 border-gray-300 appearance-none
+              dark:text-white dark:border-gray-600 dark:focus:border-blue-500
+              focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 value={endTime}
-                onChange={(value) => endTimeChange(value)}
-                name="end_time"
+                onChange={(val) =>
+                  handleDateTimeChange(setEndTime, "end_time", val, "time")
+                }
               />
-              <p className="text-blue-500">Current: {booking.end_time}</p>
               {errors.end_time && (
                 <p className="text-red-500 text-xs mt-1">{errors.end_time}</p>
               )}
             </div>
-            {/* Driver select  */}
-            <div className="relative z-0 w-full mb-5 group">
-              <input
-                type="text"
-                name="custom_rate"
-                id="custom_rate"
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                value={inputs.custom_rate}
-                onChange={handleChange}
-              />
-
-              <label
-                for="custom_rate"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-              >
-                Custome Rate
-              </label>
-            </div>
-            <button
-              disabled={disabled}
-              className="w-full border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
-            >
-              Submit
-            </button>
           </div>
+
+          {/* Custom Rate */}
+          <div className="relative z-0 w-full mb-5 group">
+            <input
+              type="text"
+              name="custom_rate"
+              id="custom_rate"
+              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              value={inputs.custom_rate}
+              onChange={handleChange}
+            />
+            <label
+              htmlFor="custom_rate"
+              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
+              Custom Rate
+            </label>
+          </div>
+
+          {/* Submit */}
+          <button
+            disabled={disabled}
+            className="w-full border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
+          >
+            Update Booking
+          </button>
         </form>
       </div>
     </LocalizationProvider>

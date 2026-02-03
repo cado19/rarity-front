@@ -118,7 +118,7 @@ const getVehicles = async () => {
       <h1 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-4 mt-2">
         Vehicles
       </h1>
-      <BasicTable columns={columns} columnFilters={columnFilters} data={vehicles} />
+      <BasicTable columns={columns} columnFilters={columnFilters} setColumnFilters={setColumnFilters} data={vehicles} />
 
     </div>
   );

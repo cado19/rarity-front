@@ -145,9 +145,14 @@ export default function NewDriver() {
       // redirect if response is "Driver Created"
       if (response.data.status === "Success") {
         const driver_id = response.data.driver_id;
-        navigate(`/driver/${driver_id}`, {
-          state: { message: "Driver Created" },
+        Swal.fire({
+          title: "Driver created",
+          icon: "success",
+          confirmButtonText: "OK",
         });
+        setTimeout(() => {
+          navigate(`/driver/${driver_id}`);
+        }, 2000);
       } else {
         Swal.fire({
           icon: "error",
@@ -155,10 +160,8 @@ export default function NewDriver() {
           text: "Something went wrong!",
         });
       }
-      console.log(response);
       setDisabled(false);
 
-      console.log(inputs);
       // console.log("Form submitted");
     }
   };
@@ -253,7 +256,6 @@ export default function NewDriver() {
               placeholder="Date of Birth"
               onChange={(newValue) => birthDateChange(newValue)}
               value={birthDate}
-
             />
           </div>
 

@@ -10,7 +10,9 @@ import { bookingColumns } from "../../components/utility/tableColumns";
 import { fetchCancelledBookings } from "../../api/fetch";
 
 export default function CancelledBookings() {
-  const bookingData = [];
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData.id;
+  const roleId = userData.role_id;
 
   const [bookings, setBookings] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -29,7 +31,14 @@ export default function CancelledBookings() {
   const getBookings = async () => {
     try {
       const response = await fetchCancelledBookings();
-      const bookingData = response.data.data.map((booking) => ({
+      let bookings = response.data.data;
+
+      // filter only if roleId is not 0
+      if (roleId !== "0") {
+        bookings = bookings.filter((booking) => booking.agent_id === userId);
+      }
+
+      const bookingData = bookings.map((booking) => ({
         id: booking.id,
         booking_no: booking.booking_no,
         client: booking.client,

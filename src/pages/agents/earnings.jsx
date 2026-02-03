@@ -23,7 +23,7 @@ export default function Earnings() {
   const getEarnings = async () => {
     try {
       const response = await axios.get(earningsURL);
-      // console.log(response);
+      console.log(response);
       if (response.data.status === "Error") {
         setError(response.data.message);
         setLoading(false);
