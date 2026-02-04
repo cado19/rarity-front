@@ -3,10 +3,10 @@ import axios from "axios";
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const api = axios.create({
-    baseURL: baseUrl,
-    headers: {
-        "Content-Type": "application/json"
-    }
+  baseURL: baseUrl,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 // -------------------- Vehicles Functions --------------------
@@ -26,39 +26,52 @@ export const get_returning_vehicles = async () => {
 };
 
 export const get_vehicle_count = async () => {
-  const response = await axios.get("/api/dashboard/vehicle_count.php");
+  const response = await api.get("/api/dashboard/vehicle_count.php");
   return response;
 };
 
 export const get_all_vehicles = async () => {
   const response = await api.get(`/api/fleet/all.php`);
   return response;
-}
+};
 
 export const get_booking_vehicles = async () => {
   const response = await api.get("/api/fleet/booking_vehicles.php");
   return response.data;
-}
+};
 
 export const get_vehicle_extras = async (id) => {
-  const response = await api.get(`/api/fleet/read_extras.php`, {params: { id }});
+  const response = await api.get(`/api/fleet/read_extras.php`, {
+    params: { id },
+  });
   return response;
-}
+};
 
 export const get_vehicle_base = async (id) => {
-  const response = await api.get(`/api/fleet/read_base.php`, {params: { id }});
+  const response = await api.get(`/api/fleet/read_base.php`, {
+    params: { id },
+  });
   return response;
-}
+};
+
+export const get_vehicle_pricing = async (id) => {
+  const response = await api.get(`/api/fleet/read_pricing.php`, {
+    params: { id },
+  });
+  return response;
+};
 
 export const get_all_issues = async () => {
   const response = await api.get(`/api/fleet/read_issues.php`);
   return response;
-}
+};
 
 export const get_issue = async (id) => {
-  const response = await api.get(`/api/fleet/read_issue.php`, {params: { id }});
+  const response = await api.get(`/api/fleet/read_issue.php`, {
+    params: { id },
+  });
   return response;
-}
+};
 
 // -------------------- Bookings Functions --------------------
 // get all bookings
@@ -91,23 +104,25 @@ export const fetchActiveBookings = async () => {
   return response;
 };
 
-// get single booking 
+// get single booking
 export const fetchBooking = async (id) => {
-  const response = await api.get(`/api/bookings/read_single.php`, {params: { id }});
+  const response = await api.get(`/api/bookings/read_single.php`, {
+    params: { id },
+  });
   return response;
-}
+};
 
-// get reservations 
+// get reservations
 export const fetchReservations = async (id) => {
   const response = await api.get(`/api/reservations/read.php`);
   return response;
-}
+};
 
 // get reservation
 export const fetchReservation = async (id) => {
   const response = await api.get(`/api/reservations/show.php`);
   return response;
-}
+};
 
 // -------------------- Customers Functions --------------------
 // get customers
@@ -126,11 +141,11 @@ export const fetchCustomer = async (id) => {
 export const fetchBookingCustomers = async () => {
   const response = await api.get("/api/customers/booking_customers.php");
   return response.data;
-}
+};
 
 // -------------------- Drivers Functions --------------------
 // get drivers for creating a booking
 export const fetchBookingDrivers = async () => {
   const response = await api.get("/api/drivers/booking_drivers.php");
   return response.data;
-}
+};
