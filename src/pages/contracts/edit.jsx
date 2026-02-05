@@ -1,16 +1,40 @@
 import axios from "axios";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SignatureCanvas from "react-signature-canvas";
 import { baseURL } from "../../constants/url";
+import { get_vehicle_pricing } from "../../api/fetch";
+import Loading from "../../components/PageContent/Loading";
 
 export default function EditContract() {
   const sigCanvas = useRef(null);
-  const { id } = useParams();
+  const { id, vehicle_id } = useParams();
 
   const navigate = useNavigate();
 
   const contractUrl = baseURL + `/api/contracts/update.php`;
+
+  // state for cdw checkbox
+  const [pricing, setPricing] = useState(); // a vehicle's pricing
+  const [cdw, setCdw] = useState(false); // cdw for the form
+  const [cdwTotal, setCdwTotal] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [pending, sePending] = useState(false);
+
+  const fetchVehicleCDW = async () => {
+    try {
+      const response = await get_vehicle_pricing(vehicle_id);
+      setPricing(response.data.pricing);
+      console.log(response);
+    } catch (error) {
+      console.error("Error fetching pricing: ", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchVehicleCDW();
+  }, []);
 
   const clearSignature = () => {
     sigCanvas.current.clear();
@@ -19,19 +43,26 @@ export default function EditContract() {
   const saveSignature = () => {
     const dataURL = sigCanvas.current.getTrimmedCanvas().toDataURL("image/png");
     // console.log(dataURL);
-    uploadSignature(dataURL);
+    handleUpload(dataURL);
   };
 
-  const uploadSignature = async (dataURL) => {
-    await axios.post(contractUrl, {image: dataURL, id}).then((response) => {
-        if(response.data.status == "Success"){
-            //navigate to success page
-            navigate("/success", {state: {message: "Contract successfully signed"}});
-
-        }
-        console.log(response);
-    })
+  const handleUpload = async (dataURL) => {
+    const response = await upload_signature({
+      id,
+      image: dataURL,
+      cdw, // boolean from checkbox state
+    });
+    if (response.data.status === "Success") {
+      if (response.data.cdw_total) {
+        setCdwTotal(response.data.cdw_total);
+      }
+      // navigate("/success", { state: { message: "Contract successfully signed" } });
+    } else {
+      alert(response.data.message || "Failed to sign contract");
+    }
   };
+
+  if (loading) return <Loading />;
 
   return (
     <div className="p-8">
@@ -47,6 +78,23 @@ export default function EditContract() {
               "signatureCanvas border-2 border-gray-300 rounded-lg w-full h-64",
           }}
         />
+        {/* CDW checkbox */}
+        {pricing.cdw_rate > 0 && (
+          <div className="mt-4">
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={cdw}
+                onChange={(e) => setCdw(e.target.checked)}
+                className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+              />
+              <span className="text-gray-700">
+                Apply CDW (Collision Damage Waiver)
+              </span>
+            </label>
+          </div>
+        )}
+
         <div className="mt-4">
           <button
             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
@@ -75,11 +123,17 @@ export default function EditContract() {
             View Voucher
           </button>
         </div>
+        {/* Show CDW total if available */}
+        {cdwTotal !== null && (
+          <div className="mt-4 p-4 bg-blue-100 border border-blue-300 rounded">
+            <p className="text-lg font-semibold text-blue-800">
+              CDW Total Applied: {cdwTotal}
+            </p>
+          </div>
+        )}
       </div>
       {/* button options for viewing contract / booking voucher  */}
-      <div>
-
-      </div>
+      <div></div>
     </div>
   );
 }

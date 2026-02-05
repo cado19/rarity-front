@@ -51,6 +51,7 @@ export default function EditBooking() {
   const [endTime, setEndTime] = useState(new Date());
   const [inputs, setInputs] = useState({
     account_id: userId,
+    booking_id: id,
     customer_id: "",
     vehicle_id: "",
     driver_id: "",

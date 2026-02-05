@@ -77,32 +77,32 @@ export default function Booking() {
           icon: "success",
           confirmButtonText: "OK",
         });
-      } else if ((location.state.message = "Booking created successfully")) {
+      } else if ((location.state.message == "Booking created successfully")) {
         Swal.fire({
           title: "Booking created",
           text: "The booking has been created successfully",
           icon: "success",
           confirmButtonText: "OK",
         });
-      } else if ((location.state.message = "Booking activated")) {
+      } else if ((location.state.message == "Booking activated")) {
         Swal.fire({
           title: "Booking activated",
           text: "The booking has been activated successfully",
           icon: "success",
           confirmButtonText: "OK",
         });
-      } else if ((location.state.message = "Booking could not be activated")) {
+      } else if ((location.state.message == "Booking could not be activated")) {
         Swal.fire({
           title: "Booking activated",
           text: "Booking could not be activated",
           icon: "error",
           confirmButtonText: "OK",
         });
-      } else if ((location.state.message = "Booking updated successfully")) {
+      } else if ((location.state.message == "Booking updated successfully")) {
         Swal.fire({
           title: "Booking updated",
           text: "Booking has been updated successfully",
-          icon: "error",
+          icon: "success",
           confirmButtonText: "OK",
         });
       }
@@ -467,6 +467,13 @@ export default function Booking() {
             </p>
           )}
 
+          {Number(booking.cdw_total) > 0 && (
+            <p className="leading-loose text-center">
+              <span className="font-bold">CDW fee:</span>{" "}
+              {Number(booking.cdw_total).toLocaleString()}/-
+            </p>
+          )}
+
           <p className="leading-loose text-center">
             <span className="font-bold">Status:</span> {booking.status}
           </p>
@@ -605,6 +612,12 @@ export default function Booking() {
               Sign contract link
             </button>
           )}
+          <button
+              className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
+              onClick={() => navigate(`/sign_contract/${id}/${booking.vehicle_id}`)}
+            >
+              Sign contract
+            </button>
         </div>
       </div>
     </div>

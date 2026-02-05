@@ -27,3 +27,15 @@ export const update_vehicle_pricing = async (pricing) => {
   const response = await api.post(`/api/fleet/update_pricing.php`, pricing)
   return response;
 }
+
+export const upload_signature = async (payload) => {
+  // cdw is optional, defaults to false
+  const response = await api.post(`/api/contracts/update.php`, {
+    id: payload.id,
+    image: payload.image,
+    cdw: payload.cdw ? "true" : "false",
+  });
+  return response;
+};
+
+
