@@ -9,10 +9,13 @@ import BookingTbl from "../../components/agents/bookings";
 import Newrate from "./newrate";
 import Editpass from "./editpass";
 import { Mosaic } from "react-loading-indicators";
+import { EarnedCommissionsModal } from "../../components/agents/earnedCommissionModal";
+import { fetchAgentBookings, fetchAgentCommissionPlans, fetchAgentDetails } from "../../api/fetch";
 
 export default function Agent() {
   const { id } = useParams();
-  const [agent, setAgent] = useState(null);
+  console.log("id: ", id)
+  const [agent, setAgent] = useState();
   const [roleId, setRoleId] = useState(null);
   const [agentBookings, setAgentBookings] = useState([]);
   const [agentCommissionPlans, setAgentCommissionPlans] = useState(null);
@@ -21,16 +24,14 @@ export default function Agent() {
   const [isModalOpen, setIsModalOpen] = useState(false); // commission modal open close state
   const [rateModalOpen, setRateModalOpen] = useState(false); // rate modal open close state
   const [passModalOpen, setPassModalOpen] = useState(false); // password modal open close state
+  const [earnedModalOpen, setEarnedModalOpen] = useState(false); // earning form modal
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
-  const agentURL = baseUrl + `/api/agents/read_single.php?id=${id}`;
+
   const commissionURL = baseUrl + `/api/commissions/update.php?agent_id=${id}`;
   const passwordURL = baseUrl + `/api/accounts/update_pass.php?agent_id=${id}`;
   const rateURL = baseUrl + `/api/commissions/update_rate.php?agent_id=${id}`;
-  const agentBookingsURL =
-    baseUrl + `/api/bookings/agent_bookings.php?agent_id=${id}`;
-  const agentCommissionPlansURL =
-    baseUrl + `/api/commissions/agent_commissions.php?agent_id=${id}`;
+
 
   const navigate = useNavigate();
 
@@ -43,9 +44,10 @@ export default function Agent() {
 
   const getAgent = async () => {
     try {
-      const response = await axios.get(agentURL);
-      console.log(response);
-      setAgent(response.data.agent);
+      const response = await fetchAgentDetails(id);
+      console.log("Get agent response: ", response);
+      
+      setAgent(response.agent);
       // setLoading(false);
     } catch (error) {
       const errorMessage = error.message;
@@ -55,31 +57,32 @@ export default function Agent() {
 
   const getAgentBookings = async () => {
     try {
-      const response = await axios.get(agentBookingsURL);
-      if (response.data.message == "Agent has no bookings") {
+      const response = await fetchAgentBookings(id);
+      // console.log("Get agent bookings response: ", response);
+      if (response.message == "Agent has no bookings") {
         return;
       }
-      const bookings = response.data.bookings;
-      formatBookings(bookings);
+      const bookings = response.bookings;
+      // formatBookings(bookings);
 
-      console.log(response);
+      // console.log(response);
       // setAgentBookings(response.data.bookings);
       // setLoading(false);
     } catch (error) {
       const errorMessage = error.message;
       console.log("agent booking error", errorMessage);
       setError(errorMessage);
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
   const getAgentCommissionPlans = async () => {
     try {
-      const response = await axios.get(agentCommissionPlansURL);
-      const commissions = response.data.data;
+      const response = await fetchAgentCommissionPlans();
+      const commissions = response.data;
       setAgentCommissionPlans(commissions);
       console.log(response);
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.log("agent commission error: ", error.message);
     }
@@ -186,12 +189,45 @@ export default function Agent() {
     { value: "8", label: "Truck" },
   ];
 
+  // useEffect(() => {
+  //   getRoleId();
+  //   getAgent();
+  //   getAgentBookings();
+  //   getAgentCommissionPlans();
+  //   setLoading(false);
+  // }, []);
+
   useEffect(() => {
-    getRoleId();
-    getAgent();
-    getAgentBookings();
-    getAgentCommissionPlans();
-  }, []);
+  const loadData = async () => {
+    try {
+      getRoleId(); // synchronous
+
+      // run all async calls in parallel
+      const [agentRes, bookingsRes, commissionsRes] = await Promise.all([
+        fetchAgentDetails(id),
+        fetchAgentBookings(id),
+        fetchAgentCommissionPlans(id),
+      ]);
+
+      // set state from results
+      setAgent(agentRes.agent);
+      console.log("Agent res: ", agentRes);
+
+      if (bookingsRes.message !== "Agent has no bookings") {
+        formatBookings(bookingsRes.bookings);
+      }
+
+      setAgentCommissionPlans(commissionsRes.data);
+
+    } catch (err) {
+      setError(err.message || "Failed to load agent data");
+    } finally {
+      setLoading(false); // only after all calls finish
+    }
+  };
+
+  loadData();
+}, [id]);
 
   console.log("role id", roleId);
 
@@ -203,11 +239,7 @@ export default function Agent() {
     );
   }
   if (loading) {
-    return (
-      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
-        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
-      </div>
-    );
+    return <Loading />
   }
   return (
     <>
@@ -217,23 +249,23 @@ export default function Agent() {
             <div className="font-bold text-xl mb-2">Agent Details</div>{" "}
             <p className="text-gray-700 text-base">
               {" "}
-              <span className="font-bold"> Name:</span> {agent.name}{" "}
+              <span className="font-bold"> Name:</span> {agent?.name}{" "}
             </p>{" "}
             <p className="text-gray-700 text-base">
               {" "}
-              <span className="font-bold">Email:</span> {agent.email}.{" "}
+              <span className="font-bold">Email:</span> {agent?.email}.{" "}
             </p>{" "}
             <p className="text-gray-700 text-base">
               {" "}
-              <span className="font-bold">Tel:</span> {agent.phone_no}.{" "}
+              <span className="font-bold">Tel:</span> {agent?.phone_no}.{" "}
             </p>{" "}
             <p className="text-gray-700 text-base">
               {" "}
-              <span className="font-bold">Country:</span> {agent.country}.{" "}
+              <span className="font-bold">Country:</span> {agent?.country}.{" "}
             </p>{" "}
             <p className="text-gray-700 text-base">
               {" "}
-              <span className="font-bold">Role:</span> {agent.role}.{" "}
+              <span className="font-bold">Role:</span> {agent?.role}.{" "}
             </p>{" "}
             {/* Only super user can set commission  */}
             {roleId == 0 && (
@@ -249,18 +281,18 @@ export default function Agent() {
             )}
             {/* super user can set commission  */}
             {roleId == 0 && (
-                <>
-                  <p className="text-gray-700 text-base">
-                    {" "}
-                    <button
-                      className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
-                      onClick={() => setRateModalOpen(true)}
-                    >
-                      Set Rate
-                    </button>
-                  </p>{" "}
-                </>
-              )}
+              <>
+                <p className="text-gray-700 text-base">
+                  {" "}
+                  <button
+                    className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
+                    onClick={() => setRateModalOpen(true)}
+                  >
+                    Set Rate
+                  </button>
+                </p>{" "}
+              </>
+            )}
             <p className="text-gray-700 text-base">
               {" "}
               <button
@@ -296,7 +328,7 @@ export default function Agent() {
           <div>
             <button
               className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold py-2 px-4 mt-3 rounded transition duration-300"
-              onClick={() => navigate(`/agent/${id}/earnings`)}
+              onClick={() => setEarnedModalOpen(true)}
             >
               Generate Commission
             </button>
@@ -339,6 +371,12 @@ export default function Agent() {
           mount: { scale: 1, y: 0 },
           unmount: { scale: 0.9, y: -100 },
         }}
+      />
+
+      <EarnedCommissionsModal
+        show={earnedModalOpen}
+        onClose={() => setEarnedModalOpen(false)}
+        agentId={id}
       />
     </>
   );

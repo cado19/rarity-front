@@ -41,3 +41,10 @@ export const save_one_day_booking = async (payload) => {
   const response = await api.post("/api/bookings/create_one_day.php", payload);
   return response;
 };
+
+// -------------------- Agent Functions --------------------
+// This function posts data to earned commissions as search params
+export const get_agent_commissions = async (payload) => {
+  const response = await api.post(`/api/commissions/earned_commissions.php`, payload)
+  return response;
+}

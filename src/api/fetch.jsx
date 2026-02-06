@@ -149,3 +149,25 @@ export const fetchBookingDrivers = async () => {
   const response = await api.get("/api/drivers/booking_drivers.php");
   return response.data;
 };
+
+// -------------------- Agent Functions --------------------
+export const fetchAgentDetails = async (id) => {
+  const response = await api.get(`/api/agents/read_single.php`, {
+    params: { id },
+  });
+  return response.data;
+};
+
+export const fetchAgentCommissionPlans = async (id) => {
+  const response = await api.get(`/api/commissions/agent_commissions.php`, {
+    params: { agent_id: id },
+  });
+  return response.data;
+};
+
+export const fetchAgentBookings = async (agent_id) => {
+  const response = await api.get(`/api/bookings/agent_bookings.php`, {
+    params: { agent_id },
+  });
+  return response.data;
+};

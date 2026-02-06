@@ -146,3 +146,39 @@ export const clientColumns = [
       },
     },
   ];
+
+ export const earningsColumns = [
+    {
+      accessorKey: "booking_no",
+      header: "No",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "total",
+      header: "Total",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "commission",
+      header: "Commission",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "start_date",
+      header: "From",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "end_date",
+      header: "To",
+      cell: (info) => info.getValue(),
+    },
+    // {
+    //   id: "details",
+    //   header: "Details",
+    //   cell: (info) => {
+    //     const issue = info.row.original;
+    //     return <Link to={`/issues/${issue.id}`}>Details</Link>;
+    //   },
+    // },
+  ];

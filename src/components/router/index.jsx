@@ -53,6 +53,8 @@ import Issue from '../../pages/issues/issue'
 import EditCustomer from '../../pages/customers/edit'
 import DeleteCustomer from '../customers/delete'
 import Reservations from '../../pages/bookings/reservations'
+import EditPricing from '../../pages/vehicles/edit_pricing'
+import Commissions from '../../pages/agents/commissions'
 
 
 export default function AppRouter() {
@@ -70,6 +72,7 @@ export default function AppRouter() {
             <Route path='/vehicle/edit_rate' element={<EditRate />} />
             <Route path='/vehicle/edit_basics/:id' element={<EditBasics />} />
             <Route path='/vehicle/edit_extras/:id' element={<EditExtras />} />
+            <Route path='/vehicle/edit_pricing/:id' element={<EditPricing />} />
             <Route path='/issues' element={<AllIssues />} />
             <Route path='/issues/new' element={<NewIssue />}  />
             <Route path='/issues/:id' element={<Issue />} />
@@ -109,6 +112,7 @@ export default function AppRouter() {
             <Route path='/agents/new' element={<NewAgent />} />
             <Route path='/agent/:id' element={<Agent />} />
             <Route path='/agent/:id/earnings' element={<Earnings />}/>
+            <Route path='/agent/commissions' element={<Commissions />}/>
 
             {/* Analytic Routes  */}
             <Route path='/analytics' element={<Analytics />} />
@@ -123,7 +127,7 @@ export default function AppRouter() {
           <Route path='/login' element={<Login />} />
           <Route path='/logout' element={<Logout />} />
           <Route path='/contract/:id' element={<ShowContract /> } />
-          <Route path='/sign_contract/:id' element={<EditContract />} />
+          <Route path='/sign_contract/:id/:vehicle_id' element={<EditContract />} />
           <Route path='/success' element={<Success />} />
           <Route path='/voucher/:id' element={<BookingVoucher />} />
           <Route path='/register' element={<SelfRegister />} />
