@@ -5,6 +5,7 @@ import SignatureCanvas from "react-signature-canvas";
 import { baseURL } from "../../constants/url";
 import { get_vehicle_pricing } from "../../api/fetch";
 import Loading from "../../components/PageContent/Loading";
+import { upload_signature } from "../../api/put";
 
 export default function EditContract() {
   const sigCanvas = useRef(null);
@@ -19,7 +20,7 @@ export default function EditContract() {
   const [cdw, setCdw] = useState(false); // cdw for the form
   const [cdwTotal, setCdwTotal] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [pending, sePending] = useState(false);
+  const [pending, setPending] = useState(false);
 
   const fetchVehicleCDW = async () => {
     try {
@@ -47,19 +48,26 @@ export default function EditContract() {
   };
 
   const handleUpload = async (dataURL) => {
+    setPending(true);
     const response = await upload_signature({
       id,
       image: dataURL,
       cdw, // boolean from checkbox state
     });
+    console.log("Contract response: ", response.data);
     if (response.data.status === "Success") {
       if (response.data.cdw_total) {
         setCdwTotal(response.data.cdw_total);
       }
-      // navigate("/success", { state: { message: "Contract successfully signed" } });
+      setTimeout(() => {
+        navigate(`/booking/${id}`, {
+          state: { message: "Contract successfully signed" },
+        });
+      }, 1500);
     } else {
       alert(response.data.message || "Failed to sign contract");
     }
+    setPending(false);
   };
 
   if (loading) return <Loading />;
@@ -105,8 +113,9 @@ export default function EditContract() {
           <button
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
             onClick={saveSignature}
+            disabled={pending}
           >
-            Save
+            {pending ? "Saving..." : "Save"}
           </button>
 
           <button

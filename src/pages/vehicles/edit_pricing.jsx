@@ -17,6 +17,7 @@ export default function EditPricing() {
     refundable_security_deposit: "",
     cdw_rate: "",
     monthly_target: "",
+    cdw_vehicle_excess: "",
   });
 
   const [vehicle, setVehicle] = useState({
@@ -67,6 +68,7 @@ export default function EditPricing() {
           priceData.refundable_security_deposit || "",
         cdw_rate: priceData.cdw_rate || "",
         monthly_target: priceData.monthly_target || "",
+        cdw_vehicle_excess: priceData.cdw_vehicle_excess || "",
       }));
     } catch (error) {
       console.log("Error: ", error.message);
@@ -161,6 +163,15 @@ export default function EditPricing() {
           label="CDW Rate"
           name="cdw_rate"
           value={formData.cdw_rate}
+          onChange={handleChange}
+          // error={errors.make}
+        />
+
+        {/* CDW Vehicle Excess */}
+        <VehicleInput
+          label="CDW Vehicle Excess"
+          name="cdw_vehicle_excess"
+          value={formData.cdw_vehicle_excess}
           onChange={handleChange}
           // error={errors.make}
         />

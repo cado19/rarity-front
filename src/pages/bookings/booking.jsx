@@ -105,6 +105,14 @@ export default function Booking() {
           icon: "success",
           confirmButtonText: "OK",
         });
+      
+      } else if ((location.state.message == "Contract successfully signed")) {
+        Swal.fire({
+          title: "Contract signed",
+          text: "Contract successfully signed",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
       }
     }
   };
