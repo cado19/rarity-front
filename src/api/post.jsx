@@ -42,6 +42,20 @@ export const save_one_day_booking = async (payload) => {
   return response;
 };
 
+// save fuel data
+export const save_fuel = async (payload) => {
+  const response = await api.post("/api/bookings/fuel.php", payload);
+  return response;
+};
+
+// assign driver for delivery
+export const assign_driver = async (payload) => {
+  const response = await api.post("/api/drivers/deliveries/assign_driver.php", payload);
+  return response;
+};
+
+
+
 // -------------------- Agent Functions --------------------
 // This function posts data to earned commissions as search params
 export const get_agent_commissions = async (payload) => {

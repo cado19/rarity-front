@@ -6,6 +6,7 @@ import { feUrl } from "../../constants/url";
 import BookingInfoBoxes from "../../components/infoboxes/BookingInfoBoxes";
 import axios from "axios";
 import Extend from "./extend";
+import Delivery from "./delivery";
 import Loading from "../../components/PageContent/Loading";
 import Swal from "sweetalert2";
 import { FaArrowLeft } from "react-icons/fa";
@@ -13,6 +14,7 @@ import Fuel from "./fuel";
 import { Mosaic, BlinkBlur } from "react-loading-indicators";
 import AddMedia from "./add_media";
 import { fetchBooking } from "../../api/fetch";
+import { assign_driver, save_fuel } from "../../api/post";
 
 export default function Booking() {
   const { id } = useParams();
@@ -24,6 +26,7 @@ export default function Booking() {
   const [isModalOpen, setIsModalOpen] = useState(false); // this is used to control the extend date modal
   const [fuelModalOpen, setFuelModalOpen] = useState(false); // this is used to control the fuel modal
   const [mediaModalOpen, setMediaModalOpen] = useState(false); // this is used to control the fuel modal
+  const [deliveryModalOpen, setDeliveryModalOpen] = useState(false); // this is used to control the delivery modal
   const [voucherBtnOpen, setVoucherBtnOpen] = useState(false); // this is used to control the voucher links dropdown
   const [total, setTotal] = useState(0); // this is used because total changes with driver fee
 
@@ -31,7 +34,7 @@ export default function Booking() {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const videoDisplayUrl = import.meta.env.VITE_VIDEO_URL;
   const extendUrl = baseUrl + `/api/bookings/extend.php`;
-  const fuelUrl = baseUrl + `/api/bookings/update_fuel.php`;
+  // const fuelUrl = baseUrl + `/api/bookings/update_fuel.php`;
   const SignUrl = contractSignUrl + `${id}`; // url
   //  for signing contract
   const contractURL = contractViewUrl + `${id}`;
@@ -77,36 +80,35 @@ export default function Booking() {
           icon: "success",
           confirmButtonText: "OK",
         });
-      } else if ((location.state.message == "Booking created successfully")) {
+      } else if (location.state.message == "Booking created successfully") {
         Swal.fire({
           title: "Booking created",
           text: "The booking has been created successfully",
           icon: "success",
           confirmButtonText: "OK",
         });
-      } else if ((location.state.message == "Booking activated")) {
+      } else if (location.state.message == "Booking activated") {
         Swal.fire({
           title: "Booking activated",
           text: "The booking has been activated successfully",
           icon: "success",
           confirmButtonText: "OK",
         });
-      } else if ((location.state.message == "Booking could not be activated")) {
+      } else if (location.state.message == "Booking could not be activated") {
         Swal.fire({
           title: "Booking activated",
           text: "Booking could not be activated",
           icon: "error",
           confirmButtonText: "OK",
         });
-      } else if ((location.state.message == "Booking updated successfully")) {
+      } else if (location.state.message == "Booking updated successfully") {
         Swal.fire({
           title: "Booking updated",
           text: "Booking has been updated successfully",
           icon: "success",
           confirmButtonText: "OK",
         });
-      
-      } else if ((location.state.message == "Contract successfully signed")) {
+      } else if (location.state.message == "Contract successfully signed") {
         Swal.fire({
           title: "Contract signed",
           text: "Contract successfully signed",
@@ -176,7 +178,7 @@ export default function Booking() {
   const fuelVehicle = async (data) => {
     setFuelModalOpen(false);
     try {
-      const response = await axios.post(fuelUrl, data);
+      await save_fuel(data);
       Swal.fire({
         title: "Fuel added",
         text: "The fuel has been added successfully",
@@ -188,6 +190,28 @@ export default function Booking() {
       Swal.fire({
         title: "Error",
         text: "The fuel couldn't be added",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
+  const assignDriver = async (data) => {
+    setDeliveryModalOpen(false);
+    // console.log("Delivery payload: ", data);
+    try {
+      await assign_driver(data);
+      Swal.fire({
+        title: "Driver assigned",
+        text: "The driver has been assigned successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      getBooking();
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "The driver couldn't be assigned",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -320,20 +344,20 @@ export default function Booking() {
     checkMessage();
   }, []);
 
-  // handle back button redirection based on booking state 
+  // handle back button redirection based on booking state
   const handleBack = () => {
-    if (booking.status == "complete"){
-      navigate('/bookings/completed')
+    if (booking.status == "complete") {
+      navigate("/bookings/completed");
     } else if (booking.status == "active") {
-      navigate('/bookings/active')
+      navigate("/bookings/active");
     } else if (booking.status == "upcoming") {
-      navigate('/bookings/upcoming')
+      navigate("/bookings/upcoming");
     } else if (booking.status == "cancelled") {
-      navigate('/bookings/cancelled')
+      navigate("/bookings/cancelled");
     } else {
-      navigate('/bookings/all')
+      navigate("/bookings/all");
     }
-  }
+  };
 
   if (uploading) {
     return (
@@ -397,6 +421,13 @@ export default function Booking() {
           mount: { scale: 1, y: 0 },
           unmount: { scale: 0.9, y: -100 },
         }}
+      />
+
+      <Delivery
+        show={deliveryModalOpen}
+        onClose={() => setDeliveryModalOpen(false)}
+        id={id}
+        onSubmit={assignDriver}
       />
 
       <h2 className="text-2xl">Booking: {booking.booking_no}</h2>
@@ -565,6 +596,14 @@ export default function Booking() {
               </>
             )}
           </div>
+          <div className="row">
+            <p
+              className="text-blue-600 underline cursor-pointer mt-4 mb-4 px-2 py-2"
+              onClick={() => setDeliveryModalOpen(true)}
+            >
+              Would you like to assign a driver for delivery?
+            </p>
+          </div>
         </div>
 
         {/* Contract details  */}
@@ -621,11 +660,13 @@ export default function Booking() {
             </button>
           )}
           <button
-              className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
-              onClick={() => navigate(`/sign_contract/${id}/${booking.vehicle_id}`)}
-            >
-              Sign contract
-            </button>
+            className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
+            onClick={() =>
+              navigate(`/sign_contract/${id}/${booking.vehicle_id}`)
+            }
+          >
+            Sign contract
+          </button>
         </div>
       </div>
     </div>
