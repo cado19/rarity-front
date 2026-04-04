@@ -17,7 +17,7 @@ import {
   fetchBookingDrivers,
   get_booking_vehicles,
 } from "../../api/fetch";
-import { save_booking, save_one_day_booking } from "../../api/post";
+import { save_booking} from "../../api/post";
 
 export default function NewBooking() {
   // Format date helper
@@ -72,6 +72,8 @@ export default function NewBooking() {
     custom_rate: "",
     in_capital: "0",
     out_capital: "0",
+    oneday: false,
+    vat: false,
   });
 
   const navigate = useNavigate();
@@ -183,80 +185,37 @@ export default function NewBooking() {
     return errors;
   };
 
-  // submit normal booking
-  const saveNormalBooking = async () => {
-    setDisabled(true);
-    const errors = validate(inputs);
-    if (Object.keys(errors).length > 0) {
-      Swal.fire({
-        title: "Validation Error",
-        icon: "error",
-        text: "Check form fields for highlighted errors",
-      });
-      console.log("Validation Errors: ", errors);
-      setDisabled(false);
-    } else {
-      console.log("Inputs: ", inputs);
-      const res = await save_booking(inputs);
-      // console.log(response);
-      if (res.data.status == "Success") {
-        const id = res.data.booking_id;
-        navigate(`/booking/${id}`, {
-          state: { message: "Booking created successfully" },
-        });
-      } else {
-        Swal.fire({
-          title: "Error",
-          icon: "error",
-          text: response.data.message,
-          confirmButtonText: "OK",
-        });
-        setDisabled(false);
-      }
-    }
-  };
-
-  //save one day booking
-  const saveOneDayBooking = async () => {
-    setDisabled(true);
-    const errors = validateOneDay(inputs);
-    if (Object.keys(errors).length > 0) {
-      Swal.fire({
-        title: "Validation Error",
-        icon: "error",
-        text: "Check form fields for highlighted errors",
-      });
-      console.log("Validation Errors: ", errors);
-      setDisabled(false);
-    } else {
-      const res = await save_one_day_booking(inputs);
-      console.log(res);
-      if (res.data.status == "Success") {
-        const id = res.data.booking_id;
-        navigate(`/booking/${id}`, {
-          state: { message: "Booking created successfully" },
-        });
-      } else {
-        Swal.fire({
-          title: "Error",
-          icon: "error",
-          text: response.data.message,
-          confirmButtonText: "OK",
-        });
-        setDisabled(false);
-      }
-    }
-  };
-
   // submit function
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (oneday) {
-      saveOneDayBooking();
-    } else {
-      saveNormalBooking();
+    setDisabled(true);
+
+    const errs = validate(inputs);
+    if (Object.keys(errs).length > 0) {
+      Swal.fire({
+        title: "Validation Error",
+        icon: "error",
+        text: "Check form fields",
+      });
+      setDisabled(false);
+      return;
     }
-    console.log(inputs);
+    // console.log("Inputs: ", inputs);
+    // setDisabled(false);
+    try {
+      const res = await save_booking(inputs);
+      if (res.data.status === "Success") {
+        navigate(`/booking/${res.data.booking_id}`, {
+          state: { message: "Booking created successfully" },
+        });
+      } else {
+        Swal.fire({ title: "Error", icon: "error", text: res.data.message });
+      }
+    } catch (err) {
+      Swal.fire({ title: "Error", icon: "error", text: "Server error" });
+    } finally {
+      setDisabled(false);
+    }
   };
 
   // console.log(typeof startTime);
@@ -277,9 +236,10 @@ export default function NewBooking() {
           <label className="flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={oneday}
+              checked={inputs.oneday}
               onChange={() => {
                 setOneDay(!oneday);
+                setInputs(prev => ({ ...prev, oneday: !prev.oneday}))
               }}
               className="form-checkbox h-5 w-5 text-blue-600 m-3"
             />
@@ -504,6 +464,21 @@ export default function NewBooking() {
                 Custome Rate
               </label>
             </div>
+
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={inputs.vat}
+                onChange={() =>
+                  setInputs((prev) => ({ ...prev, vat: !prev.vat }))
+                }
+                className="form-checkbox h-5 w-5 text-blue-600 m-3"
+              />
+              <span className="text-gray-500">
+                {inputs.vat ? "VAT Applied (16%)" : "No VAT"}
+              </span>
+            </label>
+
             <button
               disabled={disabled}
               className="w-full border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"

@@ -96,6 +96,8 @@ export default function EditBooking() {
 
         const booking = bookingRes.data.booking;
 
+        console.log("Drivers: ", dRes.drivers);
+
         // Populate inputs
         setInputs({
           ...inputs,
@@ -115,14 +117,15 @@ export default function EditBooking() {
         // Dropdowns
         setDrivers(
           dRes.drivers.map((d) => ({
-            value: booking.driver_id,
-            label: `${booking.d_fname} ${booking.d_lname}`,
+            value: d.id,
+            label: `${d.first_name} ${d.last_name}`,
           })),
         );
+
         setVehicles(
           vRes.vehicles.map((v) => ({
-            value: booking.vehicle_id,
-            label: `${booking.make} ${booking.model} ${booking.number_plate}`,
+            value: v.id,
+            label: `${v.make} ${v.model} ${v.number_plate}`,
           })),
         );
 
@@ -179,7 +182,9 @@ export default function EditBooking() {
     // console.log("Inputs: ", inputs);
     const res = await update_booking_details(inputs);
     if (res.data.status === "Success") {
-      navigate(`/booking/${id}`, { state: { message: "Booking updated successfully" } });
+      navigate(`/booking/${id}`, {
+        state: { message: "Booking updated successfully" },
+      });
     } else {
       Swal.fire({ title: "Error", icon: "error", text: res.data.message });
       setDisabled(false);
