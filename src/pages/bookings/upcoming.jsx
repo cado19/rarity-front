@@ -36,9 +36,9 @@ export default function UpcomingBookings() {
       let bookings = response.data.data;
 
       // filter only if roleId is not 0
-      if (roleId !== "0") {
-        bookings = bookings.filter((booking) => booking.agent_id === userId);
-      }
+      // if (roleId !== "0") {
+      //   bookings = bookings.filter((booking) => booking.agent_id === userId);
+      // }
 
       const bookingData = bookings.map((booking) => ({
         id: booking.id,
