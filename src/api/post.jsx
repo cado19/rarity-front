@@ -28,6 +28,16 @@ export const save_issue = async (issues) => {
   return response;
 };
 
+export const save_work_order = async (payload) => {
+  const response = api.post(`/api/workorders/create.php`, payload);
+  return response;
+}
+
+export const update_work_order = async (payload) => {
+  const response = api.post(`/api/workorders/update.php`, payload);
+  return response;
+}
+
 // -------------------- Bookings Functions --------------------
 
 // save booking

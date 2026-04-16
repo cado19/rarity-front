@@ -47,7 +47,7 @@ import { HiMiniWrenchScrewdriver } from "react-icons/hi2";
       {
           key: 'issues',
           label: 'Fleet Maintenance',
-          path: '/issues',
+          path: '/workorders',
           icon:  <HiMiniWrenchScrewdriver />
       },
       {

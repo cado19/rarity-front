@@ -1,5 +1,5 @@
-// export const baseURL = 'http://localhost:3000';
-export const baseURL = 'https://test.jinamizi.dev';
+export const baseURL = 'http://localhost:3000';
+// export const baseURL = 'https://test.jinamizi.dev';
 // export const voucherUrl = 'raritycars.com/booking_voucher/2';
 // export const voucherUrl = 'http:/localhost:5173/voucher';
 export const voucherUrl = 'https://client.raritycars.com/index.php?page=contract/booking_voucher&id=';

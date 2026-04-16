@@ -55,6 +55,11 @@ import DeleteCustomer from '../customers/delete'
 import Reservations from '../../pages/bookings/reservations'
 import EditPricing from '../../pages/vehicles/edit_pricing'
 import Commissions from '../../pages/agents/commissions'
+import WorkflowDashboard from '../../pages/workorders/all'
+import WorkOrderForm from '../../pages/workorders/form'
+import WorkOrderEdit from '../../pages/workorders/edit'
+import WorkOrderCreatePage from '../../pages/workorders/create'
+import WorkOrderShowPage from '../../pages/workorders/show'
 
 
 export default function AppRouter() {
@@ -76,6 +81,12 @@ export default function AppRouter() {
             <Route path='/issues' element={<AllIssues />} />
             <Route path='/issues/new' element={<NewIssue />}  />
             <Route path='/issues/:id' element={<Issue />} />
+
+            {/* Workorder Routes  */}
+            <Route path='/workorders' element={<WorkflowDashboard />} />
+            <Route path='/workorders/create' element={<WorkOrderCreatePage />} />
+            <Route path='/workorders/:id/edit' element={<WorkOrderEdit />} />
+            <Route path='/workorders/:id' element={<WorkOrderShowPage />} />
 
             {/* Customer Routes  */}
             <Route path='/customers' element={<AllCustomers />} />

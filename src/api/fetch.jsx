@@ -73,6 +73,22 @@ export const get_issue = async (id) => {
   return response;
 };
 
+// -------------------- Workorder Functions --------------------
+
+// get all work orders
+export const fetchWorkOrders = async () => {
+  const response = api.get(`/api/workorders/all.php`);
+  return response;
+}
+
+// get single work order
+export const fetchWorkOrder = async (id) => {
+  const response = api.get(`/api/workorders/read.php`, {
+    params: { id },
+  });
+  return response;
+}
+
 // -------------------- Bookings Functions --------------------
 // get all bookings
 export const fetchBookings = async () => {
