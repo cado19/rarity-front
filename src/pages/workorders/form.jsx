@@ -128,8 +128,11 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
             />
           </div>
 
+          {/* Completion Date */}
           <div className="mb-5 group">
-            <label>Completion Date</label>
+            <label className="block text-sm text-gray-600 mb-1">
+              Completion Date
+            </label>
             <DatePicker
               value={completionDate}
               onChange={(val) =>
@@ -142,6 +145,51 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
                 },
               }}
             />
+
+            {/* Clear button */}
+            {completionDate && (
+              <button
+                type="button"
+                onClick={() => {
+                  setCompletionDate(null);
+                  setInputs((prev) => ({ ...prev, completion_date: null }));
+                }}
+                className="mt-2 px-3 py-1 border border-red-600 text-red-600 rounded hover:bg-red-700 hover:text-white transition"
+              >
+                Clear Completion Date
+              </button>
+            )}
+
+            {/* Mark as completed checkbox */}
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="markCompleted"
+                checked={inputs.status === "completed"}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    const today = new Date();
+                    const formatted = formatDate(today);
+                    setCompletionDate(today);
+                    setInputs((prev) => ({
+                      ...prev,
+                      completion_date: formatted,
+                      status: "completed",
+                    }));
+                  } else {
+                    setCompletionDate(null);
+                    setInputs((prev) => ({
+                      ...prev,
+                      completion_date: null,
+                      status: "open",
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="markCompleted" className="text-sm text-gray-700">
+                Mark as Completed (set today’s date)
+              </label>
+            </div>
           </div>
 
           {/* Status */}

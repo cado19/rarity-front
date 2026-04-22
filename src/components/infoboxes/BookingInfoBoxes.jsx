@@ -1,8 +1,9 @@
 import React from "react";
+import { format } from 'date-fns';
 
 export default function BookingInfoBoxes({ fname, lname, start, end }) {
-  const start_date = new Date(start).toString();
-  const end_date = new Date(end).toString();
+  const start_date = format(new Date(start), "MMMM do, yyyy");
+  const end_date = format(new Date(end), "MMMM do, yyyy");
 
   const duration = (new Date(end) - new Date(start)) / (1000 * 3600 * 24)
   return (
@@ -24,7 +25,7 @@ export default function BookingInfoBoxes({ fname, lname, start, end }) {
             <strong className="text-xl text-gray-700 font-semibold">
               {start_date}
             </strong>
-            <span className="text-sm text-green-500 pl-2">+234</span>
+            {/* <span className="text-sm text-green-500 pl-2">+234</span> */}
           </div>
         </div>
       </BoxWrapper>
@@ -35,7 +36,7 @@ export default function BookingInfoBoxes({ fname, lname, start, end }) {
             <strong className="text-xl text-gray-700 font-semibold">
             {end_date}
             </strong>
-            <span className="text-sm text-green-500 pl-2">+234</span>
+            {/* <span className="text-sm text-green-500 pl-2">+234</span> */}
           </div>
         </div>
       </BoxWrapper>
@@ -46,7 +47,7 @@ export default function BookingInfoBoxes({ fname, lname, start, end }) {
             <strong className="text-xl text-gray-700 font-semibold">
               {duration} days
             </strong>
-            <span className="text-sm text-green-500 pl-2">+234</span>
+            {/* <span className="text-sm text-green-500 pl-2">+234</span> */}
           </div>
         </div>
       </BoxWrapper>

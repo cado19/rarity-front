@@ -15,6 +15,7 @@ import { save_booking } from "../../api/post";
 import Loading from "../../components/PageContent/Loading";
 import BookingNav from "../../components/navs/bookingnav";
 import { update_booking_details } from "../../api/put";
+import BookingForm from "../../components/bookings/form";
 
 export default function EditBooking() {
   const { id } = useParams(); // booking id from route
@@ -36,11 +37,27 @@ export default function EditBooking() {
     return `${formattedHours}:${minutes} ${suffix}`;
   };
 
+  const parseDateTime = (dateStr, timeStr) => {
+    // timeStr is like "8:00 am" or "4:00 pm"
+    const [hoursPart, minutesPart] = timeStr.split(":");
+    const [minutes, suffix] = minutesPart.split(" ");
+    let h = parseInt(hoursPart, 10);
+    const m = parseInt(minutes, 10);
+
+    if (suffix.toLowerCase() === "pm" && h !== 12) h += 12;
+    if (suffix.toLowerCase() === "am" && h === 12) h = 0;
+
+    const d = new Date(dateStr);
+    d.setHours(h, m, 0, 0);
+    return d;
+  };
+
   // get userId from local storage to set as accountId
   const userData = JSON.parse(localStorage.getItem("user"));
   const userId = userData.id;
 
   // State
+  const [no, setNo] = useState();
   const [drivers, setDrivers] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
@@ -60,6 +77,8 @@ export default function EditBooking() {
     start_time: "",
     end_time: "",
     custom_rate: "",
+    override: false,
+    vat: false,
   });
   const [customerName, setCustomerName] = useState(""); // display only
   const [errors, setErrors] = useState({});
@@ -109,7 +128,11 @@ export default function EditBooking() {
           start_time: booking.start_time,
           end_time: booking.end_time,
           custom_rate: booking.custom_rate,
+          vat: booking.vat > 0,
         });
+
+        // set booking no
+        setNo(booking.booking_no);
 
         // Customer name (read-only)
         setCustomerName(`${booking.c_fname} ${booking.c_lname}`);
@@ -126,7 +149,13 @@ export default function EditBooking() {
           vRes.vehicles.map((v) => ({
             value: v.id,
             label: `${v.make} ${v.model} ${v.number_plate}`,
+            daily_rate: v.daily_rate,
           })),
+        );
+
+        // After setting vehicles find the booked vehicle's id from all the loaded vehicles to add daily_rate to it
+        const matchedVehicle = vRes.vehicles.find(
+          (v) => v.id === booking.vehicle_id,
         );
 
         // Preselect driver/vehicle
@@ -134,14 +163,22 @@ export default function EditBooking() {
           value: booking.driver_id,
           label: `${booking.d_fname} ${booking.d_lname}`,
         });
-        setSelectedVehicle({
-          value: booking.vehicle_id,
-          label: `${booking.make} ${booking.model} ${booking.number_plate}`,
-        });
-
+        if (matchedVehicle) {
+          setSelectedVehicle({
+            value: matchedVehicle.id,
+            label: `${matchedVehicle.make} ${matchedVehicle.model} ${matchedVehicle.number_plate}`,
+            daily_rate: matchedVehicle.daily_rate,
+          });
+        }
         // Dates/times
-        setStartDate(new Date(booking.start_date));
-        setEndDate(new Date(booking.end_date));
+        // Dates
+        setStartDate(parseDateTime(booking.start_date, booking.start_time));
+        setEndDate(parseDateTime(booking.end_date, booking.end_time));
+
+        // Times (for TimePicker)
+        setStartTime(parseDateTime(booking.start_date, booking.start_time));
+        setEndTime(parseDateTime(booking.end_date, booking.end_time));
+
         // You may need to parse times into Date objects if backend returns strings
       } catch (err) {
         console.error("Error loading booking:", err);
@@ -195,157 +232,28 @@ export default function EditBooking() {
   if (loading) return <Loading />;
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <div className="bg-white px-4 pb-4 pt-4 rounded shadow-md mt-2 mx-3">
-        <BookingNav />
-        <h1 className="text-2xl sm:text-4xl my-5 text-center">Edit Booking</h1>
-
-        <form onSubmit={handleSubmit} className="w-4/5 mx-auto">
-          {/* Customer (read-only) */}
-          <div className="mb-5 group">
-            <input
-              type="text"
-              value={customerName}
-              readOnly
-              className="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-300 appearance-none"
-            />
-          </div>
-
-          {/* Vehicle select */}
-          <div className="mb-5 group">
-            <Select
-              options={vehicles}
-              value={selectedVehicle}
-              onChange={(option) => {
-                setSelectedVehicle(option);
-                handleChange("vehicle_id", option.value);
-              }}
-              placeholder="Select Vehicle"
-              isSearchable
-            />
-            {errors.vehicle_id && (
-              <p className="text-red-500 text-xs mt-1">{errors.vehicle_id}</p>
-            )}
-          </div>
-
-          {/* Driver select */}
-          <div className="mb-5 group">
-            <Select
-              options={drivers}
-              value={selectedDriver}
-              onChange={(option) => {
-                setSelectedDriver(option);
-                handleChange("driver_id", option.value);
-              }}
-              placeholder="Select Driver"
-              isSearchable
-            />
-            {errors.driver_id && (
-              <p className="text-red-500 text-xs mt-1">{errors.driver_id}</p>
-            )}
-          </div>
-
-          {/* Booking dates */}
-          <div className="grid md:grid-cols-2 md:gap-6">
-            <div className="relative z-0 w-full mb-5 group">
-              <label>Start Date</label>
-              <DatePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900
-              bg-transparent border-0 border-b-2 border-gray-300 appearance-none
-              dark:text-white dark:border-gray-600 dark:focus:border-blue-500
-              focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                value={startDate}
-                onChange={(val) =>
-                  handleDateTimeChange(setStartDate, "start_date", val, "date")
-                }
-              />
-              {errors.start_date && (
-                <p className="text-red-500 text-xs mt-1">{errors.start_date}</p>
-              )}
-            </div>
-
-            <div className="relative z-0 w-full mb-5 group">
-              <label>End Date</label>
-              <DatePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900
-              bg-transparent border-0 border-b-2 border-gray-300 appearance-none
-              dark:text-white dark:border-gray-600 dark:focus:border-blue-500
-              focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                value={endDate}
-                onChange={(val) =>
-                  handleDateTimeChange(setEndDate, "end_date", val, "date")
-                }
-              />
-              {errors.end_date && (
-                <p className="text-red-500 text-xs mt-1">{errors.end_date}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Booking times */}
-          <div className="grid md:grid-cols-2 md:gap-6">
-            <div className="relative z-0 w-full mb-5 group">
-              <label>Start Time</label>
-              <TimePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900
-              bg-transparent border-0 border-b-2 border-gray-300 appearance-none
-              dark:text-white dark:border-gray-600 dark:focus:border-blue-500
-              focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                value={startTime}
-                onChange={(val) =>
-                  handleDateTimeChange(setStartTime, "start_time", val, "time")
-                }
-              />
-              {errors.start_time && (
-                <p className="text-red-500 text-xs mt-1">{errors.start_time}</p>
-              )}
-            </div>
-
-            <div className="relative z-0 w-full mb-5 group">
-              <label>End Time</label>
-              <TimePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900
-              bg-transparent border-0 border-b-2 border-gray-300 appearance-none
-              dark:text-white dark:border-gray-600 dark:focus:border-blue-500
-              focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                value={endTime}
-                onChange={(val) =>
-                  handleDateTimeChange(setEndTime, "end_time", val, "time")
-                }
-              />
-              {errors.end_time && (
-                <p className="text-red-500 text-xs mt-1">{errors.end_time}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Custom Rate */}
-          <div className="relative z-0 w-full mb-5 group">
-            <input
-              type="text"
-              name="custom_rate"
-              id="custom_rate"
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              value={inputs.custom_rate}
-              onChange={handleChange}
-            />
-            <label
-              htmlFor="custom_rate"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Custom Rate
-            </label>
-          </div>
-
-          {/* Submit */}
-          <button
-            disabled={disabled}
-            className="w-full border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
-          >
-            Update Booking
-          </button>
-        </form>
-      </div>
-    </LocalizationProvider>
+    <BookingForm
+      title={`Edit Booking ${no ? `#${no}` : ""}`}
+      inputs={inputs}
+      setInputs={setInputs}
+      drivers={drivers}
+      vehicles={vehicles}
+      selectedDriver={selectedDriver}
+      setSelectedDriver={setSelectedDriver}
+      selectedVehicle={selectedVehicle}
+      setSelectedVehicle={setSelectedVehicle}
+      startDate={startDate}
+      setStartDate={setStartDate}
+      endDate={endDate}
+      setEndDate={setEndDate}
+      startTime={startTime}
+      setStartTime={setStartTime}
+      endTime={endTime}
+      setEndTime={setEndTime}
+      errors={errors}
+      disabled={disabled}
+      onSubmit={handleSubmit}
+      customerName={customerName}
+    />
   );
 }

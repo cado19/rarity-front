@@ -17,7 +17,8 @@ import {
   fetchBookingDrivers,
   get_booking_vehicles,
 } from "../../api/fetch";
-import { save_booking} from "../../api/post";
+import { save_booking } from "../../api/post";
+import BookingForm from "../../components/bookings/form";
 
 export default function NewBooking() {
   // Format date helper
@@ -47,6 +48,8 @@ export default function NewBooking() {
   const [clients, setClients] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [vehicles, setVehicles] = useState([]);
+  const [dailyRate, setDailyRate] = useState(0);
+
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
@@ -74,6 +77,7 @@ export default function NewBooking() {
     out_capital: "0",
     oneday: false,
     vat: false,
+    override: false,
   });
 
   const navigate = useNavigate();
@@ -107,6 +111,7 @@ export default function NewBooking() {
         vRes.vehicles.map((v) => ({
           value: v.id,
           label: `${v.make} ${v.model} ${v.number_plate}`,
+          daily_rate: v.daily_rate,
         })),
       );
     } catch (error) {
@@ -225,269 +230,33 @@ export default function NewBooking() {
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
-        <BookingNav />
-        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-4xl my-5 text-center ">
-          New Booking
-        </h1>
-        <form onSubmit={handleSubmit} className="w-4/5 mx-auto">
-          {/* Checkbox for one day  */}
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={inputs.oneday}
-              onChange={() => {
-                setOneDay(!oneday);
-                setInputs(prev => ({ ...prev, oneday: !prev.oneday}))
-              }}
-              className="form-checkbox h-5 w-5 text-blue-600 m-3"
-            />
-            <span className=" text-gray-500 dark:text-gray-400">
-              {oneday
-                ? "One Day Booking Turned On"
-                : "One Day Booking Turned Off"}
-            </span>
-          </label>
+    <div className="bg-white px-4 pb-4 pt-4 rounded shadow-md mt-2 mx-3">
+      <BookingNav />
 
-          {/* Client select  */}
-          <div className=" mb-5 group">
-            <Select
-              options={clients}
-              defaultValue={clients[0]}
-              value={selectedClient}
-              onChange={(option) => {
-                setSelectedClient(option);
-                handleSelectChange("customer_id", option.value);
-              }}
-              placeholder="Select Client"
-              isSearchable
-            />
-            {errors.customer_id && (
-              <p className="text-red-500 text-xs mt-1">{errors.customer_id}</p>
-            )}
-          </div>
-
-          {/* Vehicle select  */}
-          <div className=" mb-5 group">
-            <Select
-              options={vehicles}
-              defaultValue={vehicles[0]}
-              value={selectedVehicle}
-              onChange={(option) => {
-                setSelectedVehicle(option);
-                handleSelectChange("vehicle_id", option.value);
-              }}
-              placeholder="Select Vehicle"
-              isSearchable
-            />
-            {errors.vehicle_id && (
-              <p className="text-red-500 text-xs mt-1">{errors.vehicle_id}</p>
-            )}
-          </div>
-
-          {/* Driver select  */}
-          <div className=" mb-5 group">
-            <Select
-              options={drivers}
-              defaultValue={drivers[0]}
-              value={selectedDriver}
-              onChange={(option) => {
-                setSelectedDriver(option);
-                handleSelectChange("driver_id", option.value);
-              }}
-              placeholder="Select Driver"
-              isSearchable
-            />
-            {errors.driver_id && (
-              <p className="text-red-500 text-xs mt-1">{errors.driver_id}</p>
-            )}
-          </div>
-          {/* Show locations  */}
-          {!oneday && (
-            <div className="flex flex-row">
-              <p
-                className="text-blue-400 flex flex-row mb-4 cursor-pointer"
-                onClick={() => setShow(!show)}
-              >
-                Locations
-                {show ? (
-                  <span>
-                    <AiFillCaretDown size={15} className="mt-1" />
-                  </span>
-                ) : (
-                  <AiFillCaretRight size={15} className="mt-1" />
-                )}
-              </p>
-            </div>
-          )}
-
-          {/* Location  */}
-          {show &&
-            !oneday(
-              <div className="grid md:grid-cols-2 md:gap-6">
-                <div className="relative z-0 w-full mb-5 group">
-                  <input
-                    type="text"
-                    name="in_capital"
-                    id="in_capital"
-                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                    placeholder=""
-                    required
-                    value={inputs.in_capital}
-                    onChange={handleChange}
-                  />
-                  <label
-                    for="first_name"
-                    className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                  >
-                    Within Nairobi
-                  </label>
-                  {errors.in_capital && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.in_capital}
-                    </p>
-                  )}
-                </div>
-
-                <div className="relative z-0 w-full mb-5 group">
-                  <input
-                    type="text"
-                    name="out_capital"
-                    id="out_capital"
-                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                    placeholder=""
-                    required
-                    value={inputs.out_capital}
-                    onChange={handleChange}
-                  />
-                  <label
-                    for="last_name"
-                    className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                  >
-                    Outside Nairobi
-                  </label>
-                  {errors.out_capital && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.last_name}
-                    </p>
-                  )}
-                </div>
-              </div>,
-            )}
-
-          {/* Booking dates  */}
-          <div className="grid md:grid-cols-2 md:gap-6">
-            <div className="relative z-0 w-full mb-5 group">
-              <label>Start Date</label>
-              <DatePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900
-              bg-transparent border-0 border-b-2 border-gray-300 appearance-none
-              dark:text-white dark:border-gray-600 dark:focus:border-blue-500
-              focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder="Start Date"
-                value={startDate}
-                onChange={(val) =>
-                  handleDateTimeChange(setStartDate, "start_date", val, "date")
-                }
-              />
-              {errors.start_date && (
-                <p className="text-red-500 text-xs mt-1">{errors.start_date}</p>
-              )}
-            </div>
-            {!oneday && (
-              <div className="relative z-0 w-full mb-5 group">
-                <label>End Date</label>
-                <DatePicker
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                  placeholder="End Date"
-                  value={endDate}
-                  onChange={(val) =>
-                    handleDateTimeChange(setEndDate, "end_date", val, "date")
-                  }
-                />
-                {errors.end_date && (
-                  <p className="text-red-500 text-xs mt-1">{errors.end_date}</p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Booking times  */}
-          <div className="grid md:grid-cols-2 md:gap-6">
-            <div className="relative z-0 w-full mb-5 group">
-              <label>Start Time</label>
-              <TimePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder="Start Time"
-                value={startTime}
-                onChange={(val) =>
-                  handleDateTimeChange(setStartTime, "start_time", val, "time")
-                }
-                name="start_time"
-              />
-              {errors.start_time && (
-                <p className="text-red-500 text-xs mt-1">{errors.start_time}</p>
-              )}
-            </div>
-
-            <div className="relative z-0 w-full mb-5 group">
-              <label>End Time</label>
-              <TimePicker
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder="End Time"
-                value={endTime}
-                onChange={(val) =>
-                  handleDateTimeChange(setEndTime, "end_time", val, "time")
-                }
-                name="end_time"
-              />
-              {errors.end_time && (
-                <p className="text-red-500 text-xs mt-1">{errors.end_time}</p>
-              )}
-            </div>
-            {/* Driver select  */}
-            <div className="relative z-0 w-full mb-5 group">
-              <input
-                type="text"
-                name="custom_rate"
-                id="custom_rate"
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                value={inputs.custom_rate}
-                onChange={handleChange}
-              />
-
-              <label
-                for="custom_rate"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-              >
-                Custome Rate
-              </label>
-            </div>
-
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={inputs.vat}
-                onChange={() =>
-                  setInputs((prev) => ({ ...prev, vat: !prev.vat }))
-                }
-                className="form-checkbox h-5 w-5 text-blue-600 m-3"
-              />
-              <span className="text-gray-500">
-                {inputs.vat ? "VAT Applied (16%)" : "No VAT"}
-              </span>
-            </label>
-
-            <button
-              disabled={disabled}
-              className="w-full border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
-      </div>
-    </LocalizationProvider>
+      <BookingForm
+        title="New Booking"
+        inputs={inputs}
+        setInputs={setInputs}
+        clients={clients}
+        drivers={drivers}
+        vehicles={vehicles}
+        selectedDriver={selectedDriver}
+        setSelectedDriver={setSelectedDriver}
+        selectedVehicle={selectedVehicle}
+        setSelectedVehicle={setSelectedVehicle}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        startTime={startTime}
+        setStartTime={setStartTime}
+        endTime={endTime}
+        setEndTime={setEndTime}
+        errors={errors}
+        disabled={disabled}
+        onSubmit={handleSubmit}
+        customerName={""} // new booking, no customer yet
+      />
+    </div>
   );
 }
