@@ -436,6 +436,7 @@ export default function Booking() {
         lname={booking.c_lname}
         start={booking.start_date}
         end={booking.end_date}
+        duration={booking.duration}
       />
       <div className="flex flex-row gap-4 mt-2 ml-2 mr-1">
         {/* Booking details  */}

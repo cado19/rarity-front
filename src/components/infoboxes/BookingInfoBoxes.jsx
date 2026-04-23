@@ -1,11 +1,10 @@
 import React from "react";
 import { format } from 'date-fns';
 
-export default function BookingInfoBoxes({ fname, lname, start, end }) {
+export default function BookingInfoBoxes({ fname, lname, start, end, duration }) {
   const start_date = format(new Date(start), "MMMM do, yyyy");
   const end_date = format(new Date(end), "MMMM do, yyyy");
 
-  const duration = (new Date(end) - new Date(start)) / (1000 * 3600 * 24)
   return (
     <div className="flex gap-4 w-full mt-2 ml-1 mr-1">
       <BoxWrapper>
