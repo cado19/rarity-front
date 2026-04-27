@@ -30,6 +30,9 @@ export default function WorkOrderDetail({ workOrderId }) {
       <h2 className="font-bold">Work Order {order.work_order_number}</h2>
       <p><strong>Vehicle:</strong> {order.make} {order.model} ({order.number_plate})</p>
       <p><strong>Title:</strong> {order.title}</p>
+      {order.mileage && (
+        <p><strong>Mileage:</strong> {Number(order.mileage).toLocaleString()}Km</p>
+      )}
       <p><strong>Description:</strong> {order.description}</p>
       <p><strong>Status:</strong> {order.status}</p>
       <p><strong>Scheduled Date:</strong> {order.scheduled_date}</p>

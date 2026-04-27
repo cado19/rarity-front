@@ -19,6 +19,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
     vehicle_id: existingOrder?.vehicle_id || "",
     title: existingOrder?.title || "",
     description: existingOrder?.description || "",
+    mileage: existingOrder?.mileage || "",
     scheduled_date: existingOrder?.scheduled_date || "",
     completion_date: existingOrder?.completion_date || null,
     labor_cost: existingOrder?.labor_cost || "",
@@ -106,6 +107,16 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
             value={inputs.description}
             onChange={(e) => handleChange("description", e.target.value)}
             placeholder="Description"
+            className="w-full border rounded px-3 py-2"
+          />
+        </div>
+        
+        {/* Mileage */}
+        <div className="mb-5 group">
+          <textarea
+            value={inputs.mileage}
+            onChange={(e) => handleChange("mileage", e.target.value)}
+            placeholder="Mileage (Just number. Don't add 'Km')"
             className="w-full border rounded px-3 py-2"
           />
         </div>
