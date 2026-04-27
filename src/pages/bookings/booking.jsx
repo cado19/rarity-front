@@ -14,7 +14,11 @@ import Fuel from "./fuel";
 import { Mosaic, BlinkBlur } from "react-loading-indicators";
 import AddMedia from "./add_media";
 import { fetchBooking } from "../../api/fetch";
-import { assign_driver, save_fuel } from "../../api/post";
+import {
+  assign_driver,
+  complete_booking_with_mileage,
+  save_fuel,
+} from "../../api/post";
 
 export default function Booking() {
   const { id } = useParams();
@@ -237,15 +241,41 @@ export default function Booking() {
   // function to complete booking
   const completeBooking = () => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "Completing booking",
-      confirmButtonText: "Yes",
-      denyButtonText: "No",
-      showDenyButton: true,
-      showConfirmButton: true,
-    }).then((result) => {
+      title: "Complete Booking",
+      text: "Enter vehicle mileage",
+      input: "number",
+      inputAttributes: {
+        min: 0,
+        step: 1,
+      },
+      showCancelButton: true,
+      confirmButtonText: "Complete",
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        navigate(`/booking/${id}/complete`);
+        const mileage = result.value;
+
+        try {
+          const response = await complete_booking_with_mileage({
+            id,
+            vehicle_id: booking.vehicle_id,
+            mileage,
+          });
+
+          if (response.data.status === "Success") {
+            Swal.fire({
+              title: "Booking completed",
+              text: "Mileage logged successfully",
+              icon: "success",
+              confirmButtonText: "OK",
+            });
+            // Refresh booking data so UI shows updated status/mileage
+            getBooking();
+          } else {
+            Swal.fire("Error", response.data.message, "error");
+          }
+        } catch (err) {
+          Swal.fire("Error", "Request failed", "error");
+        }
       }
     });
   };

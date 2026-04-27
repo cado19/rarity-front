@@ -240,6 +240,8 @@ export default function NewBooking() {
         clients={clients}
         drivers={drivers}
         vehicles={vehicles}
+        selectedClient={selectedClient}
+        setSelectedClient={setSelectedClient}
         selectedDriver={selectedDriver}
         setSelectedDriver={setSelectedDriver}
         selectedVehicle={selectedVehicle}
@@ -255,7 +257,7 @@ export default function NewBooking() {
         errors={errors}
         disabled={disabled}
         onSubmit={handleSubmit}
-        customerName={""} // new booking, no customer yet
+        customerName={""}
       />
     </div>
   );
