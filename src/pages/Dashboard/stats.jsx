@@ -36,15 +36,34 @@ export default function StatsDashboard() {
   }
 
   return (
-    <div className="bg-white p-6 rounded shadow-md h-screen overflow-y-auto">
-      <h2 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-4 mt-2">Dashboard </h2>
-      <div className="flex space-x-4">
-        <div>Active Bookings: {stats.active_bookings}</div>
-        <div>Upcoming Bookings: {stats.upcoming_bookings}</div>
-        <div>Total Revenue: Ksh. {Number(stats.revenue_total).toLocaleString()}</div>
-      </div>
+<div className="bg-gray-100 min-h-screen p-6">
+  {/* Header */}
+  <h2 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-6">
+    Dashboard
+  </h2>
 
-      {/* Recent Bookings Section */}
+  {/* KPI Cards */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div className="bg-white p-4 rounded shadow">
+      <h3 className="text-sm text-gray-500">Active Bookings</h3>
+      <p className="text-xl font-semibold">{stats.active_bookings}</p>
+    </div>
+    <div className="bg-white p-4 rounded shadow">
+      <h3 className="text-sm text-gray-500">Upcoming Bookings</h3>
+      <p className="text-xl font-semibold">{stats.upcoming_bookings}</p>
+    </div>
+    <div className="bg-white p-4 rounded shadow">
+      <h3 className="text-sm text-gray-500">Total Revenue</h3>
+      <p className="text-xl font-semibold">
+        Ksh. {Number(stats.revenue_total).toLocaleString()}
+      </p>
+    </div>
+  </div>
+
+  {/* Middle Row */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    {/* Recent Bookings */}
+    <div className="bg-white p-4 rounded shadow">
       <h3 className="text-lg font-semibold mb-2">Recent Bookings</h3>
       <ul className="space-y-2">
         {stats.recent_bookings && stats.recent_bookings.length > 0 ? (
@@ -64,55 +83,68 @@ export default function StatsDashboard() {
           <li>No recent bookings found.</li>
         )}
       </ul>
+    </div>
 
-      {/* Top Customers */}
+    {/* Top Customers */}
+    <div className="bg-white p-4 rounded shadow">
       <h3 className="text-lg font-semibold mb-2">Top Customers</h3>
-      <ul className="space-y-1 mb-6">
+      <ul className="space-y-1">
         {stats.top_customers?.map((c) => (
           <li key={c.id}>
             {c.first_name} {c.last_name} — {c.booking_count} bookings
           </li>
         ))}
       </ul>
+    </div>
+  </div>
 
-      {/* Top Vehicles */}
+  {/* Bottom Row */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    {/* Top Vehicles */}
+    <div className="bg-white p-4 rounded shadow">
       <h3 className="text-lg font-semibold mb-2">Top Vehicles</h3>
-      <ul className="space-y-1 mb-6">
+      <ul className="space-y-1">
         {stats.top_vehicles?.map((v) => (
           <li key={v.id}>
             {v.make} {v.model} ({v.number_plate}) — {v.booking_count} bookings
           </li>
         ))}
       </ul>
+    </div>
 
-      {/* Revenue by Customer */}
+    {/* Revenue */}
+    <div className="bg-white p-4 rounded shadow">
       <h3 className="text-lg font-semibold mb-2">Revenue by Customer</h3>
-      <ul className="space-y-1 mb-6">
+      <ul className="space-y-1 mb-4">
         {stats.revenue_by_customer?.map((c) => (
           <li key={c.id}>
-            {c.first_name} {c.last_name} — Ksh. {Number(c.total_spent).toLocaleString()}
+            {c.first_name} {c.last_name} — Ksh.{" "}
+            {Number(c.total_spent).toLocaleString()}
           </li>
         ))}
       </ul>
 
-      {/* Revenue by Vehicle */}
       <h3 className="text-lg font-semibold mb-2">Revenue by Vehicle</h3>
-      <ul className="space-y-1 mb-6">
+      <ul className="space-y-1">
         {stats.revenue_by_vehicle?.map((v) => (
           <li key={v.id}>
             {v.make} {v.model} — Ksh. {Number(v.total_revenue).toLocaleString()}
           </li>
         ))}
       </ul>
-
-      <div className="mt-6">
-        <button
-          onClick={() => navigate("/calen")}
-          className="text-blue-600 underline"
-        >
-          View Calendar →
-        </button>
-      </div>
     </div>
+  </div>
+
+  {/* Calendar Link */}
+  <div className="mt-6 text-end">
+    <button
+      onClick={() => navigate("/calen")}
+      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    >
+      View Calendar →
+    </button>
+  </div>
+</div>
+
   );
 }
