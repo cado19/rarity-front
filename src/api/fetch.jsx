@@ -187,3 +187,12 @@ export const fetchAgentBookings = async (agent_id) => {
   });
   return response.data;
 };
+
+
+// Dashboard Stats
+export const getDashboardStats = async (account_id) => {
+  const response = await api.post("/api/dashboard/web_home_stats.php", {
+    account_id,
+  });
+  return response.data;
+};

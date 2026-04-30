@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 import PageContent from '../PageContent'
 import Dashboard from '../../pages/Dashboard'
+import StatsDashboard from '../../pages/Dashboard/stats'
 import AllVehicles from '../../pages/vehicles/all'
 import AllCustomers from '../../pages/customers/all'
 import Vehicle from '../../pages/vehicles/vehicle'
@@ -68,8 +69,8 @@ export default function AppRouter() {
       <HashRouter>
         <Routes>
           <Route path='/' element={<PageContent />}>
-            <Route index element={<Dashboard />} />
-            <Route path='/calen' element={<Calen />} />
+            <Route index element={<StatsDashboard />} />
+            <Route path='/calen' element={<Dashboard />} />
             {/* Vehicle Routes  */}
             <Route path='/vehicles' element={<AllVehicles />} />
             <Route path='/vehicle/:id' element={<Vehicle />} />
