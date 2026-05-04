@@ -76,3 +76,20 @@ export const get_agent_commissions = async (payload) => {
   );
   return response;
 };
+
+// Initiate a conversation
+export const initiateConversation = async (agent_id, customer_id, message = "Hello, how are you") => {
+  const res = await api.post("/api/chat/initiate.php", { agent_id, customer_id, message });
+  return res.data; // { status, conversation_id }
+};
+
+// Send a new message
+export const sendMessage = async (conversation_id, sender_id, sender_role, message) => {
+  const res = await api.post("/tests/send.php", {
+    conversation_id,
+    sender_id,
+    sender_role,
+    message,
+  });
+  return res.data; // { status, message }
+};

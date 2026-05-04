@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaCalendarPlus, FaCalendar } from "react-icons/fa";
+import { FaCalendarPlus, FaCalendar, FaComments } from "react-icons/fa";
 import { BsPersonPlusFill } from "react-icons/bs";
 import { BiSolidBadgeDollar } from "react-icons/bi";
 import { PiCarSimpleFill } from "react-icons/pi";
 import { Tooltip } from "react-tooltip";
 import { userUrl } from "../../constants/url";
 import Swal from "sweetalert2";
+import { useChat } from "../../context/ChatContext";
 
 export default function Header() {
   // Get the user's name from local storage
   const [isOpen, setIsOpen] = useState(false);
+
+  const { toggleChat, unreadCount } = useChat();
+
+  console.log("Unread text count: ", unreadCount);
 
   const userData = localStorage.getItem("user");
   const userName = userData ? JSON.parse(userData).name : "Guest";
@@ -46,6 +51,20 @@ export default function Header() {
     <div className="bg-white h-16 px-4 flex justify-end items-center border-b border-gray-200">
       {/* Utility Links  */}
       <div className="flex items-center space-x-4 mr-5">
+        {/* Chat Icon */}
+        <button
+          onClick={toggleChat}
+          className="relative text-yellow-600 hover:text-blue-500 inline-flex justify-center"
+          data-tooltip-id="chat-tooltip"
+          data-tooltip-content="Chats"
+        >
+          <FaComments size={16} />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-1">
+              {unreadCount}
+            </span>
+          )}
+        </button>
         <button
           onClick={copyCatalogURL}
           className="text-yellow-600 hover:text-blue-500inline-flex justify-center"

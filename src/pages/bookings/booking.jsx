@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
+import { FaArrowLeft, FaComments } from "react-icons/fa";
+import { Mosaic, BlinkBlur } from "react-loading-indicators";
 import { baseURL, contractSignUrl, contractViewUrl } from "../../constants/url";
 import { voucherUrl } from "../../constants/url";
 import { feUrl } from "../../constants/url";
@@ -8,10 +11,7 @@ import axios from "axios";
 import Extend from "./extend";
 import Delivery from "./delivery";
 import Loading from "../../components/PageContent/Loading";
-import Swal from "sweetalert2";
-import { FaArrowLeft } from "react-icons/fa";
 import Fuel from "./fuel";
-import { Mosaic, BlinkBlur } from "react-loading-indicators";
 import AddMedia from "./add_media";
 import { fetchBooking } from "../../api/fetch";
 import {
@@ -19,9 +19,11 @@ import {
   complete_booking_with_mileage,
   save_fuel,
 } from "../../api/post";
+import { useChat } from "../../context/ChatContext";
 
 export default function Booking() {
   const { id } = useParams();
+  const { openChatWithCustomer } = useChat();
   const [roleId, setRoleId] = useState(null);
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -697,6 +699,14 @@ export default function Booking() {
             }
           >
             Sign contract
+          </button>
+
+          <button
+            onClick={() => openChatWithCustomer(booking.customer_id)}
+            className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center"
+            title="Chat"
+          >
+            <FaComments className="text-lg" />
           </button>
         </div>
       </div>

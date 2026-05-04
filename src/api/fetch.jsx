@@ -79,7 +79,7 @@ export const get_issue = async (id) => {
 export const fetchWorkOrders = async () => {
   const response = api.get(`/api/workorders/all.php`);
   return response;
-}
+};
 
 // get single work order
 export const fetchWorkOrder = async (id) => {
@@ -87,7 +87,7 @@ export const fetchWorkOrder = async (id) => {
     params: { id },
   });
   return response;
-}
+};
 
 // -------------------- Bookings Functions --------------------
 // get all bookings
@@ -188,6 +188,26 @@ export const fetchAgentBookings = async (agent_id) => {
   return response.data;
 };
 
+// Fetch all conversations for an agent
+export const fetchAgentChats = async (agent_id) => {
+  const res = await api.post("/api/chat/list_agent.php", { agent_id });
+  return res.data; // { status, conversations }
+};
+
+// Fetch number of unread agent messages
+export const fetchAgentUnread = async (agent_id) => {
+  const res = await api.post("api/chat/unread_agent.php", { agent_id });
+  return res.data;
+};
+
+// Fetch messages in a conversation
+export const fetchMessages = async (conversation_id) => {
+  const res = await api.post("api/chat/read.php", {
+    conversation_id,
+    viewer_role: "agent",
+  });
+  return res.data;
+};
 
 // Dashboard Stats
 export const getDashboardStats = async (account_id) => {
