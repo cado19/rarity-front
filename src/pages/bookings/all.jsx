@@ -2,6 +2,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { baseURL } from "../../constants/url";
+import Loading from '../../components/PageContent/Loading';
 
 import { Link } from "react-router-dom";
 import { formatDate } from "date-fns";
@@ -57,11 +58,7 @@ export default function AllBookings() {
   };
   // console.log(bookings);
   if (loading) {
-    return (
-      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
-        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {

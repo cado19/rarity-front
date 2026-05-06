@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { FaDownload } from "react-icons/fa";
+import axios from "axios";
 import { fetchWorkOrder } from "../../api/fetch";
 import StyledButton from "../../components/styled/StyledButton";
-import axios from "axios";
+import Loading from "../../components/PageContent/Loading";
 
 export default function WorkOrderShowPage() {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,6 +23,8 @@ export default function WorkOrderShowPage() {
         }
       } catch (error) {
         console.error("Error fetching work order:", error);
+      } finally {
+        setLoading(false);
       }
     };
     loadOrder();
@@ -30,7 +35,7 @@ export default function WorkOrderShowPage() {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/workorders/delete.php`,
-        { work_order_id: id }
+        { work_order_id: id },
       );
       if (res.data.status === "Success") {
         navigate("/workorders");
@@ -42,7 +47,7 @@ export default function WorkOrderShowPage() {
     }
   };
 
-  if (!order) return <p>Loading...</p>;
+  if (loading) return <Loading />;
 
   return (
     <div className="bg-white rounded shadow-md p-6 border border-gray-200 max-w-3xl mx-auto mt-6">
@@ -51,17 +56,36 @@ export default function WorkOrderShowPage() {
       </h1>
 
       <div className="space-y-2 text-gray-700">
-        <p><strong>Vehicle:</strong> {order.make} {order.model} ({order.number_plate})</p>
-        <p><strong>Title:</strong> {order.title}</p>
-        <p><strong>Description:</strong> {order.description}</p>
-        <p><strong>Status:</strong> {order.status}</p>
-        <p><strong>Scheduled Date:</strong> {order.scheduled_date}</p>
+        <p>
+          <strong>Vehicle:</strong> {order.make} {order.model} (
+          {order.number_plate})
+        </p>
+        <p>
+          <strong>Title:</strong> {order.title}
+        </p>
+        <p>
+          <strong>Description:</strong> {order.description}
+        </p>
+        <p>
+          <strong>Status:</strong> {order.status}
+        </p>
+        <p>
+          <strong>Scheduled Date:</strong> {order.scheduled_date}
+        </p>
         {order.completion_date && (
-          <p><strong>Completed:</strong> {order.completion_date}</p>
+          <p>
+            <strong>Completed:</strong> {order.completion_date}
+          </p>
         )}
-        <p><strong>Labor Cost:</strong> {order.labor_cost}</p>
-        <p><strong>Parts Cost:</strong> {order.parts_cost}</p>
-        <p><strong>Total Cost:</strong> {order.total_cost}</p>
+        <p>
+          <strong>Labor Cost:</strong> {order.labor_cost}
+        </p>
+        <p>
+          <strong>Parts Cost:</strong> {order.parts_cost}
+        </p>
+        <p>
+          <strong>Total Cost:</strong> {order.total_cost}
+        </p>
       </div>
 
       <h3 className="text-lg font-semibold mt-6 mb-2">Items</h3>
@@ -89,13 +113,26 @@ export default function WorkOrderShowPage() {
       )}
 
       <div className="mt-6 flex gap-4">
-        <StyledButton to={`/workorders/${id}/edit`} label="Edit" variant="amber" />
+        <StyledButton
+          to={`/workorders/${id}/edit`}
+          label="Edit"
+          variant="amber"
+        />
         <button
           onClick={handleDelete}
           className="px-4 py-2 border border-red-600 text-red-600 rounded hover:bg-red-700 hover:text-white transition"
         >
           Delete
         </button>
+        <a
+          href={`${import.meta.env.VITE_BASE_URL}/api/workorders/download.php?id=${id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 px-4 py-2 border border-green-600 text-green-600 rounded hover:bg-green-600 hover:text-white transition"
+        >
+          <FaDownload className="text-lg" />
+          <span>Download PDF</span>
+        </a>
       </div>
     </div>
   );

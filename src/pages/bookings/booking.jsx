@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import { FaArrowLeft, FaComments } from "react-icons/fa";
+import { FaArrowLeft, FaComments, FaDownload } from "react-icons/fa";
 import { Mosaic, BlinkBlur } from "react-loading-indicators";
 import { baseURL, contractSignUrl, contractViewUrl } from "../../constants/url";
 import { voucherUrl } from "../../constants/url";
@@ -15,6 +15,7 @@ import Fuel from "./fuel";
 import AddMedia from "./add_media";
 import { fetchBooking } from "../../api/fetch";
 import {
+  activate_booking,
   assign_driver,
   complete_booking_with_mileage,
   save_fuel,
@@ -34,6 +35,7 @@ export default function Booking() {
   const [mediaModalOpen, setMediaModalOpen] = useState(false); // this is used to control the fuel modal
   const [deliveryModalOpen, setDeliveryModalOpen] = useState(false); // this is used to control the delivery modal
   const [voucherBtnOpen, setVoucherBtnOpen] = useState(false); // this is used to control the voucher links dropdown
+  const [contractBtnOpen, setContractBtnOpen] = useState(false); // this is used to control the voucher links dropdown
   const [total, setTotal] = useState(0); // this is used because total changes with driver fee
 
   const [extendInfo, setExtendInfo] = useState(null);
@@ -260,6 +262,7 @@ export default function Booking() {
           const response = await complete_booking_with_mileage({
             id,
             vehicle_id: booking.vehicle_id,
+            user_id: userId,
             mileage,
           });
 
@@ -291,9 +294,29 @@ export default function Booking() {
       denyButtonText: "No",
       showDenyButton: true,
       showConfirmButton: true,
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        navigate(`/booking/${id}/activate`);
+        // navigate(`/booking/${id}/activate`);
+        try {
+          const response = await activate_booking({
+            id,
+            user_id: userId,
+          });
+          console.log(response);
+          if (response.data.status === "Success") {
+            Swal.fire({
+              title: "Booking activated",
+              icon: "success",
+              confirmButtonText: "OK",
+            });
+            // Refresh booking data so UI shows updated status
+            getBooking();
+          } else {
+            Swal.fire("Error", response.data.message, "error");
+          }
+        } catch (error) {
+          Swal.fire("Error", "Request failed", "error");
+        }
       }
     });
   };
@@ -354,7 +377,7 @@ export default function Booking() {
   const getBooking = async () => {
     try {
       const response = await fetchBooking(id);
-      // console.log(response);
+      console.log("Booking: ", response);
       if (response.data.booking.driver_fee > 0) {
         const total =
           Number(response.data.booking.total) +
@@ -493,12 +516,12 @@ export default function Booking() {
             {booking.custom_rate > 0 ? (
               <span>
                 <span className="line-through text-gray-400">
-                  {booking.daily_rate}
+                  {Number(booking.daily_rate).toLocaleString()}
                 </span>{" "}
-                <span>{booking.custom_rate}</span>
+                <span>{Number(booking.custom_rate).toLocaleString()}</span>
               </span>
             ) : (
-              <span>{booking.daily_rate}</span>
+              <span>{Number(booking.daily_rate).toLocaleString()}</span>
             )}
             /-
           </p>
@@ -558,6 +581,10 @@ export default function Booking() {
           </p>
           <p className="leading-loose text-center">
             <span className="font-bold">End Time:</span> {booking.end_time}
+          </p>
+          <p className="leading-loose text-center">
+            <span className="font-bold">Distance driven:</span>{" "}
+            {Number(booking.mileage).toLocaleString()}km
           </p>
           <hr />
           <div className="flex flex-row gap-4 w-full mt-10">
@@ -675,15 +702,56 @@ export default function Booking() {
               >
                 Copy voucher link (USD)
               </button>
+
+              {/* Download links */}
+              <a
+                href={`https://backend.raritycars.com/api/bookings/download.php?id=${id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 border border-green-600 text-green-600 hover:bg-green-600 hover:text-white font-bold py-2 px-4 rounded transition duration-300"
+              >
+                <FaDownload /> Download Voucher (KES)
+              </a>
+              <a
+                href={`https://backend.raritycars.com/api/bookings/download_usd.php?id=${id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black font-bold py-2 px-4 rounded transition duration-300"
+              >
+                <FaDownload /> Download Voucher (USD)
+              </a>
             </div>
           )}
           {/* contract button  */}
           <button
-            className="border border-gray-800 text-gray-800 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-800 hover:text-white dark:hover:bg-gray-400 dark:hover:text-gray-800 font-bold mt-2 py-2 px-4 rounded transition duration-300"
-            onClick={() => copyContractLink()}
+            className="border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300"
+            onClick={() => setContractBtnOpen(!contractBtnOpen)}
           >
-            Copy contract link
+            Contract Options
           </button>
+
+          {contractBtnOpen && (
+            <div className="absolute mt-2 w-64 bg-white border rounded shadow-lg z-10 flex flex-col p-2 gap-2">
+              {/* Copy links */}
+              <button
+                className="border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white font-bold py-2 px-4 rounded transition duration-300"
+                onClick={() => copyContractLink()}
+              >
+                Copy Contract Link
+              </button>
+
+              {/* Download link */}
+              <a
+                href={`https://backend.raritycars.com/api/contracts/download.php?id=${id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 border border-green-600 text-green-600 hover:bg-green-600 hover:text-white font-bold py-2 px-4 rounded transition duration-300"
+              >
+                <FaDownload /> Download Contract PDF
+              </a>
+            </div>
+          )}
+
           {booking.ct_status == "unsigned" && (
             <button
               className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
@@ -703,7 +771,7 @@ export default function Booking() {
 
           <button
             onClick={() => openChatWithCustomer(booking.customer_id)}
-            className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center"
+            className="bg-blue-600 text-white mt-2 p-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center"
             title="Chat"
           >
             <FaComments className="text-lg" />

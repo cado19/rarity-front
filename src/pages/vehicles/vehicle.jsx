@@ -12,6 +12,8 @@ import Swal from "sweetalert2";
 import { FaShare } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 import { deleteVehicle } from "../../api/delete";
+import { update_vehicle_status } from "../../api/put";
+import { get_vehicle_history } from "../../api/fetch";
 import AddImage from "./add_image";
 import StyledButton from "../../components/styled/StyledButton";
 
@@ -19,8 +21,14 @@ export default function Vehicle() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // get user id from local storage
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData.id;
+
   //   const carImg = require('../../assets/car-img.png');
   const [vehicle, setVehicle] = useState(null);
+  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [disabled, setDisabled] = useState(false);
@@ -67,35 +75,20 @@ export default function Vehicle() {
       console.log(errorMessage);
     }
   }
-  const validate = (rate) => {
-    const errors = {};
-    if (!rate) {
-      errors.rate = "Rate is required";
+
+  // fetch history
+  const fetchHistory = async () => {
+    try {
+      const response = await get_vehicle_history(id);
+      console.log("history response: ", response);
+      if (response.data.status === "Success") {
+        setHistory(response.data.history);
+      }
+    } catch (err) {
+      console.error("Error fetching history:", err.message);
     }
-    setErrors(errors);
-    return errors;
   };
 
-  const submitRate = async (data) => {
-    setDisabled(true);
-    console.log(data);
-    const validationErrors = validate(data.rate);
-    if (Object.keys(validationErrors).length > 0) {
-      console.log("Form could not be submitted");
-      console.log(validationErrors);
-      setDisabled(false);
-    } else {
-      const response = await axios.post(rateUrl, data);
-      Swal.fire({
-        title: response.data.status,
-        text: response.data.message,
-        icon: response.data.status === "Success" ? "success" : "error",
-        confirmButtonText: "OK",
-      });
-      getVehicle(); // Refresh vehicle data after updating rate
-      setDisabled(false);
-    }
-  };
   // upload image function
   const handleUpload = async (data) => {
     if (!data) return;
@@ -156,12 +149,32 @@ export default function Vehicle() {
     setDisabled(false);
   };
 
+  // Update status
+  const updateStatus = async (newStatus) => {
+    try {
+      const response = await update_vehicle_status({
+        id: vehicle.id,
+        status: newStatus,
+        user_id: userId,
+      });
+      Swal.fire({
+        title: response.data.status,
+        text: response.data.message,
+        icon: response.data.status === "Success" ? "success" : "error",
+      });
+      getVehicle(); // refresh data
+    } catch (error) {
+      Swal.fire("Error", error.message, "error");
+    }
+  };
+
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
     if (!loggedIn) {
       navigate("/login");
     }
     getVehicle();
+    fetchHistory();
     checkMessage();
   }, []);
 
@@ -190,7 +203,7 @@ export default function Vehicle() {
     <div className="flex flex-col gap-4 ml-1">
       {/* Back Button  */}
       <button
-        onClick={() => navigate('/vehicles')}
+        onClick={() => navigate("/vehicles")}
         className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 transition"
       >
         <FaArrowLeft className="text-[#9ACD32]" /> {/* YellowGreen tone */}
@@ -200,9 +213,20 @@ export default function Vehicle() {
         make={vehicle.make}
         model={vehicle.model}
         number_plate={vehicle.number_plate}
-        id={vehicle.id}
         category={vehicle.category_name}
+        mileage={vehicle.mileage}
+        bookingsCount={vehicle.active_bookings}
+        status={
+          vehicle.maintenance === "yes"
+            ? "Under Maintenance"
+            : vehicle.active_bookings > 0
+              ? "Booked"
+              : vehicle.availability === "available"
+                ? "Available"
+                : "Unavailable"
+        }
       />
+
       <div className="flex flex-row gap-4 w-full">
         {/* vehicle image  */}
         <div className="w-[20rem] h-[25rem] bg-white p-4 rounded-sm border border-gray flex flex-col">
@@ -251,47 +275,29 @@ export default function Vehicle() {
             {vehicle.daily_rate}/-
             <span className="text-amber-600">(Per Day)</span>
           </div>
-          {/* daily rate form  */}
-          <strong className="text-gray-700 font-medium text-xl mt-4 italic">
-            Update Daily Rate
-          </strong>
 
-          <DailyRateForm
-            vehicle_id={vehicle.id}
-            onSubmit={submitRate}
-            errors={errors}
-            disabled={disabled}
-          />
-          {/* Key Features  */}
-          <strong className="text-gray-700 font-medium text-xl mt-4">
-            Key Features
+          {/* Status update buttons */}
+          <strong className="text-gray-700 font-medium text-xl mt-6">
+            Update Status
           </strong>
-          <ul className="ml-3">
-            <li className="text-md italic flex flex-row">
-              <span>
-                <FaCheck className="text-amber-400" />
-              </span>{" "}
-              {vehicle.seats} seater
-            </li>
-            <li className="text-md italic flex flex-row">
-              <span>
-                <FaCheck className="text-amber-400" />
-              </span>
-              {vehicle.category_name}{" "}
-            </li>
-            <li className="text-md italic flex flex-row">
-              <span>
-                <FaCheck className="text-amber-400" />
-              </span>
-              {vehicle.drive_train}{" "}
-            </li>
-            <li className="text-md italic flex flex-row">
-              <span>
-                <FaCheck className="text-amber-400" />
-              </span>
-              {vehicle.color}{" "}
-            </li>
-          </ul>
+          <div className="flex gap-2 mt-2">
+            {vehicle.maintenance === "yes" ? (
+              <button
+                onClick={() => updateStatus("clear_maintenance")}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Remove from Maintenance
+              </button>
+            ) : (
+              <button
+                onClick={() => updateStatus("maintenance")}
+                className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-600"
+              >
+                Mark Under Maintenance
+              </button>
+            )}
+          </div>
+
           <div className="mt-4 flex gap-4">
             <button
               onClick={handleDelete}
@@ -318,6 +324,27 @@ export default function Vehicle() {
             />
           </div>
         </div>
+      </div>
+      {/* Vehicle status history */}
+      <div className="bg-white p-4 rounded-sm border border-gray-200 mt-6">
+        <strong className="text-gray-700 font-medium text-xl">
+          Status History
+        </strong>
+        <ul className="mt-3 space-y-2">
+          {history.map((h) => (
+            <li key={h.id} className="border-b pb-2">
+              <div className="flex justify-between">
+                <span className="font-semibold">{h.status}</span>
+                <span className="text-sm text-gray-500">
+                  {new Date(h.created_at).toLocaleString()}
+                </span>
+              </div>
+              <div className="text-sm text-gray-600">
+                {h.notes} {h.account_name ? `by ${h.account_name}` : ""}
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
       {/* Vehicle will show up here */}
       <AddImage

@@ -14,32 +14,32 @@ export const get_active_vehicles = async () => {
   const response = await api.get("/api/dashboard/active_vehicles.php");
   return response;
 };
-
+// Fetch number of vehicles reserved
 export const get_reserved_vehicles = async () => {
   const response = await api.get("/api/dashboard/reserved_vehicles.php");
   return response;
 };
-
+// Fetch vehicles returning
 export const get_returning_vehicles = async () => {
   const response = await api.get("/api/dashboard/due_out_count.php");
   return response;
 };
-
+// Fetch vehicle number
 export const get_vehicle_count = async () => {
   const response = await api.get("/api/dashboard/vehicle_count.php");
   return response;
 };
-
+// Fetch all vehicles 
 export const get_all_vehicles = async () => {
   const response = await api.get(`/api/fleet/all.php`);
   return response;
 };
-
+// Fetch vehicles for booking form dropdown
 export const get_booking_vehicles = async () => {
   const response = await api.get("/api/fleet/booking_vehicles.php");
   return response.data;
 };
-
+// Fetch vehicle extras
 export const get_vehicle_extras = async (id) => {
   const response = await api.get(`/api/fleet/read_extras.php`, {
     params: { id },
@@ -47,6 +47,7 @@ export const get_vehicle_extras = async (id) => {
   return response;
 };
 
+// Fetch vehicle basics
 export const get_vehicle_base = async (id) => {
   const response = await api.get(`/api/fleet/read_base.php`, {
     params: { id },
@@ -54,10 +55,17 @@ export const get_vehicle_base = async (id) => {
   return response;
 };
 
+// Fetch vehicle pricing
 export const get_vehicle_pricing = async (id) => {
   const response = await api.get(`/api/fleet/read_pricing.php`, {
     params: { id },
   });
+  return response;
+};
+
+// Fetch vehicle history
+export const get_vehicle_history = async (vehicle_id) => {
+  const response = await api.post(`/api/fleet/history.php`, { vehicle_id });
   return response;
 };
 

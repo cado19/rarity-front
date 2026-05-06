@@ -58,6 +58,12 @@ export const complete_booking_with_mileage = async (payload) => {
   return response;
 }
 
+// activate booking
+export const activate_booking = async (payload) => {
+  const response = await api.post("api/bookings/activate.php", payload);
+  return response;
+}
+
 // assign driver for delivery
 export const assign_driver = async (payload) => {
   const response = await api.post(
