@@ -162,7 +162,7 @@ export default function Vehicle() {
         text: response.data.message,
         icon: response.data.status === "Success" ? "success" : "error",
       });
-      getVehicle(); // refresh data
+      fetchHistory(); // refresh data
     } catch (error) {
       Swal.fire("Error", error.message, "error");
     }
