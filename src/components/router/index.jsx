@@ -32,6 +32,7 @@ import AllDrivers from '../../pages/drivers/all'
 import NewDriver from '../../pages/drivers/new'
 import AllAgents from '../../pages/agents/all'
 import NewAgent from '../../pages/agents/new'
+import EditAgent from '../../pages/agents/edit'
 import Agent from '../../pages/agents/agent'
 import Driver from '../../pages/drivers/driver'
 import NewVehicle from '../../pages/vehicles/new'
@@ -123,6 +124,7 @@ export default function AppRouter() {
             <Route path='/agents' element={<AllAgents />} />
             <Route path='/agents/new' element={<NewAgent />} />
             <Route path='/agent/:id' element={<Agent />} />
+            <Route path='/agent/:id/edit' element={<EditAgent />} />
             <Route path='/agent/:id/earnings' element={<Earnings />}/>
             <Route path='/agent/commissions' element={<Commissions />}/>
 

@@ -66,6 +66,20 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
     setItems(newItems);
   };
 
+  // Compute subtotal from items
+  const itemsSubtotal = items.reduce(
+    (sum, item) =>
+      sum + (parseFloat(item.cost) || 0) * (parseInt(item.quantity) || 0),
+    0,
+  );
+
+  // Decide which parts cost to use
+  const effectivePartsCost =
+    items.length > 0 ? itemsSubtotal : parseFloat(inputs.parts_cost) || 0;
+
+  // Grand total
+  const grandTotal = (parseFloat(inputs.labor_cost) || 0) + effectivePartsCost;
+
   return (
     <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
       <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-4xl my-5 text-center">
@@ -110,7 +124,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
             className="w-full border rounded px-3 py-2"
           />
         </div>
-        
+
         {/* Mileage */}
         <div className="mb-5 group">
           <textarea
@@ -278,6 +292,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
             </div>
           </div>
         ))}
+
         <button
           type="button"
           onClick={addCustomItem}
@@ -285,6 +300,19 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
         >
           + Add Item
         </button>
+        
+        {/* Preview Totals */}
+        <div className="mt-6 border-t pt-4">
+          <h3 className="text-lg font-semibold mb-2">Cost Preview</h3>
+          <p>Labor Cost: Ksh. {inputs.labor_cost || 0}</p>
+          <p>
+            Parts Cost:{" "}
+            {items.length > 0
+              ? `From items subtotal (Ksh. ${itemsSubtotal})`
+              : `Manual entry (Ksh. ${inputs.parts_cost || 0})`}
+          </p>
+          <p className="font-bold">Grand Total: Ksh. {grandTotal}</p>
+        </div>
 
         {/* Submit */}
         <div className="mt-6 text-center">

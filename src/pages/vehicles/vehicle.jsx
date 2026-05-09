@@ -163,6 +163,7 @@ export default function Vehicle() {
         icon: response.data.status === "Success" ? "success" : "error",
       });
       fetchHistory(); // refresh data
+      getVehicle();
     } catch (error) {
       Swal.fire("Error", error.message, "error");
     }

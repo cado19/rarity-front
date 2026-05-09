@@ -175,8 +175,19 @@ export const fetchBookingDrivers = async () => {
 };
 
 // -------------------- Agent Functions --------------------
+//get all agents
+export const fetchAgents = async () => {
+  const response = await api.get(`/api/accounts/all.php`);
+  return response.data;
+}
+// get role names and ids
+export const fetchAccountRoles = async () => {
+  const response = await api.get(`/api/accounts/list_roles.php`);
+  return response.data;
+}
+
 export const fetchAgentDetails = async (id) => {
-  const response = await api.get(`/api/agents/read_single.php`, {
+  const response = await api.get(`/api/accounts/read_agent.php`, {
     params: { id },
   });
   return response.data;

@@ -31,12 +31,12 @@ export const save_issue = async (issues) => {
 export const save_work_order = async (payload) => {
   const response = api.post(`/api/workorders/create.php`, payload);
   return response;
-}
+};
 
 export const update_work_order = async (payload) => {
   const response = api.post(`/api/workorders/update.php`, payload);
   return response;
-}
+};
 
 // -------------------- Bookings Functions --------------------
 
@@ -56,13 +56,13 @@ export const save_fuel = async (payload) => {
 export const complete_booking_with_mileage = async (payload) => {
   const response = await api.post("api/bookings/complete.php", payload);
   return response;
-}
+};
 
 // activate booking
 export const activate_booking = async (payload) => {
   const response = await api.post("api/bookings/activate.php", payload);
   return response;
-}
+};
 
 // assign driver for delivery
 export const assign_driver = async (payload) => {
@@ -83,14 +83,54 @@ export const get_agent_commissions = async (payload) => {
   return response;
 };
 
+export const submit_agent_rate = async (id, payload) => {
+  const response = await api.post("/api/commissions/update_rate.php", {
+    agent_id: id,
+    ...payload,
+  });
+  return response;
+};
+export const submit_agent_password = async (id, payload) => {
+  const response = await api.post(`/api/accounts/update_pass.php`, {
+    agent_id: id,
+    ...payload,
+  });
+  return response;
+};
+export const submit_agent_commission = async (payload) => {
+  const response = await api.post(`/api/commissions/update_rate.php`, {
+    ...payload,
+  });
+  return response;
+};
+
+// Create a new agent with roles
+export const createAgent = async (agentData) => {
+  const response = await api.post("/api/accounts/create_agent.php", agentData);
+  return response.data;
+};
+
 // Initiate a conversation
-export const initiateConversation = async (agent_id, customer_id, message = "Hello, how are you") => {
-  const res = await api.post("/api/chat/initiate.php", { agent_id, customer_id, message });
+export const initiateConversation = async (
+  agent_id,
+  customer_id,
+  message = "Hello, how are you",
+) => {
+  const res = await api.post("/api/chat/initiate.php", {
+    agent_id,
+    customer_id,
+    message,
+  });
   return res.data; // { status, conversation_id }
 };
 
 // Send a new message
-export const sendMessage = async (conversation_id, sender_id, sender_role, message) => {
+export const sendMessage = async (
+  conversation_id,
+  sender_id,
+  sender_role,
+  message,
+) => {
   const res = await api.post("/tests/send.php", {
     conversation_id,
     sender_id,

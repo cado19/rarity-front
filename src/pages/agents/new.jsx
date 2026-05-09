@@ -5,14 +5,20 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import Select from "react-select";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { baseURL } from "../../constants/url";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AgentNav from "../../components/navs/agentnav";
 import Swal from "sweetalert2";
+import { fetchAccountRoles } from "../../api/fetch";
+import Loading from "../../components/PageContent/Loading";
+import { createAgent } from "../../api/post";
 
 export default function NewAgent() {
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData.id;
+
   // state
   const [inputs, setInputs] = useState({
     name: "",
@@ -20,12 +26,15 @@ export default function NewAgent() {
     phone_number: "",
     role_id: "",
     country: "",
+    role_ids: [],
   });
 
+  const [roles, setRoles] = useState([]); // fetched from backend
   const [selectedOption, setSelectedOption] = useState(null);
   const [phone, setPhone] = useState("");
   const [disabled, setDisabled] = useState(false);
 
+  const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
 
   const options = [
@@ -38,6 +47,36 @@ export default function NewAgent() {
   const agentURL = baseUrl + "/api/agents/create.php";
 
   const navigate = useNavigate();
+
+  // get the roles
+  const fetchRoles = async () => {
+    try {
+      const res = await fetchAccountRoles();
+      if (res.status === "Success") {
+        setRoles(res.roles);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Could not fetch roles from the server.",
+          confirmButtonText: "OK",
+        });
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Network Error",
+        text: "Unable to reach the backend. Please try again later.",
+        confirmButtonText: "OK",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
 
   // handle change function
   const handleChange = (e) => {
@@ -64,8 +103,8 @@ export default function NewAgent() {
       ...inputs,
       role_id: value.value,
     });
-    // console.log(value);  
-  }
+    // console.log(value);
+  };
 
   // validation functions
   const validate = (data) => {
@@ -84,8 +123,8 @@ export default function NewAgent() {
     }
 
     // validate role_id
-    if (!data.role_id) {
-      errors.role_id = "Role is required";
+    if (!data.role_ids || data.role_ids.length === 0) {
+      errors.role_ids = "At least one role is required";
     }
 
     // validate id number
@@ -109,33 +148,42 @@ export default function NewAgent() {
       setDisabled(false);
     } else {
       // submit the form
-      const response = await axios.post(agentURL, inputs);
-      // redirect if response status is "Success"
-      if (response.data.status === "Success") {
-        const agent_id = response.data.agent_id;
-        navigate(`/agent/${agent_id}`, {
-          state: { message: "Agent Created" },
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: response.data.message,
-          confirmButtonText: 'OK'
-        })
+      try {
+        const response = await createAgent(inputs);
+        console.log("Response: ", response);
+        if (response.status === "Success") {
+          const agent_id = response.account_id;
+          navigate(`/agent/${agent_id}`, {
+            state: { message: "Agent Created" },
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: response.message,
+          });
+        }
+      } catch (err) {
+        Swal.fire({ icon: "error", title: "Network Error", text: err.message });
+      } finally {
+        setDisabled(false);
       }
-      // console.log(response);
-      setDisabled(false);
-
-      // console.log(inputs);
-      // console.log("Form submitted");
     }
   };
 
+  if (loading) return <Loading />;
+
   return (
     <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
+      {/* Nav  */}
       <AgentNav />
-      <h3 className="xl mt-2">Add Agent</h3>
+
+      {/* Title / Header  */}
+      <h1 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-4 mt-2">
+        Add Agent
+      </h1>
+
+      {/* Form  */}
       <form className="max-w-md mx-auto p-3" onSubmit={handleSubmit}>
         <div className="relative z-0 w-full mb-5 group">
           <input
@@ -203,28 +251,57 @@ export default function NewAgent() {
             <p className="text-red-500 text-xs mt-1">{errors.email}</p>
           )}
         </div>
-        <div>
-        <p className="font-medium">Tel:</p>
-        <PhoneInput
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          name="phone_number"
-          defaultCountry="KE"
-          value={phone}
-          onChange={(phone) => phoneChange(phone)}
-        />
+
+        {/* phone input  */}
+        <div className="mb-5">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Telephone
+          </label>
+          <PhoneInput
+            name="phone_number"
+            defaultCountry="KE"
+            value={phone}
+            onChange={phoneChange}
+            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 
+               focus:border-blue-500 focus:ring-blue-500 focus:outline-none shadow-sm"
+            inputClass="w-full border-none focus:ring-0 focus:outline-none"
+          />
+          {errors.phone_number && (
+            <p className="text-red-500 text-xs mt-1">{errors.phone_number}</p>
+          )}
         </div>
 
-        {/* role select  */}
-        <div className="relative z-0 w-full mb-5 mt-5 group">
-          <Select
-            options={options}
-            defaultValue={options[0]}
-            value={selectedOption}
-            onChange={roleChange}
-            placeholder="Select Role"
-          />
-          {errors.id_type && (
-            <p className="text-red-500 text-xs mt-1">{errors.id_type}</p>
+        {/* Roles checkboxes */}
+        <div className="mb-5">
+          <p className="font-medium mb-2">Assign Roles:</p>
+          <div className="grid grid-cols-3 gap-4">
+            {roles.map((role) => (
+              <label
+                key={role.id}
+                className="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 text-blue-600"
+                  checked={inputs.role_ids.includes(role.id)}
+                  onChange={() => {
+                    setInputs((prev) => {
+                      const alreadySelected = prev.role_ids.includes(role.id);
+                      return {
+                        ...prev,
+                        role_ids: alreadySelected
+                          ? prev.role_ids.filter((id) => id !== role.id)
+                          : [...prev.role_ids, role.id],
+                      };
+                    });
+                  }}
+                />
+                <span className="text-gray-700">{role.name}</span>
+              </label>
+            ))}
+          </div>
+          {errors.role_ids && (
+            <p className="text-red-500 text-xs mt-1">{errors.role_ids}</p>
           )}
         </div>
 

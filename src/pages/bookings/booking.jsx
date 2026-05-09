@@ -254,6 +254,15 @@ export default function Booking() {
       },
       showCancelButton: true,
       confirmButtonText: "Complete",
+      inputValidator: (value) => {
+      if (!value) {
+        return "Mileage is required";
+      }
+      if (value < 0) {
+        return "Mileage cannot be negative";
+      }
+      return null; // valid
+    },
     }).then(async (result) => {
       if (result.isConfirmed) {
         const mileage = result.value;

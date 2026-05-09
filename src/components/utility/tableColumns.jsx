@@ -108,77 +108,100 @@ export const clientColumns = [
   },
 ];
 
- export const issueColumns = [
-    {
-      accessorKey: "vehicle",
-      header: "Vehicle",
-      cell: (info) => info.getValue(),
+export const issueColumns = [
+  {
+    accessorKey: "vehicle",
+    header: "Vehicle",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "title",
+    header: "Title",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "cost",
+    header: "Cost",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: (info) => {
+      const timestamp = info.getValue();
+      const date = new Date(timestamp);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
     },
-    {
-      accessorKey: "title",
-      header: "Title",
-      cell: (info) => info.getValue(),
+  },
+  {
+    id: "details",
+    header: "Details",
+    cell: (info) => {
+      const issue = info.row.original;
+      return <Link to={`/issues/${issue.id}`}>Details</Link>;
     },
-    {
-      accessorKey: "cost",
-      header: "Cost",
-      cell: (info) => info.getValue(),
-    },
-    {
-      accessorKey: "date",
-      header: "Date",
-      cell: (info) => {
-        const timestamp = info.getValue();
-        const date = new Date(timestamp);
-        return date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
-      },
-    },
-    {
-      id: "details",
-      header: "Details",
-      cell: (info) => {
-        const issue = info.row.original;
-        return <Link to={`/issues/${issue.id}`}>Details</Link>;
-      },
-    },
-  ];
+  },
+];
 
- export const earningsColumns = [
-    {
-      accessorKey: "booking_no",
-      header: "No",
-      cell: (info) => info.getValue(),
+export const earningsColumns = [
+  {
+    accessorKey: "booking_no",
+    header: "No",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "total",
+    header: "Total",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "commission",
+    header: "Commission",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "start_date",
+    header: "From",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "end_date",
+    header: "To",
+    cell: (info) => info.getValue(),
+  },
+];
+
+export const agentColumns = [
+  {
+    accessorKey: "name",
+    header: "Name",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "phone_no",
+    header: "Phone number",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "country",
+    header: "Country",
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: "details",
+    header: "Details",
+    cell: (info) => {
+      const agent = info.row.original;
+      return <Link to={`/agent/${agent.id}`}>Details</Link>;
     },
-    {
-      accessorKey: "total",
-      header: "Total",
-      cell: (info) => info.getValue(),
-    },
-    {
-      accessorKey: "commission",
-      header: "Commission",
-      cell: (info) => info.getValue(),
-    },
-    {
-      accessorKey: "start_date",
-      header: "From",
-      cell: (info) => info.getValue(),
-    },
-    {
-      accessorKey: "end_date",
-      header: "To",
-      cell: (info) => info.getValue(),
-    },
-    // {
-    //   id: "details",
-    //   header: "Details",
-    //   cell: (info) => {
-    //     const issue = info.row.original;
-    //     return <Link to={`/issues/${issue.id}`}>Details</Link>;
-    //   },
-    // },
-  ];
+  },
+];

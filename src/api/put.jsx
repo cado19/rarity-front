@@ -45,3 +45,12 @@ export const upload_signature = async (payload) => {
   });
   return response;
 };
+
+// -------------------- Agent Functions --------------------
+export const updateAgent = async (id, agentData) => {
+  const response = await api.post(`/api/accounts/update_agent.php`, {
+    ...agentData,
+    id,
+  });
+  return response.data;
+};

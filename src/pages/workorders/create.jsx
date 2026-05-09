@@ -16,6 +16,7 @@ export default function WorkOrderCreatePage() {
         navigate("/workorders");
       } else {
         alert("Error creating work order: " + res.data.message);
+        console.error("Error creating work order: " + res.data.message);
       }
     } catch (error) {
       console.error("Error creating work order:", error);
