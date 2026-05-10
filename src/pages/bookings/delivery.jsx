@@ -16,7 +16,7 @@ export default function Delivery({ show, onClose, id, onSubmit }) {
         setDrivers(
           res.drivers.map((d) => ({
             value: d.id,
-            label: `${d.first_name} ${d.last_name}`,
+            label: `${d.name}`,
           })),
         );
       } catch (err) {

@@ -255,14 +255,14 @@ export default function Booking() {
       showCancelButton: true,
       confirmButtonText: "Complete",
       inputValidator: (value) => {
-      if (!value) {
-        return "Mileage is required";
-      }
-      if (value < 0) {
-        return "Mileage cannot be negative";
-      }
-      return null; // valid
-    },
+        if (!value) {
+          return "Mileage is required";
+        }
+        if (value < 0) {
+          return "Mileage cannot be negative";
+        }
+        return null; // valid
+      },
     }).then(async (result) => {
       if (result.isConfirmed) {
         const mileage = result.value;
@@ -496,8 +496,8 @@ export default function Booking() {
 
       <h2 className="text-2xl">Booking: {booking.booking_no}</h2>
       <BookingInfoBoxes
-        fname={booking.c_fname}
-        lname={booking.c_lname}
+        fname={booking.customer_first_name}
+        lname={booking.customer_last_name}
         start={booking.start_date}
         end={booking.end_date}
         duration={booking.duration}
@@ -534,9 +534,12 @@ export default function Booking() {
             )}
             /-
           </p>
-          <p className="leading-loose text-center">
-            <span className="font-bold">Fuel fee:</span> {booking.fuel}
-          </p>
+          {booking.fuel_fee > 0 && (
+            <p className="leading-loose text-center">
+              <span className="font-bold">Fuel fee:</span> {booking.fuel}
+            </p>
+          )}
+
           {/* Total in the event that there is no driver fee  */}
           {booking.driver_fee > 0 && (
             <>
@@ -582,8 +585,7 @@ export default function Booking() {
             <span className="font-bold">Status:</span> {booking.status}
           </p>
           <p className="leading-loose text-center">
-            <span className="font-bold">Driver:</span> {booking.d_fname}{" "}
-            {booking.d_lname}
+            <span className="font-bold">Driver:</span> {booking.driver_name}
           </p>
           <p className="leading-loose text-center">
             <span className="font-bold">Start Time:</span> {booking.start_time}

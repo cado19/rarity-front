@@ -94,6 +94,7 @@ export default function NewBooking() {
         fetchBookingDrivers(),
         get_booking_vehicles(),
       ]);
+
       // set state
       setClients(
         cRes.clients.map((c) => ({
@@ -104,7 +105,7 @@ export default function NewBooking() {
       setDrivers(
         dRes.drivers.map((d) => ({
           value: d.id,
-          label: `${d.first_name} ${d.last_name}`,
+          label: `${d.name}`,
         })),
       );
       setVehicles(
@@ -209,15 +210,18 @@ export default function NewBooking() {
     // setDisabled(false);
     try {
       const res = await save_booking(inputs);
+      console.log("Res: ", res);
       if (res.data.status === "Success") {
         navigate(`/booking/${res.data.booking_id}`, {
           state: { message: "Booking created successfully" },
         });
       } else {
         Swal.fire({ title: "Error", icon: "error", text: res.data.message });
+        console.error("Error: ", res.data.message);
       }
     } catch (err) {
       Swal.fire({ title: "Error", icon: "error", text: "Server error" });
+      console.error(err);
     } finally {
       setDisabled(false);
     }
