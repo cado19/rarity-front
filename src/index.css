@@ -5,28 +5,32 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @layer base {
   html {
-      font-family: 'Montserrat', sans-serif;
-      line-height: 1.3;
+    font-family: 'Inter', sans-serif; /* Default body font */
+    line-height: 1.5;
   }
 
-  table{
-
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif; /* Headings use Montserrat */
+    line-height: 1.3;
   }
+
+  table { }
+
   th, td {
-      @apply py-3 px-2.5 text-sm text-left border-y border-gray-200;
+    @apply py-3 px-2.5 text-sm text-left border-y border-gray-200;
   }
+
   thead {
-      @apply bg-neutral-100;
+    @apply bg-neutral-100;
   }
+
   th {
-      @apply font-semibold;
+    @apply font-semibold;
   }
 
   a {
-      @apply text-sky-500 hover:underline;
+    @apply text-sky-500 hover:underline;
   }
 }
