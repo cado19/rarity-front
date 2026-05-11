@@ -6,6 +6,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { get_vehicle_base } from "../../api/fetch";
 import VehicleInput from "../../components/styled/VehicleInput";
 import VehicleDropdown from "../../components/styled/VehicleDropdown";
+import Loading from "../../components/PageContent/Loading";
 import { update_vehicle_basics } from "../../api/post";
 
 export default function EditBasics() {
@@ -49,7 +50,7 @@ export default function EditBasics() {
   const getBase = async () => {
     try {
       const response = await get_vehicle_base(id);
-      setVehicle(response.data.vehicle);
+      setVehicle(response.data.base);
       console.log(response);
     } catch (error) {
       const errorMessage = "Error: " + error.message;
@@ -112,11 +113,7 @@ export default function EditBasics() {
   };
 
   if (loading) {
-    return (
-      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
-        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
@@ -129,7 +126,7 @@ export default function EditBasics() {
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 transition"
       >
-        <FaArrowLeft className="text-[#9ACD32]" /> {/* YellowGreen tone */} 
+        <FaArrowLeft className="text-[#9ACD32]" /> {/* YellowGreen tone */}
         <span className="text-[#9ACD32] font-medium">Go Back</span>
       </button>
 
@@ -231,6 +228,24 @@ export default function EditBasics() {
           value={vehicle.aspiration}
           onChange={handleChange}
           error={errors.aspiration}
+        />
+
+        {/* Mileage */}
+        <VehicleInput
+          label="Mileage"
+          name="mileage"
+          value={vehicle.mileage}
+          onChange={handleChange}
+          error={errors.mileage}
+        />
+
+        {/* Next Service Mileage */}
+        <VehicleInput
+          label="Next Service Mileage"
+          name="service"
+          value={vehicle.service}
+          onChange={handleChange}
+          error={errors.service}
         />
 
         {/* Dropdowns */}

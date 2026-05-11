@@ -1,7 +1,7 @@
 import React from "react";
-import { FaCar, FaIdCard, FaTag, FaTachometerAlt, FaCalendarCheck, FaCircle } from "react-icons/fa";
+import { FaCar, FaIdCard, FaTag, FaTachometerAlt, FaCalendarCheck, FaCircle, FaWrench } from "react-icons/fa";
 
-const VehicleInfoBoxes = ({ make, model, number_plate, category, mileage, bookingsCount, status }) => {
+const VehicleInfoBoxes = ({ make, model, number_plate, category, mileage, bookingsCount, status, service }) => {
   return (
     <div className="flex flex-col gap-6 mt-4">
       {/* Identity row */}
@@ -31,9 +31,9 @@ const VehicleInfoBoxes = ({ make, model, number_plate, category, mileage, bookin
           value={mileage ? `${mileage} km` : "N/A"}
         />
         <BoxWrapper
-          icon={<FaCalendarCheck className="text-indigo-500 text-2xl" />}
-          label="Bookings"
-          value={bookingsCount ?? 0}
+          icon={<FaWrench className="text-indigo-500 text-2xl" />}
+          label="Next Service"
+          value={`${service} km` ?? 0}
         />
         <BoxWrapper
           icon={<FaCircle className={
