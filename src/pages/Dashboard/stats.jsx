@@ -1,5 +1,6 @@
+// src/pages/Dashboard/stats.jsx
+
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
   FaCheckCircle,
@@ -28,7 +29,7 @@ export default function StatsDashboard() {
       try {
         const response = await getDashboardStats(userId);
         console.log(response);
-        setStats(response); // since fetch.jsx returns response.data already
+        setStats(response); // fetch.jsx returns response.data already
       } catch (err) {
         setError("Error fetching stats: " + err.message);
       } finally {
@@ -46,6 +47,11 @@ export default function StatsDashboard() {
     return <p className="text-red-600">{error}</p>;
   }
 
+  const base = stats.dashboard.base;
+  const driver = stats.dashboard.driver;
+  const sales = stats.dashboard.sales;
+  const fleet = stats.dashboard.fleet_manager;
+
   return (
     <div className="bg-gray-100 min-h-screen p-6">
       {/* Header */}
@@ -59,7 +65,7 @@ export default function StatsDashboard() {
           <FaCheckCircle className="text-green-600 text-2xl mr-3" />
           <div>
             <h3 className="text-sm text-gray-500">Active Bookings</h3>
-            <p className="text-xl font-semibold">{stats.active_bookings}</p>
+            <p className="text-xl font-semibold">{base.active_bookings}</p>
           </div>
         </div>
 
@@ -67,7 +73,7 @@ export default function StatsDashboard() {
           <FaCalendarAlt className="text-yellow-600 text-2xl mr-3" />
           <div>
             <h3 className="text-sm text-gray-500">Upcoming Bookings</h3>
-            <p className="text-xl font-semibold">{stats.upcoming_bookings}</p>
+            <p className="text-xl font-semibold">{base.upcoming_bookings}</p>
           </div>
         </div>
 
@@ -76,7 +82,7 @@ export default function StatsDashboard() {
           <div>
             <h3 className="text-sm text-gray-500">Total Revenue</h3>
             <p className="text-xl font-semibold">
-              Ksh. {Number(stats.revenue_total).toLocaleString()}
+              Ksh. {Number(base.revenue_total).toLocaleString()}
             </p>
           </div>
         </div>
@@ -84,13 +90,13 @@ export default function StatsDashboard() {
 
       {/* Middle Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        {/* Recent Bookings */}
+        {/* Top Customers */}
         <div className="bg-white p-4 rounded shadow">
           <h3 className="text-lg font-semibold border-b pb-2 mb-3 flex items-center">
             <FaUsers className="text-gray-600 mr-2" /> Top Customers
           </h3>
           <ul className="space-y-1">
-            {stats.top_customers?.map((c) => (
+            {base.top_customers?.map((c) => (
               <li key={c.id}>
                 {c.first_name} {c.last_name} — {c.booking_count} bookings
               </li>
@@ -98,12 +104,13 @@ export default function StatsDashboard() {
           </ul>
         </div>
 
+        {/* Top Vehicles */}
         <div className="bg-white p-4 rounded shadow">
           <h3 className="text-lg font-semibold border-b pb-2 mb-3 flex items-center">
             <FaCar className="text-gray-600 mr-2" /> Top Vehicles
           </h3>
           <ul className="space-y-1">
-            {stats.top_vehicles?.map((v) => (
+            {base.top_vehicles?.map((v) => (
               <li key={v.id}>
                 {v.make} {v.model} ({v.number_plate}) — {v.booking_count}{" "}
                 bookings
@@ -115,15 +122,14 @@ export default function StatsDashboard() {
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        {/* Revenue */}
+        {/* Revenue by Customer */}
         <div className="bg-white p-4 rounded shadow">
-          {/* Revenue by Customer */}
           <h3 className="text-lg font-semibold mb-2 flex items-center border-b pb-2">
             <FaUsers className="text-yellow-600 mr-2" />
             Revenue by Customer
           </h3>
           <ul className="space-y-2 mb-4">
-            {stats.revenue_by_customer?.map((c) => (
+            {base.revenue_by_customer?.map((c) => (
               <li
                 key={c.id}
                 className="flex justify-between items-center border-b py-1"
@@ -138,14 +144,15 @@ export default function StatsDashboard() {
             ))}
           </ul>
         </div>
+
+        {/* Revenue by Vehicle */}
         <div className="bg-white p-4 rounded shadow">
-          {/* Revenue by Vehicle */}
           <h3 className="text-lg font-semibold mb-2 flex items-center border-b pb-2">
             <FaCarSide className="text-blue-600 mr-2" />
             Revenue by Vehicle
           </h3>
           <ul className="space-y-2">
-            {stats.revenue_by_vehicle?.map((v) => (
+            {base.revenue_by_vehicle?.map((v) => (
               <li
                 key={v.id}
                 className="flex justify-between items-center border-b py-1"
@@ -161,6 +168,86 @@ export default function StatsDashboard() {
           </ul>
         </div>
       </div>
+
+      {/* Role-Specific Sections */}
+      {driver && (
+        <div className="bg-white p-4 rounded shadow mb-6">
+          <h3 className="text-lg font-semibold border-b pb-2 mb-3">
+            Driver Deliveries
+          </h3>
+          <ul className="space-y-1">
+            {driver.deliveries?.map((d) => (
+              <li key={d.id}>
+                Booking {d.booking_no} — Start: {d.start_date}
+              </li>
+            ))}
+          </ul>
+
+          <h3 className="text-lg font-semibold border-b pb-2 mb-3">
+            Chauffeur Bookings
+          </h3>
+          <ul className="space-y-1">
+            {driver.chauffeur_bookings?.map((b) => (
+              <li key={b.id}>
+                {b.booking_no} — {b.first_name} {b.last_name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {sales && (
+        <div className="bg-white p-4 rounded shadow mb-6">
+          <h3 className="text-lg font-semibold border-b pb-2 mb-3">
+            Sales Bookings
+          </h3>
+          <ul className="space-y-1">
+            {sales.sales_bookings?.map((b) => (
+              <li key={b.id}>
+                {b.booking_no} — {b.first_name} {b.last_name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {fleet && (
+        <div className="bg-white p-4 rounded shadow mb-6">
+          <h3 className="text-lg font-semibold border-b pb-2 mb-3">
+            Work Orders
+          </h3>
+          <ul className="space-y-1">
+            {fleet.work_orders?.map((w) => (
+              <li key={w.id}>
+                {w.work_order_no} — {w.make} {w.model} ({w.number_plate})
+              </li>
+            ))}
+          </ul>
+
+          <h3 className="text-lg font-semibold border-b pb-2 mb-3">
+            Maintenance Vehicles
+          </h3>
+          <ul className="space-y-1">
+            {fleet.maintenance_vehicles?.map((v) => (
+              <li key={v.id}>
+                {v.make} {v.model} ({v.number_plate})
+              </li>
+            ))}
+          </ul>
+
+          <h3 className="text-lg font-semibold border-b pb-2 mb-3">
+            Service Alerts
+          </h3>
+          <ul className="space-y-1">
+            {fleet.service_alerts?.map((v) => (
+              <li key={v.id}>
+                {v.make} {v.model} ({v.number_plate}) — Mileage: {v.mileage}/
+                {v.service_interval}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Calendar Link */}
       <div className="mt-6 text-end">
