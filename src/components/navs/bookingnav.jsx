@@ -13,37 +13,37 @@ export default function BookingNav() {
         <ul class="flex flex-wrap -mb-px">
           <li class="me-2">
             <NavLink to="/bookings/all" className={classNameFunc}>
-              All
+              <h3>All</h3>
             </NavLink>
           </li>
           <li className="me-2">
             <NavLink to="/bookings/active" className={classNameFunc}>
-              Active
+              <h3>Active</h3>
             </NavLink>
           </li>
           <li className="me-2">
             <NavLink to="/bookings/upcoming" className={classNameFunc}>
-              Upcoming
+              <h3>Upcoming</h3>
             </NavLink>
           </li>
           <li cclassNamelass="me-2">
             <NavLink to="/bookings/cancelled" className={classNameFunc}>
-              Cancelled
+              <h3>Cancelled</h3>
             </NavLink>
           </li>
           <li cclassNamelass="me-2">
             <NavLink to="/bookings/completed" className={classNameFunc}>
-              Completed
+              <h3>Completed</h3>
             </NavLink>
           </li>
           <li cclassNamelass="me-2">
             <NavLink to="/bookings/reservations" className={classNameFunc}>
-              Reservations
+              <h3>Reservations</h3>
             </NavLink>
           </li>
           <li cclassNamelass="me-2">
             <NavLink to="/bookings/new" className={classNameFunc}>
-              Create Booking
+              <h3>Create Booking</h3>
             </NavLink>
           </li>
         </ul>

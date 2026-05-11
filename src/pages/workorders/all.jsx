@@ -25,7 +25,7 @@ export default function WorkflowDashboard() {
       {/* Left side: list of work orders in a card */}
       <div className="w-1/2 bg-white rounded shadow-md p-4 border border-gray-200">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Work Orders</h2>
+          <h2 className="text-xl font-semibold text-yellow-500">Work Orders</h2>
           <StyledButton
             to="/workorders/create"
             label="＋ New"

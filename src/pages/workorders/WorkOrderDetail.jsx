@@ -27,7 +27,7 @@ export default function WorkOrderDetail({ workOrderId }) {
 
   return (
     <div>
-      <h2 className="font-bold">Work Order {order.work_order_number}</h2>
+      <h2 className="font-bold text-yellow-500">Work Order {order.work_order_number}</h2>
       <p><strong>Vehicle:</strong> {order.make} {order.model} ({order.number_plate})</p>
       <p><strong>Title:</strong> {order.title}</p>
       {order.mileage && (

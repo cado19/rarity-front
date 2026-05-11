@@ -140,7 +140,7 @@ export default function Header() {
           to={`/agent/${userId}`}
           className="inline-block p-4 text-yellow-500 border-b-2 border-transparent rounded-t-lg hover:text-yellow-600 hover:border-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300"
         >
-          {userName}
+          <h3>{userName}</h3>
         </Link>
       </div>
       <Tooltip id="new-booking-tooltip" place="bottom" />

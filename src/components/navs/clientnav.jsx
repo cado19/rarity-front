@@ -13,17 +13,17 @@ export default function ClientNav() {
         <ul class="flex flex-wrap -mb-px">
           <li class="me-2">
             <NavLink to="/customers" className={classNameFunc}>
-              All
+              <h3>All</h3>
             </NavLink>
           </li>
           <li className="me-2">
             <NavLink to="/recent_clients" className={classNameFunc}>
-              Recent
+              <h3>Recent</h3>
             </NavLink>
           </li>
           <li className="me-2">
             <NavLink to="/customer/new" className={classNameFunc}>
-              Add Client
+              <h3>Add Client</h3>
             </NavLink>
           </li>
         </ul>

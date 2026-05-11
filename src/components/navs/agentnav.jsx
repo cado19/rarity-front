@@ -13,13 +13,13 @@ export default function AgentNav() {
         <ul class="flex flex-wrap -mb-px">
           <li class="me-2">
             <NavLink to="/agents" className={classNameFunc}>
-              All
+              <h3>All</h3>
             </NavLink>
           </li>
 
           <li className="me-2">
             <NavLink to="/agents/new" className={classNameFunc}>
-              Add Agent
+              <h3>Add Agent</h3>
             </NavLink>
           </li>
         </ul>

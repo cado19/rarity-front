@@ -13,19 +13,19 @@ export default function DriverNav() {
         <ul class="flex flex-wrap -mb-px">
           <li class="me-2">
             <NavLink to="/drivers" className={classNameFunc}>
-              All
+              <h3>All</h3>
             </NavLink>
           </li>
 
           <li className="me-2">
             <NavLink to="/driver/new" className={classNameFunc}>
-              Add Driver
+              <h3>Add Driver</h3>
             </NavLink>
           </li>
 
           <li className="me-2">
             <NavLink to="/driver/workplan" className={classNameFunc}>
-              Workplan
+              <h3>Workplan</h3>
             </NavLink>
           </li>
 

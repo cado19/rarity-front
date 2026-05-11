@@ -13,13 +13,13 @@ export default function VehicleNav() {
         <ul class="flex flex-wrap -mb-px">
           <li class="me-2">
             <NavLink to="/vehicles" className={classNameFunc}>
-              All
+              <h3>All</h3>
             </NavLink>
           </li>
 
           <li className="me-2">
             <NavLink to="/vehicle/new" className={classNameFunc}>
-              Add Vehicle
+              <h3>Add Vehicle</h3>
             </NavLink>
           </li>
         </ul>
