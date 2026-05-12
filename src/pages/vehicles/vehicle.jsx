@@ -4,16 +4,17 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FaCheck } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa";
-import VehicleInfoBoxes from "../../components/infoboxes/VehicleInfoBoxes";
-import carImg from "../../assets/car-img.png";
-import DailyRateForm from "../../components/vehicles/DailyRateForm";
+import { formatDate } from "date-fns";
 import { BlinkBlur, Mosaic } from "react-loading-indicators";
 import Swal from "sweetalert2";
 import { FaShare } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
+import VehicleInfoBoxes from "../../components/infoboxes/VehicleInfoBoxes";
+import carImg from "../../assets/car-img.png";
+import DailyRateForm from "../../components/vehicles/DailyRateForm";
 import { deleteVehicle } from "../../api/delete";
 import { update_vehicle_status } from "../../api/put";
-import { get_vehicle_history } from "../../api/fetch";
+import { fetchVehicleWorkOrder, get_vehicle_history } from "../../api/fetch";
 import AddImage from "./add_image";
 import StyledButton from "../../components/styled/StyledButton";
 import Loading from "../../components/PageContent/Loading";
@@ -30,6 +31,7 @@ export default function Vehicle() {
   //   const carImg = require('../../assets/car-img.png');
   const [vehicle, setVehicle] = useState(null);
   const [history, setHistory] = useState([]);
+  const [workOrders, setWorkOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [disabled, setDisabled] = useState(false);
@@ -87,6 +89,19 @@ export default function Vehicle() {
       }
     } catch (err) {
       console.error("Error fetching history:", err.message);
+    }
+  };
+
+  // fetch vehicle work orders
+  const fetchWorkOrders = async () => {
+    try {
+      const response = await fetchVehicleWorkOrder(id, 5);
+      console.log("work order response: ", response);
+      if (response.data.status === "Success") {
+        setWorkOrders(response.data.data);
+      }
+    } catch (err) {
+      console.error("Error work orders:", err.message);
     }
   };
 
@@ -177,11 +192,12 @@ export default function Vehicle() {
     }
     getVehicle();
     fetchHistory();
+    fetchWorkOrders();
     checkMessage();
   }, []);
 
   if (loading) {
-    return <Loading />
+    return <Loading />;
   }
 
   if (uploading) {
@@ -323,6 +339,40 @@ export default function Vehicle() {
           </div>
         </div>
       </div>
+      {/* Vehicle Work Orders Preview */}
+      <div className="bg-white p-4 rounded-sm border border-gray-200 mt-6">
+        <strong className="text-gray-700 font-medium text-xl">
+          Recent Work Orders
+        </strong>
+        <ul className="mt-3 space-y-2">
+          {workOrders.map((wo) => (
+            <li key={wo.id} className="border-b pb-2">
+              <Link
+                to={`/workorders/${wo.id}`}
+                className="font-semibold text-blue-600 hover:underline"
+              >
+                <div className="flex justify-between">
+                  <span className="font-semibold">{wo.work_order_number} - {wo.title} </span>
+                  <span className="text-sm text-gray-500">{wo.status}</span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  Scheduled:{" "}
+                  {formatDate(new Date(wo.scheduled_date), "do MMMM yyyy")} |
+                  Cost: Ksh. {wo.total_cost}
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-4 text-end">
+          <StyledButton
+            to={`/vehicle/${id}/work_orders`}
+            label="View All Work Orders →"
+            variant="amber"
+          />
+        </div>
+      </div>
+
       {/* Vehicle status history */}
       <div className="bg-white p-4 rounded-sm border border-gray-200 mt-6">
         <strong className="text-gray-700 font-medium text-xl">

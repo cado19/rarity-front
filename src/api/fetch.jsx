@@ -97,6 +97,14 @@ export const fetchWorkOrder = async (id) => {
   return response;
 };
 
+// get a vehicle's work order
+export const fetchVehicleWorkOrder = async (vehicle_id, limit = null) => {
+  const response = api.get(`/api/workorders/by_vehicle.php`, {
+    params: { vehicle_id, limit },
+  });
+  return response;
+};
+
 // -------------------- Bookings Functions --------------------
 // get all bookings
 export const fetchBookings = async () => {
@@ -152,6 +160,12 @@ export const fetchReservation = async (id) => {
 // get customers
 export const fetchCustomers = async () => {
   const response = await axios.get(baseUrl + "/api/customers/all.php");
+  return response;
+};
+
+// get recent customers
+export const fetchRecentCustomers = async () => {
+  const response = await axios.get(baseUrl + "/api/customers/recent.php");
   return response;
 };
 
