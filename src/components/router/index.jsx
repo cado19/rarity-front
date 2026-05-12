@@ -63,6 +63,7 @@ import WorkOrderEdit from "../../pages/workorders/edit";
 import WorkOrderCreatePage from "../../pages/workorders/create";
 import WorkOrderShowPage from "../../pages/workorders/show";
 import ProtectedRoute from "./ProtectedRoute";
+import VehicleWorkOrders from "../../pages/vehicles/VehicleWorkOrder";
 
 export default function AppRouter() {
   return (
@@ -112,6 +113,14 @@ export default function AppRouter() {
               element={
                 <ProtectedRoute allowedRoles={[0, 1]}>
                   <EditPricing />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/vehicle/:id/work_orders"
+              element={
+                <ProtectedRoute allowedRoles={[0,1,2,7]}>
+                  <VehicleWorkOrders />
                 </ProtectedRoute>
               }
             />

@@ -1,18 +1,17 @@
-// THIS COMPONENT SHOWS RECENTLY ADDED CUSTOMERS
-import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
-import { baseURL } from "../../constants/url";
+import React, { useEffect, useState } from "react";
 import { Mosaic } from "react-loading-indicators";
-import Loading from "../../components/PageContent/Loading";
-import DataTable from "react-data-table-component";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ClientNav from "../../components/navs/clientnav";
-import { esES } from "@mui/x-date-pickers/locales";
 import { fetchCustomers } from "../../api/fetch";
 import BasicTable from "../../components/utility/basicTable";
 import { clientColumns } from "../../components/utility/tableColumns";
+import Loading from "../../components/PageContent/Loading";
 
 export default function AllCustomers() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?.id;
+  const roles = user?.roles?.map((r) => r.name) || []; // roles array from localStorage
+
   const navigate = useNavigate();
 
   const [customers, setCustomers] = useState([]);
@@ -24,18 +23,24 @@ export default function AllCustomers() {
   const getCustomers = async () => {
     try {
       const response = await fetchCustomers();
-      const customerData = response.data.data.map((customer) => ({
+      let customerData = response.data.data.map((customer) => ({
         id: customer.id,
         first_name: customer.first_name,
         last_name: customer.last_name,
         email: customer.email,
         id_no: customer.id_no,
         phone_no: customer.phone_no,
+        account_id: customer.account_id, // make sure backend returns this
       }));
+
+      // 🔑 Filter if salesperson
+      if (roles.includes("salesperson")) {
+        customerData = customerData.filter((c) => c.account_id === userId);
+      }
+
       setCustomers(customerData);
     } catch (error) {
-      const errorMessage = "Error: " + error.message;
-      setError(errorMessage);
+      setError("Error: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -47,7 +52,7 @@ export default function AllCustomers() {
       navigate("/login");
     }
     getCustomers();
-  }, [customers, navigate]);
+  }, [navigate]);
 
   if (error) {
     return (
@@ -57,11 +62,7 @@ export default function AllCustomers() {
     );
   }
   if (loading) {
-    return (
-      <div className="bg-white p-4 rounded-lg shadow-md w-full flex items-center justify-center h-full">
-        <Mosaic color="#32cd32" size="large" text="Loading..." textColor="" />
-      </div>
-    );
+    return <Loading />
   }
 
   return (
@@ -69,7 +70,7 @@ export default function AllCustomers() {
       <ClientNav />
 
       <h1 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-4 mt-2">
-        Customers
+        Clients
       </h1>
       <BasicTable
         columns={clientColumns}

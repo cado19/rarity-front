@@ -2,7 +2,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { baseURL } from "../../constants/url";
-import Loading from '../../components/PageContent/Loading';
+import Loading from "../../components/PageContent/Loading";
 
 import { Link } from "react-router-dom";
 import { formatDate } from "date-fns";
@@ -14,9 +14,10 @@ import { bookingColumns } from "../../components/utility/tableColumns";
 import { fetchBookings } from "../../api/fetch";
 
 export default function AllBookings() {
-  const userData = JSON.parse(localStorage.getItem("user"));
-  const userId = userData.id;
-  const roleId = userData.role_id;
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?.id;
+  const roles = user?.roles?.map((r) => r.name) || []; // roles array from localStorage
+
   const [bookings, setBookings] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,10 +34,10 @@ export default function AllBookings() {
       // raw bookings from backend
       let bookings = response.data.data;
 
-      // filter only if roleId is not 0
-      // if (roleId !== "0") {
-      //   bookings = bookings.filter((booking) => booking.agent_id === userId);
-      // }
+      // 🔑 Filter if salesperson
+      if (roles.includes("salesperson")) {
+        bookings = bookings.filter((b) => b.agent_id === userId);
+      }
 
       const bookingData = bookings.map((booking) => ({
         id: booking.id,
@@ -47,6 +48,7 @@ export default function AllBookings() {
         start_date: formatDate(new Date(booking.start_date), "do MMMM yyyy"),
         end_date: formatDate(new Date(booking.end_date), "do MMMM yyyy"),
       }));
+
       setBookings(bookingData);
     } catch (error) {
       const errorMessage = "Error: " + error.message;

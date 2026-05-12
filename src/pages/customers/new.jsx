@@ -16,8 +16,12 @@ import ClientNav from "../../components/navs/clientnav";
 import Swal from "sweetalert2";
 
 export default function NewCustomer() {
+   const user = JSON.parse(localStorage.getItem("user"));
+   console.log("User data: ", user);
+   const userId = user?.id;
   // state
   const [inputs, setInputs] = useState({
+    account_id: userId,
     f_name: "",
     l_name: "",
     email: "",

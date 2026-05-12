@@ -10,9 +10,9 @@ import { bookingColumns } from "../../components/utility/tableColumns";
 import { fetchUpcomingBookings } from "../../api/fetch";
 
 export default function UpcomingBookings() {
-  const userData = JSON.parse(localStorage.getItem("user"));
-  const userId = userData.id;
-  const roleId = userData.role_id;
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?.id;
+  const roles = user?.roles?.map((r) => r.name) || []; // roles array from localStorage
 
   const [bookings, setBookings] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -35,10 +35,9 @@ export default function UpcomingBookings() {
 
       let bookings = response.data.data;
 
-      // filter only if roleId is not 0
-      // if (roleId !== "0") {
-      //   bookings = bookings.filter((booking) => booking.agent_id === userId);
-      // }
+      if (roles.includes("salesperson")) {
+        bookings = bookings.filter((b) => b.agent_id === userId);
+      }
 
       const bookingData = bookings.map((booking) => ({
         id: booking.id,

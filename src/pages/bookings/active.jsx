@@ -9,6 +9,10 @@ import { bookingColumns } from "../../components/utility/tableColumns";
 import { fetchActiveBookings } from "../../api/fetch";
 
 export default function ActiveBookings() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?.id;
+  const roles = user?.roles?.map((r) => r.name) || []; // roles array from localStorage
+
   const bookingData = [];
   const [bookings, setBookings] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -26,8 +30,15 @@ export default function ActiveBookings() {
   const getBookings = async () => {
     try {
       const response = await fetchActiveBookings();
-      console.log(response);
-      const bookingData = response.data.data.map((booking) => ({
+      // console.log(response);
+
+      let bookings = response.data.data;
+
+      if (roles.includes("salesperson")) {
+        bookings = bookings.filter((b) => b.agent_id === userId);
+      }
+
+      const bookingData = bookings.map((booking) => ({
         id: booking.id,
         booking_no: booking.booking_no,
         client: booking.client,
