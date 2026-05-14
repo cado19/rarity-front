@@ -34,6 +34,7 @@ export default function BookingForm({
   setOneDay,
   show,
   setShow,
+  customerName
 }) {
   const [days, setDays] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
@@ -67,92 +68,86 @@ export default function BookingForm({
   }, []);
 
   // Totals preview calculation
-useEffect(() => {
-  if (!selectedVehicle) {
-    setDays(0);
-    setSubtotal(0);
-    setVatAmount(0);
-    setGrandTotal(0);
-    return;
-  }
-
-  const rate =
-    inputs.custom_rate && inputs.custom_rate > 0
-      ? parseFloat(inputs.custom_rate)
-      : selectedVehicle?.daily_rate || 0;
-
-  const startDateStr = inputs.start_date || null;
-  const endDateStr = inputs.end_date || null;
-  const startTimeStr = inputs.start_time || "00:00:00";
-  const endTimeStr = inputs.end_time || "00:00:00";
-
-  if (!startDateStr || !endDateStr) {
-    setDays(0);
-    setSubtotal(0);
-    setVatAmount(0);
-    setGrandTotal(0);
-    return;
-  }
-
-  const start = new Date(`${startDateStr} ${startTimeStr}`);
-  const end = new Date(`${endDateStr} ${endTimeStr}`);
-
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-    setDays(0);
-    setSubtotal(0);
-    setVatAmount(0);
-    setGrandTotal(0);
-    return;
-  }
-
-  // Calculate difference in hours
-  const hoursDiff = (end - start) / (1000 * 60 * 60);
-  const wholeDays = Math.floor(hoursDiff / 24);
-
-  // Round leftover hours to nearest whole hour
-  const leftoverHours = Math.round(hoursDiff % 24);
-
-  console.log("Hours difference:", hoursDiff);
-  console.log("Whole days:", wholeDays);
-  console.log("Leftover hours (rounded):", leftoverHours);
-
-  let calcDays = Math.max(1, wholeDays);
-
-  if (!inputs.override) {
-    if (leftoverHours > 2) {
-      calcDays += 1;
-      console.log("Constraint applied: +1 day");
-    } else {
-      console.log("Constraint not applied: within 2 hours");
+  useEffect(() => {
+    if (!selectedVehicle) {
+      setDays(0);
+      setSubtotal(0);
+      setVatAmount(0);
+      setGrandTotal(0);
+      return;
     }
-  } else {
-    console.log("Override checked: ignoring leftover hours");
-  }
 
-  const baseSubtotal = rate * calcDays;
-  const vatCalc = inputs.vat ? +(baseSubtotal * 0.16).toFixed(2) : 0;
-  const totalCalc = baseSubtotal + vatCalc;
+    const rate =
+      inputs.custom_rate && inputs.custom_rate > 0
+        ? parseFloat(inputs.custom_rate)
+        : selectedVehicle?.daily_rate || 0;
 
-  setDays(calcDays);
-  setSubtotal(baseSubtotal);
-  setVatAmount(vatCalc);
-  setGrandTotal(totalCalc);
-}, [
-  inputs.custom_rate,
-  inputs.vat,
-  inputs.start_date,
-  inputs.end_date,
-  inputs.start_time,
-  inputs.end_time,
-  inputs.override,
-  selectedVehicle,
-]);
+    const startDateStr = inputs.start_date || null;
+    const endDateStr = inputs.end_date || null;
+    const startTimeStr = inputs.start_time || "00:00:00";
+    const endTimeStr = inputs.end_time || "00:00:00";
 
+    if (!startDateStr || !endDateStr) {
+      setDays(0);
+      setSubtotal(0);
+      setVatAmount(0);
+      setGrandTotal(0);
+      return;
+    }
 
+    const start = new Date(`${startDateStr} ${startTimeStr}`);
+    const end = new Date(`${endDateStr} ${endTimeStr}`);
 
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      setDays(0);
+      setSubtotal(0);
+      setVatAmount(0);
+      setGrandTotal(0);
+      return;
+    }
 
+    // Calculate difference in hours
+    const hoursDiff = (end - start) / (1000 * 60 * 60);
+    const wholeDays = Math.floor(hoursDiff / 24);
 
+    // Round leftover hours to nearest whole hour
+    const leftoverHours = Math.round(hoursDiff % 24);
 
+    console.log("Hours difference:", hoursDiff);
+    console.log("Whole days:", wholeDays);
+    console.log("Leftover hours (rounded):", leftoverHours);
+
+    let calcDays = Math.max(1, wholeDays);
+
+    if (!inputs.override) {
+      if (leftoverHours > 2) {
+        calcDays += 1;
+        console.log("Constraint applied: +1 day");
+      } else {
+        console.log("Constraint not applied: within 2 hours");
+      }
+    } else {
+      console.log("Override checked: ignoring leftover hours");
+    }
+
+    const baseSubtotal = rate * calcDays;
+    const vatCalc = inputs.vat ? +(baseSubtotal * 0.16).toFixed(2) : 0;
+    const totalCalc = baseSubtotal + vatCalc;
+
+    setDays(calcDays);
+    setSubtotal(baseSubtotal);
+    setVatAmount(vatCalc);
+    setGrandTotal(totalCalc);
+  }, [
+    inputs.custom_rate,
+    inputs.vat,
+    inputs.start_date,
+    inputs.end_date,
+    inputs.start_time,
+    inputs.end_time,
+    inputs.override,
+    selectedVehicle,
+  ]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -182,16 +177,25 @@ useEffect(() => {
 
           {/* Customer select */}
           <div className="mb-5 group">
-            <Select
-              options={clients}
-              value={selectedClient}
-              onChange={(option) => {
-                setSelectedClient(option);
-                setInputs((prev) => ({ ...prev, customer_id: option.value }));
-              }}
-              placeholder="Select Client"
-              isSearchable
-            />
+            {customerName ? (
+              <input
+                type="text"
+                value={customerName}
+                disabled
+                className="w-full border rounded px-3 py-2 bg-gray-100 text-gray-700"
+              />
+            ) : (
+              <Select
+                options={clients}
+                value={selectedClient}
+                onChange={(option) => {
+                  setSelectedClient(option);
+                  setInputs((prev) => ({ ...prev, customer_id: option.value }));
+                }}
+                placeholder="Select Client"
+                isSearchable
+              />
+            )}
             {errors.customer_id && (
               <p className="text-red-500 text-xs mt-1">{errors.customer_id}</p>
             )}

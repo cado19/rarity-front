@@ -17,8 +17,7 @@ export const update_vehicle_extras = async (extras) => {
 };
 
 export const update_vehicle_basics = async (basics) => {
-  const extrasUrl = baseUrl + `/api/fleet/update_base.php`;
-  const response = await axios.post(extrasUrl, basics);
+  const response = await api.post(`/api/fleet/update_base.php`, basics);
   return response;
 };
 

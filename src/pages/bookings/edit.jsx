@@ -115,14 +115,14 @@ export default function EditBooking() {
 
         const booking = bookingRes.data.booking;
 
-        console.log("Drivers: ", dRes.drivers);
+        console.log("Booking: ", booking);
 
         // Populate inputs
         setInputs({
           ...inputs,
           customer_id: booking.customer_id,
           vehicle_id: booking.vehicle_id,
-          driver_id: booking.driver_id,
+          driver_id: booking.d_id,
           start_date: booking.start_date,
           end_date: booking.end_date,
           start_time: booking.start_time,
@@ -135,14 +135,14 @@ export default function EditBooking() {
         setNo(booking.booking_no);
 
         // Customer name (read-only)
-        setCustomerName(`${booking.c_fname} ${booking.c_lname}`);
+        setCustomerName(`${booking.customer_first_name} ${booking.customer_last_name}`);
 
         // Dropdowns
         setDrivers(
           dRes.drivers.map((d) => ({
-            value: d.id,
-            label: `${d.first_name} ${d.last_name}`,
-          })),
+          value: d.id,
+          label: `${d.name}`,
+        })),
         );
 
         setVehicles(
@@ -161,7 +161,7 @@ export default function EditBooking() {
         // Preselect driver/vehicle
         setSelectedDriver({
           value: booking.driver_id,
-          label: `${booking.d_fname} ${booking.d_lname}`,
+          label: `${booking.driver_name}`,
         });
         if (matchedVehicle) {
           setSelectedVehicle({

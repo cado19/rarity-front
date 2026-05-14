@@ -79,7 +79,7 @@ export default function AppRouter() {
             <Route
               path="/vehicle/new"
               element={
-                <ProtectedRoute allowedRoles={[0, 1]}>
+                <ProtectedRoute allowedRoles={[0, 1, 7]}>
                   <NewVehicle />
                 </ProtectedRoute>
               }
@@ -87,7 +87,7 @@ export default function AppRouter() {
             <Route
               path="/vehicle/edit_rate"
               element={
-                <ProtectedRoute allowedRoles={[0, 1]}>
+                <ProtectedRoute allowedRoles={[0, 1, 7]}>
                   <EditRate />
                 </ProtectedRoute>
               }
@@ -95,7 +95,7 @@ export default function AppRouter() {
             <Route
               path="/vehicle/edit_basics/:id"
               element={
-                <ProtectedRoute allowedRoles={[0, 1]}>
+                <ProtectedRoute allowedRoles={[0, 1, 7]}>
                   <EditBasics />
                 </ProtectedRoute>
               }
@@ -103,7 +103,7 @@ export default function AppRouter() {
             <Route
               path="/vehicle/edit_extras/:id"
               element={
-                <ProtectedRoute allowedRoles={[0, 1]}>
+                <ProtectedRoute allowedRoles={[0, 1, 7]}>
                   <EditExtras />
                 </ProtectedRoute>
               }
@@ -111,7 +111,7 @@ export default function AppRouter() {
             <Route
               path="/vehicle/edit_pricing/:id"
               element={
-                <ProtectedRoute allowedRoles={[0, 1]}>
+                <ProtectedRoute allowedRoles={[0, 1, 7]}>
                   <EditPricing />
                 </ProtectedRoute>
               }
@@ -119,7 +119,7 @@ export default function AppRouter() {
             <Route
               path="/vehicle/:id/work_orders"
               element={
-                <ProtectedRoute allowedRoles={[0,1,2,7]}>
+                <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
                   <VehicleWorkOrders />
                 </ProtectedRoute>
               }
@@ -129,13 +129,34 @@ export default function AppRouter() {
             <Route path="/issues/:id" element={<Issue />} />
 
             {/* Workorder Routes  */}
-            <Route path="/workorders" element={<WorkflowDashboard />} />
+            <Route
+              path="/workorders"
+              element={
+                <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
+                  <WorkflowDashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/workorders/create"
               element={<WorkOrderCreatePage />}
             />
-            <Route path="/workorders/:id/edit" element={<WorkOrderEdit />} />
-            <Route path="/workorders/:id" element={<WorkOrderShowPage />} />
+            <Route
+              path="/workorders/:id/edit"
+              element={
+                <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
+                  <WorkOrderEdit />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/workorders/:id"
+              element={
+                <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
+                  <WorkOrderShowPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Customer Routes  */}
             <Route path="/customers" element={<AllCustomers />} />
@@ -185,7 +206,7 @@ export default function AppRouter() {
             <Route
               path="/agents"
               element={
-                <ProtectedRoute allowedRoles={[0, 1]}>
+                <ProtectedRoute allowedRoles={[0]}>
                   <AllAgents />
                 </ProtectedRoute>
               }

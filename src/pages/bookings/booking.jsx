@@ -615,14 +615,14 @@ export default function Booking() {
                 Extend Booking
               </button>
             )}
-            {(roleId == 0 || roleId == 1) && (
+            
               <button
                 className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
                 onClick={() => navigate(`/bookings/edit/${id}`)}
               >
                 Edit Booking
               </button>
-            )}
+            
 
             {booking.status != "cancelled" && (
               <button

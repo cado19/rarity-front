@@ -104,7 +104,7 @@ export default function EditBasics() {
     } else {
       Swal.fire({
         title: "An error occured while updating.",
-        text: "Please try again",
+        text: response.data.message,
         icon: "error",
         confirmButtonText: "OK",
       });
