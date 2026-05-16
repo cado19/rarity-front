@@ -99,7 +99,7 @@ export default function Agent() {
       console.log(response);
       // setLoading(false);
     } catch (error) {
-      console.log("agent commission error: ", error.message);
+      // console.log("agent commission error: ", error.message);
     }
   };
 
@@ -139,15 +139,15 @@ export default function Agent() {
         icon: "error",
         confirmButtonText: "OK",
       });
-      console.log(response);
+      // console.log(response);
     }
     getAgent();
   };
 
   // SUBMIT AGENT PASSWORD TO THE BACKEND
   const handlePasswordSubmit = async (data) => {
-    console.log("password data: ", data);
-    setIsModalOpen(false);
+    // console.log("password data: ", data);
+    setPassModalOpen(false);
     const response = await submit_agent_password(id, data);
     if (response.data.status === "Success") {
       Swal.fire({
@@ -170,7 +170,7 @@ export default function Agent() {
 
   // SUBMIT AGENT RATE TO THE BACKEND
   const handleRateSubmit = async (data) => {
-    console.log(data);
+    // console.log(data);
     setRateModalOpen(false);
     const response = await submit_agent_rate(id, data);
     if (response.data.status === "Success") {

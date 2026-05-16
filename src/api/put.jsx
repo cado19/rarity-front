@@ -22,6 +22,11 @@ export const update_booking_details = async (booking) => {
   return response;
 };
 
+export const cancel_booking = async (id) => {
+  const response = await api.post(`/api/bookings/cancel.php`, {id});
+  return response;
+}
+
 // -------------------- Vehicle Functions --------------------
 export const update_vehicle_pricing = async (pricing) => {
   const response = await api.post(`/api/fleet/update_pricing.php`, pricing);

@@ -21,6 +21,7 @@ import {
   save_fuel,
 } from "../../api/post";
 import { useChat } from "../../context/ChatContext";
+import { cancel_booking } from "../../api/put";
 
 export default function Booking() {
   const { id } = useParams();
@@ -133,7 +134,7 @@ export default function Booking() {
       setRoleId(user.role_id);
     }
   };
-  // console.log("Role ID: ", roleId);
+  
   // function to handle extend date of booking
   const extendData = async (data) => {
     // const data = {id: id, endDate: endDate};
@@ -227,19 +228,46 @@ export default function Booking() {
   };
 
   // function to cancel booking
-  const cancelBooking = () => {
-    Swal.fire({
+  const cancelBooking = async () => {
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "Cancelling booking",
       confirmButtonText: "Yes",
       denyButtonText: "No",
       showDenyButton: true,
       showConfirmButton: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate(`/booking/${id}/cancel`);
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await cancel_booking(id);
+        console.log("Cancel response: ", response);
+        if (response.data.status === "Success") {
+          Swal.fire({
+            title: "Success",
+            text: "The booking has been cancelled",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          // Refresh booking data so UI shows updated status
+          getBooking();
+        } else {
+          Swal.fire({
+            title: "Error",
+            text: response.data.message,
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      } catch (err) {
+        Swal.fire({
+          title: "Error",
+          text: "Request failed",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    }
   };
 
   // function to complete booking
@@ -615,14 +643,13 @@ export default function Booking() {
                 Extend Booking
               </button>
             )}
-            
-              <button
-                className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
-                onClick={() => navigate(`/bookings/edit/${id}`)}
-              >
-                Edit Booking
-              </button>
-            
+
+            <button
+              className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
+              onClick={() => navigate(`/bookings/edit/${id}`)}
+            >
+              Edit Booking
+            </button>
 
             {booking.status != "cancelled" && (
               <button
