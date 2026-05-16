@@ -16,31 +16,13 @@ import { agentColumns } from "../../components/utility/tableColumns";
 export default function AllAgents() {
   const navigate = useNavigate();
 
-  const columns = [
-    {
-      name: "Name",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-    {
-      name: "Email",
-      selector: (row) => row.email,
-    },
-    {
-      name: "Phone Number",
-      selector: (row) => row.phone_no,
-      sortable: true,
-    },
-    {
-      name: "Country",
-      selector: (row) => row.country,
-      sortable: true,
-    },
-    {
-      name: "Options",
-      cell: (row) => <Link to={`/agent/${row.id}`}>Details</Link>,
-    },
-  ];
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userRoles = user?.roles?.map((r) => r.id) || [];
+
+  // Filter columns dynamically
+  const filteredColumns = userRoles.includes(0)
+    ? agentColumns
+    : agentColumns.filter((col) => col.id !== "details");
 
   const agentData = [];
 
@@ -113,7 +95,7 @@ export default function AllAgents() {
       {/* <h1 className="text-bold text-center">Vehicles </h1> */}
       <BasicTable
         data={agents}
-        columns={agentColumns}
+        columns={filteredColumns}
         columnFilters={columnFilters}
         setColumnFilters={setColumnFilters}
       />

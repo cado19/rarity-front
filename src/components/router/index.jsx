@@ -206,7 +206,7 @@ export default function AppRouter() {
             <Route
               path="/agents"
               element={
-                <ProtectedRoute allowedRoles={[0]}>
+                <ProtectedRoute allowedRoles={[0, 1]}>
                   <AllAgents />
                 </ProtectedRoute>
               }
@@ -214,7 +214,7 @@ export default function AppRouter() {
             <Route
               path="/agents/new"
               element={
-                <ProtectedRoute allowedRoles={[0]}>
+                <ProtectedRoute allowedRoles={[0, 1]}>
                   <NewAgent />
                 </ProtectedRoute>
               }

@@ -18,7 +18,10 @@ import { createAgent } from "../../api/post";
 export default function NewAgent() {
   const userData = JSON.parse(localStorage.getItem("user"));
   const userId = userData.id;
+  // get user roles from localStorage
+  const userRoles = userData?.roles?.map((r) => r.id) || [];
 
+  
   // state
   const [inputs, setInputs] = useState({
     name: "",
@@ -37,6 +40,18 @@ export default function NewAgent() {
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
 
+  const filteredRoles = React.useMemo(() => {
+  if (userRoles.includes(0)) {
+    // super user → all roles
+    return roles;
+  } else if (userRoles.includes(1)) {
+    // super agent → exclude super user (0) and super agent (1)
+    return roles.filter((role) => role.id !== 0 && role.id !== 1);
+  } else {
+    // regular agent → no role assignment section
+    return [];
+  }
+}, [roles, userRoles]);
   const options = [
     { value: "0", label: "Super user" },
     { value: "1", label: "Super agent" },
@@ -272,38 +287,40 @@ export default function NewAgent() {
         </div>
 
         {/* Roles checkboxes */}
-        <div className="mb-5">
-          <p className="font-medium mb-2">Assign Roles:</p>
-          <div className="grid grid-cols-3 gap-4">
-            {roles.map((role) => (
-              <label
-                key={role.id}
-                className="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  className="form-checkbox h-4 w-4 text-blue-600"
-                  checked={inputs.role_ids.includes(role.id)}
-                  onChange={() => {
-                    setInputs((prev) => {
-                      const alreadySelected = prev.role_ids.includes(role.id);
-                      return {
-                        ...prev,
-                        role_ids: alreadySelected
-                          ? prev.role_ids.filter((id) => id !== role.id)
-                          : [...prev.role_ids, role.id],
-                      };
-                    });
-                  }}
-                />
-                <span className="text-gray-700">{role.name}</span>
-              </label>
-            ))}
+        {filteredRoles.length > 0 && (
+          <div className="mb-5">
+            <p className="font-medium mb-2">Assign Roles:</p>
+            <div className="grid grid-cols-3 gap-4">
+              {filteredRoles.map((role) => (
+                <label
+                  key={role.id}
+                  className="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    className="form-checkbox h-4 w-4 text-blue-600"
+                    checked={inputs.role_ids.includes(role.id)}
+                    onChange={() => {
+                      setInputs((prev) => {
+                        const alreadySelected = prev.role_ids.includes(role.id);
+                        return {
+                          ...prev,
+                          role_ids: alreadySelected
+                            ? prev.role_ids.filter((id) => id !== role.id)
+                            : [...prev.role_ids, role.id],
+                        };
+                      });
+                    }}
+                  />
+                  <span className="text-gray-700">{role.name}</span>
+                </label>
+              ))}
+            </div>
+            {errors.role_ids && (
+              <p className="text-red-500 text-xs mt-1">{errors.role_ids}</p>
+            )}
           </div>
-          {errors.role_ids && (
-            <p className="text-red-500 text-xs mt-1">{errors.role_ids}</p>
-          )}
-        </div>
+        )}
 
         {/* submit button  */}
         <button

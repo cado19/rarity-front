@@ -146,20 +146,20 @@ export default function Agent() {
 
   // SUBMIT AGENT PASSWORD TO THE BACKEND
   const handlePasswordSubmit = async (data) => {
-    console.log(data);
+    console.log("password data: ", data);
     setIsModalOpen(false);
     const response = await submit_agent_password(id, data);
-    if (responsestatus === "Success") {
+    if (response.data.status === "Success") {
       Swal.fire({
         title: "Password Successfully Updated",
         icon: "success",
         confirmButtonText: "OK",
       });
-      getAgentCommissionPlans();
+      getAgent();
     } else {
       Swal.fire({
         title: "Error updating password",
-        text: response.message,
+        text: response.data.message,
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -173,7 +173,7 @@ export default function Agent() {
     console.log(data);
     setRateModalOpen(false);
     const response = await submit_agent_rate(id, data);
-    if (response.status === "Success") {
+    if (response.data.status === "Success") {
       Swal.fire({
         title: "Rate Set Successfully",
         icon: "success",
@@ -183,7 +183,7 @@ export default function Agent() {
     } else {
       Swal.fire({
         title: "Error Setting Rate",
-        text: response.message,
+        text: response.data.message,
         icon: "error",
         confirmButtonText: "OK",
       });
