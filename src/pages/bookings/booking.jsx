@@ -414,7 +414,7 @@ export default function Booking() {
   const getBooking = async () => {
     try {
       const response = await fetchBooking(id);
-      console.log("Booking: ", response);
+      // console.log("Booking: ", response);
       if (response.data.booking.driver_fee > 0) {
         const total =
           Number(response.data.booking.total) +
@@ -711,12 +711,12 @@ export default function Booking() {
             This is a contract of a booking between the renter{" "}
             <span className="font-bold">Rarity rental</span> and client{" "}
             <span className="font-bold">
-              {booking.c_fname} {booking.c_lname}
+              {booking.customer_first_name} {booking.customer_last_name}
             </span>
           </p>
           <p className="mt-2">
             Contract status is{" "}
-            <span className="font-bold">{booking.ct_status}</span>
+            <span className="font-bold">{booking.signature_status}</span>
           </p>
           {/* voucher button  */}
           <button
