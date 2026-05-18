@@ -34,7 +34,7 @@ export default function BookingForm({
   setOneDay,
   show,
   setShow,
-  customerName
+  customerName,
 }) {
   const [days, setDays] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
@@ -77,11 +77,6 @@ export default function BookingForm({
       return;
     }
 
-    const rate =
-      inputs.custom_rate && inputs.custom_rate > 0
-        ? parseFloat(inputs.custom_rate)
-        : selectedVehicle?.daily_rate || 0;
-
     const startDateStr = inputs.start_date || null;
     const endDateStr = inputs.end_date || null;
     const startTimeStr = inputs.start_time || "00:00:00";
@@ -109,28 +104,38 @@ export default function BookingForm({
     // Calculate difference in hours
     const hoursDiff = (end - start) / (1000 * 60 * 60);
     const wholeDays = Math.floor(hoursDiff / 24);
-
-    // Round leftover hours to nearest whole hour
     const leftoverHours = Math.round(hoursDiff % 24);
-
-    console.log("Hours difference:", hoursDiff);
-    console.log("Whole days:", wholeDays);
-    console.log("Leftover hours (rounded):", leftoverHours);
 
     let calcDays = Math.max(1, wholeDays);
 
     if (!inputs.override) {
       if (leftoverHours > 2) {
         calcDays += 1;
-        console.log("Constraint applied: +1 day");
-      } else {
-        console.log("Constraint not applied: within 2 hours");
       }
-    } else {
-      console.log("Override checked: ignoring leftover hours");
     }
 
-    const baseSubtotal = rate * calcDays;
+    // 🔄 Reverse calculation logic
+    let effectiveRate;
+    if (inputs.budgetMode && inputs.custom_total) {
+      const customTotal = parseFloat(inputs.custom_total);
+      if (!isNaN(customTotal) && calcDays > 0) {
+        effectiveRate = +(customTotal / calcDays).toFixed(2);
+        // ✅ populate custom_rate so backend gets it
+        setInputs((prev) => ({ ...prev, custom_rate: effectiveRate }));
+      } else {
+        effectiveRate =
+          inputs.custom_rate && parseFloat(inputs.custom_rate) > 0
+            ? parseFloat(inputs.custom_rate)
+            : selectedVehicle?.daily_rate || 0;
+      }
+    } else {
+      effectiveRate =
+        inputs.custom_rate && parseFloat(inputs.custom_rate) > 0
+          ? parseFloat(inputs.custom_rate)
+          : selectedVehicle?.daily_rate || 0;
+    }
+
+    const baseSubtotal = effectiveRate * calcDays;
     const vatCalc = inputs.vat ? +(baseSubtotal * 0.16).toFixed(2) : 0;
     const totalCalc = baseSubtotal + vatCalc;
 
@@ -140,6 +145,8 @@ export default function BookingForm({
     setGrandTotal(totalCalc);
   }, [
     inputs.custom_rate,
+    inputs.custom_total,
+    inputs.budgetMode,
     inputs.vat,
     inputs.start_date,
     inputs.end_date,
@@ -330,25 +337,78 @@ export default function BookingForm({
           </div>
 
           {/* Custom Rate */}
-          <div className="relative z-0 w-full mb-5 group">
+          <label className="flex items-center space-x-2 mb-4">
             <input
-              type="text"
-              name="custom_rate"
-              id="custom_rate"
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              value={inputs.custom_rate}
-              onChange={(e) =>
-                setInputs((prev) => ({ ...prev, custom_rate: e.target.value }))
+              type="checkbox"
+              checked={inputs.budgetMode || false}
+              onChange={() =>
+                setInputs((prev) => ({ ...prev, budgetMode: !prev.budgetMode }))
               }
+              className="form-checkbox h-5 w-5 text-blue-600"
             />
+            <span className="text-gray-500">
+              {inputs.budgetMode
+                ? "Budget Mode (enter total)"
+                : "Rate Mode (enter daily rate)"}
+            </span>
+          </label>
 
-            <label
-              for="custom_rate"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Custome Rate
-            </label>
-          </div>
+          {inputs.budgetMode ? (
+            <div className="relative z-0 w-full mb-5 group">
+              <input
+                type="text"
+                name="custom_total"
+                id="custom_total"
+                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                value={inputs.custom_total || ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setInputs((prev) => ({ ...prev, custom_total: val }));
+                  // 🔄 derive rate immediately if days known
+                  if (days > 0 && val) {
+                    const derivedRate = +(parseFloat(val) / days).toFixed(2);
+                    setInputs((prev) => ({
+                      ...prev,
+                      custom_rate: derivedRate,
+                    }));
+                  }
+                }}
+              />
+              <label
+                htmlFor="custom_total"
+                className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0]"
+              >
+                Budget Total
+              </label>
+              {inputs.custom_rate && (
+                <p className="text-xs text-gray-600 mt-1">
+                  Derived Rate: {inputs.custom_rate} per day
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="relative z-0 w-full mb-5 group">
+              <input
+                type="text"
+                name="custom_rate"
+                id="custom_rate"
+                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                value={inputs.custom_rate || ""}
+                onChange={(e) =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    custom_rate: e.target.value,
+                  }))
+                }
+              />
+              <label
+                htmlFor="custom_rate"
+                className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0]"
+              >
+                Custom Rate
+              </label>
+            </div>
+          )}
 
           {/* VAT toggle */}
           <label className="flex items-center space-x-2">

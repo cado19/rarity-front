@@ -15,7 +15,7 @@ import { save_booking } from "../../api/post";
 import Loading from "../../components/PageContent/Loading";
 import BookingNav from "../../components/navs/bookingnav";
 import { update_booking_details } from "../../api/put";
-import BookingForm from "../../components/bookings/form";
+import BookingForm from "../../components/forms/BookingForm";
 
 export default function EditBooking() {
   const { id } = useParams(); // booking id from route

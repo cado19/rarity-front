@@ -18,7 +18,7 @@ import {
   get_booking_vehicles,
 } from "../../api/fetch";
 import { save_booking } from "../../api/post";
-import BookingForm from "../../components/bookings/form";
+import BookingForm from "../../components/forms/BookingForm";
 
 export default function NewBooking() {
   // Format date helper
