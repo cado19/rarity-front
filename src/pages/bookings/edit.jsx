@@ -117,6 +117,29 @@ export default function EditBooking() {
 
         console.log("Booking: ", booking);
 
+        // ✅ Parse dates
+        const startDateObj = new Date(booking.start_date);
+        const endDateObj = new Date(booking.end_date);
+
+        // ✅ Parse times (HH:mm format from backend)
+        const [startHour, startMinute] = booking.start_time.split(":");
+        const [endHour, endMinute] = booking.end_time.split(":");
+
+        const startTimeObj = new Date(startDateObj);
+        startTimeObj.setHours(
+          parseInt(startHour, 10),
+          parseInt(startMinute, 10),
+        );
+
+        const endTimeObj = new Date(endDateObj);
+        endTimeObj.setHours(parseInt(endHour, 10), parseInt(endMinute, 10));
+
+        // ✅ Set states for pickers
+        setStartDate(startDateObj);
+        setEndDate(endDateObj);
+        setStartTime(startTimeObj);
+        setEndTime(endTimeObj);
+
         // Populate inputs
         setInputs({
           ...inputs,
@@ -135,14 +158,16 @@ export default function EditBooking() {
         setNo(booking.booking_no);
 
         // Customer name (read-only)
-        setCustomerName(`${booking.customer_first_name} ${booking.customer_last_name}`);
+        setCustomerName(
+          `${booking.customer_first_name} ${booking.customer_last_name}`,
+        );
 
         // Dropdowns
         setDrivers(
           dRes.drivers.map((d) => ({
-          value: d.id,
-          label: `${d.name}`,
-        })),
+            value: d.id,
+            label: `${d.name}`,
+          })),
         );
 
         setVehicles(
@@ -232,8 +257,23 @@ export default function EditBooking() {
   if (loading) return <Loading />;
 
   return (
+    <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
+    {/* Header with title + cancel */}
+    <div className="flex justify-between items-center mb-4">
+      <h1 className="text-3xl font-bold text-yellow-600 tracking-wide">
+        Edit Booking {no ? `#${no}` : ""}
+      </h1>
+      <button
+        type="button"
+        onClick={() => navigate(`/booking/${id}`)} // back to booking detail
+        className="border-2 border-red-600 text-red-600 bg-white hover:bg-red-600 hover:text-white transition duration-200 rounded-full px-4 py-2"
+      >
+        Cancel
+      </button>
+    </div>
+
     <BookingForm
-      title={`Edit Booking ${no ? `#${no}` : ""}`}
+      title=""
       inputs={inputs}
       setInputs={setInputs}
       drivers={drivers}
@@ -255,5 +295,6 @@ export default function EditBooking() {
       onSubmit={handleSubmit}
       customerName={customerName}
     />
+    </div>
   );
 }

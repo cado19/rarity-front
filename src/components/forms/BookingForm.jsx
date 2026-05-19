@@ -5,6 +5,7 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { AiFillCaretRight, AiFillCaretDown } from "react-icons/ai";
+import CurrencyModal from "../modals/CurrencyModal";
 
 export default function BookingForm({
   title, // NEW: passed from parent
@@ -40,6 +41,7 @@ export default function BookingForm({
   const [subtotal, setSubtotal] = useState(0);
   const [vatAmount, setVatAmount] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
+  const [showCurrencyModal, setShowCurrencyModal] = useState(false); // currency modal display
 
   //pre populate time
   useEffect(() => {
@@ -158,10 +160,29 @@ export default function BookingForm({
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <CurrencyModal
+        show={showCurrencyModal}
+        onClose={() => setShowCurrencyModal(false)}
+        onApply={(kesValue) => {
+          // feed into reverse calculation
+          setInputs((prev) => ({ ...prev, custom_total: kesValue }));
+        }}
+      />
+
       <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
         <h1 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-4 mt-2">
           {title}
         </h1>
+
+        <div className="w-4/5 mx-auto">
+          <button
+            type="button"
+            onClick={() => setShowCurrencyModal(true)}
+            className="border-2  bg-white hover:bg-blue-600 hover:text-white transition duration-200 rounded-full px-4 py-2"
+          >
+            Convert Currency
+          </button>
+        </div>
 
         <form onSubmit={onSubmit} className="w-4/5 mx-auto">
           {/* One Day Booking toggle */}
