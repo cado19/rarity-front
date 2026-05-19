@@ -14,7 +14,7 @@ export default function WorkOrderEdit() {
     const fetchOrder = async () => {
       try {
         const res = await fetchWorkOrder(id);
-        console.log("Response: ", res);
+        // console.log("Response: ", res);
 
         if (res.data.status === "Success") {
           // Combine work_order + items into one object for the form
@@ -37,6 +37,7 @@ export default function WorkOrderEdit() {
       e.preventDefault();
       try {
         const payload = { work_order_id: id, ...inputs, items };
+        console.log("Payload: ", payload);
         const res = await update_work_order(payload);
   
         if (res.data.status === "Success") {

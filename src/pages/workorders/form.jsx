@@ -22,9 +22,10 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
     mileage: existingOrder?.mileage || "",
     scheduled_date: existingOrder?.scheduled_date || "",
     completion_date: existingOrder?.completion_date || null,
-    labor_cost: existingOrder?.labor_cost || "",
-    parts_cost: existingOrder?.parts_cost || "",
+    labor_cost: existingOrder?.labor_cost || 0,
+    parts_cost: existingOrder?.parts_cost || 0,
     status: existingOrder?.status || "open",
+    service: existingOrder?.service || "",
   });
 
   useEffect(() => {
@@ -92,6 +93,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
       >
         {/* Vehicle select */}
         <div className="mb-5 group">
+          <label>Vehicle</label>
           <Select
             options={vehicles}
             value={selectedVehicle}
@@ -106,6 +108,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
 
         {/* Title */}
         <div className="mb-5 group">
+          <label>Title</label>
           <input
             type="text"
             value={inputs.title}
@@ -117,6 +120,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
 
         {/* Description */}
         <div className="mb-5 group">
+          <label>Description</label>
           <textarea
             value={inputs.description}
             onChange={(e) => handleChange("description", e.target.value)}
@@ -127,6 +131,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
 
         {/* Mileage */}
         <div className="mb-5 group">
+          <label>Mileage</label>
           <textarea
             value={inputs.mileage}
             onChange={(e) => handleChange("mileage", e.target.value)}
@@ -190,7 +195,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
               <input
                 type="checkbox"
                 id="markCompleted"
-                checked={inputs.status === "completed"}
+                checked={inputs.status === "resolved"}
                 onChange={(e) => {
                   if (e.target.checked) {
                     const today = new Date();
@@ -199,7 +204,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
                     setInputs((prev) => ({
                       ...prev,
                       completion_date: formatted,
-                      status: "completed",
+                      status: "resolved",
                     }));
                   } else {
                     setCompletionDate(null);
@@ -228,7 +233,8 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
               <option value="">Select Status</option>
               <option value="open">Open</option>
               <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
+              <option value="awaiting_parts">Awaiting parts</option>
+              <option value="resolved">Resolved</option>
               <option value="closed">Closed</option>
             </select>
           </div>
@@ -256,6 +262,22 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
             className="w-full border rounded px-3 py-2"
           />
         </div>
+
+        {/* Next Service Mileage - only show when editing */}
+        {existingOrder && (
+          <div className="mb-5 group">
+            <label className="block text-sm text-gray-600 mb-1">
+              Next Service Mileage
+            </label>
+            <input
+              type="number"
+              value={inputs.service}
+              onChange={(e) => handleChange("service", e.target.value)}
+              placeholder="Enter next service mileage"
+              className="w-full border rounded px-3 py-2"
+            />
+          </div>
+        )}
 
         {/* Items Section */}
         <h3 className="text-lg font-semibold mb-2">Work Order Items</h3>
@@ -300,7 +322,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
         >
           + Add Item
         </button>
-        
+
         {/* Preview Totals */}
         <div className="mt-6 border-t pt-4">
           <h3 className="text-lg font-semibold mb-2">Cost Preview</h3>
@@ -312,6 +334,11 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
               : `Manual entry (Ksh. ${inputs.parts_cost || 0})`}
           </p>
           <p className="font-bold">Grand Total: Ksh. {grandTotal}</p>
+          {inputs.service && (
+            <p className="text-blue-600">
+              Next Service Mileage: {inputs.service} km
+            </p>
+          )}
         </div>
 
         {/* Submit */}

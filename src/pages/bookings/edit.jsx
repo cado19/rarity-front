@@ -260,9 +260,6 @@ export default function EditBooking() {
     <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
     {/* Header with title + cancel */}
     <div className="flex justify-between items-center mb-4">
-      <h1 className="text-3xl font-bold text-yellow-600 tracking-wide">
-        Edit Booking {no ? `#${no}` : ""}
-      </h1>
       <button
         type="button"
         onClick={() => navigate(`/booking/${id}`)} // back to booking detail
@@ -270,6 +267,9 @@ export default function EditBooking() {
       >
         Cancel
       </button>
+      <h1 className="text-3xl font-bold text-yellow-600 tracking-wide">
+        Edit Booking {no ? `#${no}` : ""}
+      </h1>
     </div>
 
     <BookingForm

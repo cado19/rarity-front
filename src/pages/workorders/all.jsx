@@ -41,6 +41,7 @@ export default function WorkflowDashboard() {
               <th>Title</th>
               <th>Status</th>
               <th>Total Cost</th>
+              <th>Next Service</th>
               <th></th>
             </tr>
           </thead>
@@ -58,6 +59,16 @@ export default function WorkflowDashboard() {
                 <td>{order.title}</td>
                 <td>{order.status}</td>
                 <td>{order.total_cost}</td>
+                <td>
+                  {order.work_order_service
+                    ? `${order.work_order_service} km`
+                    : "—"}
+                  {order.service_updated === 1 && (
+                    <span className="ml-2 text-green-600 font-semibold">
+                      (Updated)
+                    </span>
+                  )}
+                </td>
                 <td>
                   {/* More details link */}
                   <Link
