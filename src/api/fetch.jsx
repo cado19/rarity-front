@@ -29,7 +29,7 @@ export const get_vehicle_count = async () => {
   const response = await api.get("/api/dashboard/vehicle_count.php");
   return response;
 };
-// Fetch all vehicles 
+// Fetch all vehicles
 export const get_all_vehicles = async () => {
   const response = await api.get(`/api/fleet/all.php`);
   return response;
@@ -144,6 +144,14 @@ export const fetchBooking = async (id) => {
   return response;
 };
 
+// get invoice for a booking
+export const fetchBookingInvoice = async (booking_id) => {
+  const response = await api.post(`/api/invoices/get_by_booking.php`, {
+    booking_id,
+  });
+  return response;
+};
+
 // get reservations
 export const fetchReservations = async (id) => {
   const response = await api.get(`/api/reservations/read.php`);
@@ -193,12 +201,12 @@ export const fetchBookingDrivers = async () => {
 export const fetchAgents = async () => {
   const response = await api.get(`/api/accounts/all.php`);
   return response.data;
-}
+};
 // get role names and ids
 export const fetchAccountRoles = async () => {
   const response = await api.get(`/api/accounts/list_roles.php`);
   return response.data;
-}
+};
 
 export const fetchAgentDetails = async (id) => {
   const response = await api.get(`/api/accounts/read_agent.php`, {

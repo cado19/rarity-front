@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { FaArrowLeft, FaComments, FaDownload } from "react-icons/fa";
 import { Mosaic, BlinkBlur } from "react-loading-indicators";
@@ -13,7 +13,7 @@ import Delivery from "./delivery";
 import Loading from "../../components/PageContent/Loading";
 import Fuel from "./fuel";
 import AddMedia from "./add_media";
-import { fetchBooking } from "../../api/fetch";
+import { fetchBooking, fetchBookingInvoice } from "../../api/fetch";
 import {
   activate_booking,
   assign_driver,
@@ -22,12 +22,15 @@ import {
 } from "../../api/post";
 import { useChat } from "../../context/ChatContext";
 import { cancel_booking } from "../../api/put";
+import InvoiceForm from "../../components/forms/InvoiceForm";
+import AddPaymentForm from "../../components/forms/AddPaymentForm";
 
 export default function Booking() {
   const { id } = useParams();
   const { openChatWithCustomer } = useChat();
   const [roleId, setRoleId] = useState(null);
   const [booking, setBooking] = useState(null);
+  const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false); // state for loading when media is being uploaded
   const [error, setError] = useState(null);
@@ -36,7 +39,10 @@ export default function Booking() {
   const [mediaModalOpen, setMediaModalOpen] = useState(false); // this is used to control the fuel modal
   const [deliveryModalOpen, setDeliveryModalOpen] = useState(false); // this is used to control the delivery modal
   const [voucherBtnOpen, setVoucherBtnOpen] = useState(false); // this is used to control the voucher links dropdown
-  const [contractBtnOpen, setContractBtnOpen] = useState(false); // this is used to control the voucher links dropdown
+  const [contractBtnOpen, setContractBtnOpen] = useState(false); // this is used to control the contract options dropdown
+  const [invoiceBtnOpen, setInvoiceBtnOpen] = useState(false); // this is used to control the invoice options dropdown
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false); // this is used to control the invoice modal
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false); // this is used to control the payment of an invoice modal
   const [total, setTotal] = useState(0); // this is used because total changes with driver fee
 
   const [extendInfo, setExtendInfo] = useState(null);
@@ -134,7 +140,7 @@ export default function Booking() {
       setRoleId(user.role_id);
     }
   };
-  
+
   // function to handle extend date of booking
   const extendData = async (data) => {
     // const data = {id: id, endDate: endDate};
@@ -430,8 +436,22 @@ export default function Booking() {
     }
   };
 
+  const getInvoice = async () => {
+    try {
+      const response = await fetchBookingInvoice(id);
+      // console.log(response);
+      if (response.data.status === "Success") {
+        setInvoice(response.data.invoice);
+      }
+    } catch (error) {
+      const errorMessage = "Error: " + error.message;
+      setError(errorMessage);
+    }
+  };
+
   useEffect(() => {
     getRoleId();
+    getInvoice();
     getBooking();
     checkMessage();
   }, []);
@@ -483,6 +503,20 @@ export default function Booking() {
 
   return (
     <div>
+      <InvoiceForm
+        bookingId={id}
+        show={invoiceModalOpen}
+        onClose={() => setInvoiceModalOpen(false)}
+        onCreated={(newInvoice) => console.log("Invoice created:", newInvoice)}
+      />
+
+      {/* <AddPaymentForm
+        invoiceId={invoice.invoice_id}
+        show={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+        onRecorded={(updatedInvoice) => setInvoice(updatedInvoice)}
+      /> */}
+
       <Extend
         show={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -719,78 +753,99 @@ export default function Booking() {
             <span className="font-bold">{booking.signature_status}</span>
           </p>
           {/* voucher button  */}
-          <button
-            className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300"
-            onClick={() => setVoucherBtnOpen(!voucherBtnOpen)}
-          >
-            Copy voucher link
-          </button>
-          {voucherBtnOpen && (
-            <div className="absolute mt-2 w-48 bg-white border rounded shadow-lg z-10">
-              <button
-                className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300"
-                onClick={() => copyVoucherLink()}
-              >
-                Copy voucher link (KES)
-              </button>
+          <div className="relative inline-block text-left">
+            <button
+              className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300"
+              onClick={() => setVoucherBtnOpen(!voucherBtnOpen)}
+            >
+              Voucher Options
+            </button>
 
-              <button
-                className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300"
-                onClick={() => copyVoucherLinkUsd()}
-              >
-                Copy voucher link (USD)
-              </button>
+            {voucherBtnOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-white border rounded shadow-lg z-10 flex flex-col">
+                <button
+                  className="px-4 py-2 hover:bg-blue-100 text-blue-700 text-left"
+                  onClick={() => {
+                    setVoucherBtnOpen(false);
+                    copyVoucherLink();
+                  }}
+                >
+                  Copy Voucher Link (KES)
+                </button>
+                <button
+                  className="px-4 py-2 hover:bg-blue-100 text-blue-700 text-left"
+                  onClick={() => {
+                    setVoucherBtnOpen(false);
+                    copyVoucherLinkUsd();
+                  }}
+                >
+                  Copy Voucher Link (USD)
+                </button>
+                <a
+                  href={`https://backend.raritycars.com/api/bookings/download.php?id=${id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 hover:bg-green-100 text-green-700 text-left"
+                  onClick={() => setVoucherBtnOpen(false)}
+                >
+                  Download Voucher (KES)
+                </a>
+                <a
+                  href={`https://backend.raritycars.com/api/bookings/download_usd.php?id=${id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 hover:bg-yellow-100 text-yellow-700 text-left"
+                  onClick={() => setVoucherBtnOpen(false)}
+                >
+                  Download Voucher (USD)
+                </a>
+              </div>
+            )}
+          </div>
 
-              {/* Download links */}
-              <a
-                href={`https://backend.raritycars.com/api/bookings/download.php?id=${id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 border border-green-600 text-green-600 hover:bg-green-600 hover:text-white font-bold py-2 px-4 rounded transition duration-300"
-              >
-                <FaDownload /> Download Voucher (KES)
-              </a>
-              <a
-                href={`https://backend.raritycars.com/api/bookings/download_usd.php?id=${id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black font-bold py-2 px-4 rounded transition duration-300"
-              >
-                <FaDownload /> Download Voucher (USD)
-              </a>
-            </div>
-          )}
           {/* contract button  */}
-          <button
-            className="border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300"
-            onClick={() => setContractBtnOpen(!contractBtnOpen)}
-          >
-            Contract Options
-          </button>
+          <div className="relative inline-block text-left">
+            <button
+              className="border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300"
+              onClick={() => setContractBtnOpen(!contractBtnOpen)}
+            >
+              Contract Options
+            </button>
 
-          {contractBtnOpen && (
-            <div className="absolute mt-2 w-64 bg-white border rounded shadow-lg z-10 flex flex-col p-2 gap-2">
-              {/* Copy links */}
-              <button
-                className="border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white font-bold py-2 px-4 rounded transition duration-300"
-                onClick={() => copyContractLink()}
-              >
-                Copy Contract Link
-              </button>
+            {contractBtnOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-white border rounded shadow-lg z-10 flex flex-col">
+                <button
+                  className="px-4 py-2 hover:bg-gray-100 text-gray-800 text-left"
+                  onClick={() => {
+                    setContractBtnOpen(false);
+                    copySignatureLink();
+                  }}
+                >
+                  Copy Signature Link
+                </button>
+                <button
+                  className="px-4 py-2 hover:bg-gray-100 text-gray-800 text-left"
+                  onClick={() => {
+                    setContractBtnOpen(false);
+                    copyContractLink();
+                  }}
+                >
+                  Copy Contract Link
+                </button>
+                <a
+                  href={`https://backend.raritycars.com/api/contracts/download.php?id=${id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 hover:bg-green-100 text-green-700 text-left"
+                  onClick={() => setContractBtnOpen(false)}
+                >
+                  Download Contract PDF
+                </a>
+              </div>
+            )}
+          </div>
 
-              {/* Download link */}
-              <a
-                href={`https://backend.raritycars.com/api/contracts/download.php?id=${id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 border border-green-600 text-green-600 hover:bg-green-600 hover:text-white font-bold py-2 px-4 rounded transition duration-300"
-              >
-                <FaDownload /> Download Contract PDF
-              </a>
-            </div>
-          )}
-
-          {booking.ct_status == "unsigned" && (
+          {/* {booking.ct_status == "unsigned" && (
             <button
               className="border border-green-700 text-green-700 hover:bg-green-700 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-400 dark:hover:text-black"
               onClick={() => copySignatureLink()}
@@ -805,8 +860,55 @@ export default function Booking() {
             }
           >
             Sign contract
-          </button>
+          </button> */}
 
+          {/* Invoice button */}
+          <div className="relative inline-block text-left">
+            <button
+              className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold mt-2 py-2 px-4 rounded transition duration-300"
+              onClick={() => setInvoiceBtnOpen(!invoiceBtnOpen)}
+            >
+              Invoice Options
+            </button>
+
+            {invoiceBtnOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10 flex flex-col">
+                {/* View or Generate Invoice */}
+                {invoice ? (
+                  <Link
+                    to={`/invoices/${invoice.invoice_id}`}
+                    className="px-4 py-2 hover:bg-purple-100 text-purple-700"
+                    onClick={() => setInvoiceBtnOpen(false)}
+                  >
+                    View Invoice
+                  </Link>
+                ) : (
+                  <button
+                    className="px-4 py-2 hover:bg-purple-100 text-purple-700 text-left"
+                    onClick={() => {
+                      setInvoiceBtnOpen(false);
+                      setInvoiceModalOpen(true);
+                    }}
+                  >
+                    Generate Invoice
+                  </button>
+                )}
+
+                {/* Record Payment */}
+                <button
+                  className="px-4 py-2 hover:bg-green-100 text-green-700 text-left"
+                  onClick={() => {
+                    setInvoiceBtnOpen(false);
+                    setPaymentModalOpen(true);
+                  }}
+                >
+                  Record Payment
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Chat section */}
           <button
             onClick={() => openChatWithCustomer(booking.customer_id)}
             className="bg-blue-600 text-white mt-2 p-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center"

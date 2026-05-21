@@ -72,6 +72,21 @@ export const assign_driver = async (payload) => {
   return response;
 };
 
+// create an invoice
+export const save_invoice = async (payload) => {
+  const response = await api.post("/api/invoices/generate.php", payload);
+  return response;
+}
+
+// create a payment
+export const add_payment = async (payload) => {
+  const response = await api.post(
+    "https://backend.raritycars.com/api/invoices/add_payment.php",
+    payload
+  );
+  return response;
+};
+
 // -------------------- Agent Functions --------------------
 // This function posts data to earned commissions as search params
 export const get_agent_commissions = async (payload) => {
