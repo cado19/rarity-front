@@ -64,6 +64,8 @@ import WorkOrderCreatePage from "../../pages/workorders/create";
 import WorkOrderShowPage from "../../pages/workorders/show";
 import ProtectedRoute from "./ProtectedRoute";
 import VehicleWorkOrders from "../../pages/vehicles/VehicleWorkOrder";
+import AllInvoices from "../../pages/invoices/all";
+import Invoice from "../../pages/invoices/invoice";
 
 export default function AppRouter() {
   return (
@@ -201,6 +203,10 @@ export default function AppRouter() {
             <Route path="/bookings/voucher/:id" element={<BookingVoucher />} />
             <Route path="/bookings/reservations" element={<Reservations />} />
             {/* <Route path='/bookings/reservations' element={<Reservations />} /> */}
+
+            {/* Invoice Routes  */}
+            <Route path="invoices/all" element={<AllInvoices />} />
+            <Route path="invoices/:id" element={<Invoice />} />
 
             {/* Agent Routes  */}
             <Route

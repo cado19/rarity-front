@@ -14,7 +14,9 @@ import {
     HiOutlineChartPie,
     HiOutlineArrowRight,
     HiOutlineArrowCircleRight,
-    HiCash
+    HiCash,
+    HiOutlineReceiptRefund,
+    HiOutlineClipboardList 
   } from "react-icons/hi";
 import { HiMiniWrenchScrewdriver } from "react-icons/hi2";  
   export const DASHBOARD_SIDEBAR_LINKS = [
@@ -61,6 +63,12 @@ import { HiMiniWrenchScrewdriver } from "react-icons/hi2";
           label: 'Bookings',
           path: '/bookings/all',
           icon: <HiOutlineDocumentText />
+      },
+      {
+          key: 'invoices',
+          label: 'Invoices',
+          path: '/invoices/all',
+          icon: <HiOutlineClipboardList  />
       },
       {
           key: 'payments',
