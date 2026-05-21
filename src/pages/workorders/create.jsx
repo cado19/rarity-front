@@ -1,5 +1,6 @@
-import WorkOrderForm from "./form";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import WorkOrderForm from "./form";
 import { save_work_order } from "../../api/post";
 
 export default function WorkOrderCreatePage() {
@@ -12,15 +13,32 @@ export default function WorkOrderCreatePage() {
       const res = await save_work_order(payload);
 
       if (res.data.status === "Success") {
-        // redirect to list or show page
-        navigate("/workorders");
+        Swal.fire({
+          title: "Work Order Created",
+          text: res.data.message || "The work order was created successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => {
+          // redirect after user closes the popup
+          navigate("/workorders");
+        });
       } else {
-        alert("Error creating work order: " + res.data.message);
+        Swal.fire({
+          title: "Error Creating Work Order",
+          text: res.data.message || "Something went wrong.",
+          icon: "error",
+          confirmButtonText: "Close",
+        });
         console.error("Error creating work order: " + res.data.message);
       }
     } catch (error) {
       console.error("Error creating work order:", error);
-      alert("Something went wrong while creating the work order.");
+      Swal.fire({
+      title: "Network Error",
+      text: "Something went wrong while creating the work order.",
+      icon: "error",
+      confirmButtonText: "Close",
+    });
     }
   };
 
