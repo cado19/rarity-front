@@ -205,3 +205,34 @@ export const agentColumns = [
     },
   },
 ];
+
+export const invoiceColumns = [
+  {
+    accessorKey: "invoice_number",
+    header: "#",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "subject",
+    header: "Subject",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "due_date",
+    header: "Due",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: "details",
+    header: "Details",
+    cell: (info) => {
+      const invoice = info.row.original;
+      return <Link to={`/invoices/${invoice.invoice_id}`}>Details</Link>;
+    },
+  },
+];

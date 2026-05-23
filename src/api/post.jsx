@@ -81,7 +81,7 @@ export const save_invoice = async (payload) => {
 // create a payment
 export const add_payment = async (payload) => {
   const response = await api.post(
-    "https://backend.raritycars.com/api/invoices/add_payment.php",
+    "/api/invoices/add_payment.php",
     payload
   );
   return response;

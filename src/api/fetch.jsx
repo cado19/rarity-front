@@ -152,6 +152,18 @@ export const fetchBookingInvoice = async (booking_id) => {
   return response;
 };
 
+// get all invoices
+export const fetchInvoices = async () => {
+  const response = await api.get(`/api/invoices/get_all.php`);
+  return response;
+};
+
+// get invoice
+export const fetchInvoice = async (invoice_id) => {
+  const response = api.post(`/api/invoices/get_full.php`,  {invoice_id} );
+  return response;
+};
+
 // get reservations
 export const fetchReservations = async (id) => {
   const response = await api.get(`/api/reservations/read.php`);
