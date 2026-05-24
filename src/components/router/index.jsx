@@ -66,6 +66,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import VehicleWorkOrders from "../../pages/vehicles/VehicleWorkOrder";
 import AllInvoices from "../../pages/invoices/all";
 import Invoice from "../../pages/invoices/invoice";
+import PaidInvoices from "../../pages/invoices/paid";
+import UnpaidInvoices from "../../pages/invoices/unpaid";
 
 export default function AppRouter() {
   return (
@@ -206,6 +208,8 @@ export default function AppRouter() {
 
             {/* Invoice Routes  */}
             <Route path="invoices/all" element={<AllInvoices />} />
+            <Route path="invoices/paid" element={<PaidInvoices />} />
+            <Route path="invoices/unpaid" element={<UnpaidInvoices />} />
             <Route path="invoices/:id" element={<Invoice />} />
 
             {/* Agent Routes  */}

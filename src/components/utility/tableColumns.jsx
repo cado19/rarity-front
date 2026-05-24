@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { formatDateOnly } from "./useDateFormatter";
 
 export const bookingColumns = [
   {
@@ -220,12 +221,15 @@ export const invoiceColumns = [
   {
     accessorKey: "due_date",
     header: "Due",
-    cell: (info) => info.getValue(),
+    cell: (info) => formatDateOnly(info.getValue()),
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: (info) => info.getValue(),
+    id: "vehicle",
+    header: "Vehicle",
+    cell: (info) => {
+      const invoice = info.row.original;
+      return `${invoice.make} ${invoice.model} (${invoice.number_plate})`;
+    },
   },
   {
     id: "details",

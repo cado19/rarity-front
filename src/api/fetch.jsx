@@ -158,9 +158,27 @@ export const fetchInvoices = async () => {
   return response;
 };
 
+// get all paid invoices
+export const fetchPaidInvoices = async () => {
+  const res = await api.get("/api/invoices/paid.php");
+  return res.data.invoices;
+};
+
+// get all unpaid invoices
+export const fetchUnpaidInvoices = async () => {
+  const res = await api.get("/api/invoices/unpaid.php");
+  return res.data.invoices;
+};
+
+// get all cancelled invoices
+export const fetchCancelledInvoices = async () => {
+  const res = await api.get("/api/invoices/cancelled.php");
+  return res.data.invoices;
+};
+
 // get invoice
 export const fetchInvoice = async (invoice_id) => {
-  const response = api.post(`/api/invoices/get_full.php`,  {invoice_id} );
+  const response = api.post(`/api/invoices/get_full.php`, { invoice_id });
   return response;
 };
 
