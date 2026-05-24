@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { FaFilePdf } from "react-icons/fa";
 import { fetchInvoice } from "../../api/fetch";
 import Loading from "../../components/PageContent/Loading";
 import AddPaymentForm from "../../components/forms/AddPaymentForm";
+import { formatDateTime } from "../../components/utility/useDateFormatter";
 
 export default function Invoice() {
   const { id } = useParams();
@@ -40,15 +42,26 @@ export default function Invoice() {
         <h1 className="text-3xl font-bold text-gray-800">
           Invoice #{invoice.invoice_number}
         </h1>
-        <span
-          className={`px-3 py-1 rounded-full text-sm font-semibold ${
-            invoice.status === "paid"
-              ? "bg-green-100 text-green-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
-        >
-          {invoice.status}
-        </span>
+        <div className="flex items-center space-x-3">
+          <a
+            href={`https://backend.raritycars.com/api/invoices/download.php?id=${id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-200 shadow-sm"
+          >
+            <FaFilePdf className="mr-2" />
+            Download 
+          </a>
+          <span
+            className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              invoice.status === "paid"
+                ? "bg-green-100 text-green-700"
+                : "bg-yellow-100 text-yellow-700"
+            }`}
+          >
+            {invoice.status}
+          </span>
+        </div>
       </div>
 
       {/* Invoice Info */}
@@ -99,14 +112,17 @@ export default function Invoice() {
         <div className="space-y-2">
           <p>
             <span className="font-semibold">Grand Total:</span>{" "}
-            {Number(invoice.duration_days * invoice.daily_rate).toLocaleString()}
+            {Number(
+              invoice.duration_days * invoice.daily_rate,
+            ).toLocaleString()}
           </p>
           <p>
             <span className="font-semibold">Total Paid:</span>{" "}
             {invoice.total_paid}
           </p>
           <p>
-            <span className="font-semibold">Balance:</span> {Number(invoice.balance).toLocaleString()}
+            <span className="font-semibold">Balance:</span>{" "}
+            {Number(invoice.balance).toLocaleString()}
           </p>
         </div>
       </div>
@@ -137,8 +153,10 @@ export default function Invoice() {
             <tbody>
               {invoice.payments.map((p) => (
                 <tr key={p.id} className="hover:bg-gray-50">
-                  <td className="border px-4 py-2">{p.date}</td>
-                  <td className="border px-4 py-2">{Number(p.amount).toLocaleString()}</td>
+                  <td className="border px-4 py-2">{formatDateTime(p.payment_time)}</td>
+                  <td className="border px-4 py-2">
+                    {Number(p.amount).toLocaleString()}
+                  </td>
                   <td className="border px-4 py-2">{p.payment_mode}</td>
                   <td className="border px-4 py-2">{p.payment_code}</td>
                   <td className="border px-4 py-2">{p.notes}</td>
