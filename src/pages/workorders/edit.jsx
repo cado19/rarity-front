@@ -5,6 +5,7 @@ import WorkOrderForm from "./form";
 import { fetchWorkOrder } from "../../api/fetch";
 import { update_work_order } from "../../api/post";
 import Loading from "../../components/PageContent/Loading";
+import { normalizeNumber } from "../../components/utility/number";
 
 export default function WorkOrderEdit() {
   const navigate = useNavigate();

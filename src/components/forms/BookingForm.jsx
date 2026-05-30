@@ -6,6 +6,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { AiFillCaretRight, AiFillCaretDown } from "react-icons/ai";
 import CurrencyModal from "../modals/CurrencyModal";
+import { sanitizeNumberInput } from "../utility/number";
 
 export default function BookingForm({
   title, // NEW: passed from parent
@@ -31,11 +32,10 @@ export default function BookingForm({
   errors,
   disabled,
   onSubmit,
-  oneday,
-  setOneDay,
   show,
   setShow,
   customerName,
+  isEdit
 }) {
   const [days, setDays] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
@@ -185,23 +185,45 @@ export default function BookingForm({
         </div>
 
         <form onSubmit={onSubmit} className="w-4/5 mx-auto">
-          {/* One Day Booking toggle */}
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={inputs.oneday}
-              onChange={() => {
-                setOneDay(!oneday);
-                setInputs((prev) => ({ ...prev, oneday: !prev.oneday }));
-              }}
-              className="form-checkbox h-5 w-5 text-blue-600 m-3"
-            />
-            <span className="text-gray-500 dark:text-gray-400">
-              {oneday
-                ? "One Day Booking Turned On"
-                : "One Day Booking Turned Off"}
-            </span>
-          </label>
+          <div className="flex items-center space-x-8 mt-4">
+            {/* One Day Booking toggle */}
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={inputs.oneday}
+                disabled={inputs.oneday === true}
+                onChange={() => {
+                  // setOneDay(!oneday);
+                  setInputs((prev) => ({ ...prev, oneday: !prev.oneday }));
+                }}
+                className="form-checkbox h-5 w-5 text-blue-600 m-3"
+              />
+              <span className="text-gray-500 dark:text-gray-400">
+                {inputs.oneday
+                  ? "One Day Booking Turned On"
+                  : "One Day Booking Turned Off"}
+              </span>
+            </label>
+
+            {/* Courtesy Booking toggle */}
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={inputs.courtesy}
+                disabled={isEdit && inputs.courtesy === true}
+                onChange={() => {
+                  // setOneDay(!oneday);
+                  setInputs((prev) => ({ ...prev, courtesy: !prev.courtesy }));
+                }}
+                className="form-checkbox h-5 w-5 text-blue-600 m-3"
+              />
+              <span className="text-gray-500 dark:text-gray-400">
+                {inputs.courtesy
+                  ? "Courtesy Booking Turned On"
+                  : "Courtesy Booking Turned Off"}
+              </span>
+            </label>
+          </div>
 
           {/* Customer select */}
           <div className="mb-5 group">
@@ -246,6 +268,66 @@ export default function BookingForm({
             )}
           </div>
 
+          {inputs.courtesy && (
+            <>
+              {/* Accident Vehicle Number Plate (Registration) */}
+              <div className="relative z-0 w-full mb-5 group">
+                <input
+                  type="text"
+                  name="accident_vehicle_reg"
+                  id="accident_vehicle_reg"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  value={inputs.accident_vehicle_reg || ""}
+                  onChange={(e) =>
+                    setInputs((prev) => ({
+                      ...prev,
+                      accident_vehicle_reg: e.target.value,
+                    }))
+                  }
+                />
+                <label
+                  htmlFor="custom_rate"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0]"
+                >
+                  Accident Vehicle Number Plate
+                </label>
+                {errors.accident_vehicle_reg && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.accident_vehicle_reg}
+                  </p>
+                )}
+              </div>
+
+              {/* Claim No  */}
+              <div className="relative z-0 w-full mb-5 group">
+                <input
+                  type="text"
+                  name="claim_no"
+                  id="claim_no"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  value={inputs.claim_no || ""}
+                  onChange={(e) =>
+                    setInputs((prev) => ({
+                      ...prev,
+                      claim_no: e.target.value,
+                    }))
+                  }
+                />
+                <label
+                  htmlFor="custom_rate"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0]"
+                >
+                  Claim Number
+                </label>
+                {errors.claim_no && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.claim_no}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+
           {/* Driver select */}
           <div className="mb-5 group">
             <Select
@@ -282,7 +364,7 @@ export default function BookingForm({
                 }}
               />
             </div>
-            {!oneday && (
+            {!inputs.oneday && (
               <div className="mb-5">
                 <label>End Date</label>
                 <DatePicker
@@ -357,7 +439,7 @@ export default function BookingForm({
             </div>
           </div>
 
-          {/* Custom Rate */}
+          {/* Custom Rate and Budget Total Section */}
           <label className="flex items-center space-x-2 mb-4">
             <input
               type="checkbox"
@@ -418,7 +500,7 @@ export default function BookingForm({
                 onChange={(e) =>
                   setInputs((prev) => ({
                     ...prev,
-                    custom_rate: e.target.value,
+                    custom_rate: sanitizeNumberInput(e.target.value),
                   }))
                 }
               />
@@ -436,6 +518,7 @@ export default function BookingForm({
             <input
               type="checkbox"
               checked={inputs.vat}
+              disabled={isEdit && inputs.vat}
               onChange={() =>
                 setInputs((prev) => ({ ...prev, vat: !prev.vat }))
               }

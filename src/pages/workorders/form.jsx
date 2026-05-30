@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import Select from "react-select";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
+import { FaTrash } from "react-icons/fa";
 import { get_booking_vehicles } from "../../api/fetch";
+import { normalizeNumber } from "../../components/utility/number";
 
 export default function WorkOrderForm({ existingOrder, handleSubmit }) {
   const [vehicles, setVehicles] = useState([]);
@@ -22,8 +24,8 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
     mileage: existingOrder?.mileage || "",
     scheduled_date: existingOrder?.scheduled_date || "",
     completion_date: existingOrder?.completion_date || null,
-    labor_cost: existingOrder?.labor_cost || 0,
-    parts_cost: existingOrder?.parts_cost || 0,
+    labor_cost: existingOrder?.labor_cost || "",
+    parts_cost: existingOrder?.parts_cost || "",
     status: existingOrder?.status || "open",
     service: existingOrder?.service || "",
   });
@@ -46,7 +48,12 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
   }, []);
 
   const handleChange = (name, value) => {
-    setInputs((prev) => ({ ...prev, [name]: value }));
+    // For numeric fields, normalize before saving
+    if (["mileage", "labor_cost", "parts_cost"].includes(name)) {
+      setInputs((prev) => ({ ...prev, [name]: normalizeNumber(value) }));
+    } else {
+      setInputs((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleDateChange = (setter, field, value) => {
@@ -58,7 +65,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
   };
 
   const addCustomItem = () => {
-    setItems([...items, { item: "", cost: 0, quantity: 1 }]);
+    setItems([...items, { item: "", cost: "", quantity: "" }]);
   };
 
   const updateItem = (index, field, value) => {
@@ -70,7 +77,8 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
   // Compute subtotal from items
   const itemsSubtotal = items.reduce(
     (sum, item) =>
-      sum + (parseFloat(item.cost) || 0) * (parseInt(item.quantity) || 0),
+      sum +
+      (normalizeNumber(item.cost) || 0) * (normalizeNumber(item.quantity) || 0),
     0,
   );
 
@@ -312,6 +320,14 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
                 className="w-full border rounded px-2 py-1"
               />
             </div>
+            {/* Remove button */}
+            <button
+              type="button"
+              onClick={() => setItems(items.filter((_, idx) => idx !== i))}
+              className="text-red-600 hover:text-red-800 transition"
+            >
+              <FaTrash />
+            </button>
           </div>
         ))}
 

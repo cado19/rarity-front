@@ -420,7 +420,7 @@ export default function Booking() {
   const getBooking = async () => {
     try {
       const response = await fetchBooking(id);
-      // console.log("Booking: ", response);
+      console.log("Booking: ", response);
       if (response.data.booking.driver_fee > 0) {
         const total =
           Number(response.data.booking.total) +
@@ -582,6 +582,18 @@ export default function Booking() {
             <span className="font-bold">Vehicle:</span> {booking.make}{" "}
             {booking.model} {booking.number_plate}
           </p>
+          {booking.courtesy === 1 && (
+            <>
+              <p className="leading-loose text-center">
+                <span className="font-bold">COURTESY BOOKING</span>
+              </p>
+
+              <p className="leading-loose text-center">
+                <span className="font-bold">Claim No:</span> {booking.claim_no}
+              </p>
+            </>
+          )}
+
           <p className="leading-loose text-center">
             <span className="font-bold">Rate:</span>{" "}
             {booking.custom_rate > 0 ? (

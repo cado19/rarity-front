@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import WorkOrderForm from "./form";
 import { save_work_order } from "../../api/post";
+import { normalizeNumber } from "../../components/utility/number";
 
 export default function WorkOrderCreatePage() {
   const navigate = useNavigate();
@@ -9,7 +10,14 @@ export default function WorkOrderCreatePage() {
   const handleSubmit = async (e, inputs, items) => {
     e.preventDefault();
     try {
-      const payload = { ...inputs, items };
+      const normalizedItems = items.map((it) => ({
+        ...it, 
+        cost: normalizeNumber(it.cost),
+        quantity: normalizeNumber(it.quantity),
+        item: it.item?.trim() || "",
+      }));
+
+      const payload = { ...inputs, items: normalizedItems };
       const res = await save_work_order(payload);
 
       if (res.data.status === "Success") {
@@ -34,11 +42,11 @@ export default function WorkOrderCreatePage() {
     } catch (error) {
       console.error("Error creating work order:", error);
       Swal.fire({
-      title: "Network Error",
-      text: "Something went wrong while creating the work order.",
-      icon: "error",
-      confirmButtonText: "Close",
-    });
+        title: "Network Error",
+        text: "Something went wrong while creating the work order.",
+        icon: "error",
+        confirmButtonText: "Close",
+      });
     }
   };
 

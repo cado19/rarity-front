@@ -61,7 +61,7 @@ export default function NewBooking() {
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [show, setShow] = useState(false);
-  const [oneday, setOneDay] = useState(false);
+  const [oneday, setOneday] = useState(false);
 
   const [inputs, setInputs] = useState({
     account_id: userId,
@@ -78,6 +78,9 @@ export default function NewBooking() {
     oneday: false,
     vat: false,
     override: false,
+    courtesy: false,
+    claim_no: "",
+    accident_vehicle_reg: "",
   });
 
   const navigate = useNavigate();
@@ -191,12 +194,43 @@ export default function NewBooking() {
     return errors;
   };
 
+  // validation courtesy booking function
+  const validateCourtesy = (data) => {
+    const errors = {};
+
+    // base required fields (same as normal booking)
+    if (!data.vehicle_id) errors.vehicle_id = "Vehicle is required";
+    if (!data.customer_id) errors.customer_id = "Client is required";
+    if (!data.driver_id) errors.driver_id = "Driver is required";
+    if (!data.start_time) errors.start_time = "Start Time is required";
+    if (!data.end_time) errors.end_time = "End Time is required";
+
+    // courtesy-specific required fields
+    if (!data.claim_no || data.claim_no.trim() === "")
+      errors.claim_no = "Claim number is required";
+    if (!data.accident_vehicle_reg || data.accident_vehicle_reg.trim() === "")
+      errors.accident_vehicle_reg = "Accident vehicle registration is required";
+
+    setErrors(errors);
+    return errors;
+  };
+
   // submit function
   const handleSubmit = async (e) => {
     e.preventDefault();
     setDisabled(true);
+    // console.log(inputs)
+    // setDisabled(false);
 
-    const errs = validate(inputs);
+    let errs = {};
+    if (inputs.courtesy) {
+      errs = validateCourtesy(inputs);
+    } else if (inputs.oneday) {
+      errs = validateOneDay(inputs);
+    } else {
+      errs = validate(inputs);
+    }
+
     if (Object.keys(errs).length > 0) {
       Swal.fire({
         title: "Validation Error",
@@ -262,6 +296,7 @@ export default function NewBooking() {
         disabled={disabled}
         onSubmit={handleSubmit}
         customerName={""}
+        isEdit={false}   // ✅ tell the form we’re creating
       />
     </div>
   );

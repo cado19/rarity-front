@@ -79,6 +79,9 @@ export default function EditBooking() {
     custom_rate: "",
     override: false,
     vat: false,
+    courtesy: false,
+    claim_no: "",
+    accident_vehicle_reg: "",
   });
   const [customerName, setCustomerName] = useState(""); // display only
   const [errors, setErrors] = useState({});
@@ -151,6 +154,9 @@ export default function EditBooking() {
           start_time: booking.start_time,
           end_time: booking.end_time,
           custom_rate: booking.custom_rate,
+          courtesy: booking.courtesy === 1,
+          claim_no: booking.claim_no || "",
+          accident_vehicle_reg: booking.accident_vehicle_reg || "",
           vat: booking.vat > 0,
         });
 
@@ -223,6 +229,21 @@ export default function EditBooking() {
     if (!data.end_date) errors.end_date = "End Date is required";
     if (!data.start_time) errors.start_time = "Start Time is required";
     if (!data.end_time) errors.end_time = "End Time is required";
+
+    // Courtesy-specific validation
+    if (data.courtesy) {
+      if (!data.claim_no || data.claim_no.trim() === "") {
+        errors.claim_no = "Claim number is required for courtesy bookings";
+      }
+      if (
+        !data.accident_vehicle_reg ||
+        data.accident_vehicle_reg.trim() === ""
+      ) {
+        errors.accident_vehicle_reg =
+          "Accident vehicle registration is required for courtesy bookings";
+      }
+    }
+
     setErrors(errors);
     return errors;
   };
@@ -258,43 +279,44 @@ export default function EditBooking() {
 
   return (
     <div className="bg-white px-4 pb-4 pt-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
-    {/* Header with title + cancel */}
-    <div className="flex justify-between items-center mb-4">
-      <button
-        type="button"
-        onClick={() => navigate(`/booking/${id}`)} // back to booking detail
-        className="border-2 border-red-600 text-red-600 bg-white hover:bg-red-600 hover:text-white transition duration-200 rounded-full px-4 py-2"
-      >
-        Cancel
-      </button>
-      <h1 className="text-3xl font-bold text-yellow-600 tracking-wide">
-        Edit Booking {no ? `#${no}` : ""}
-      </h1>
-    </div>
+      {/* Header with title + cancel */}
+      <div className="flex justify-between items-center mb-4">
+        <button
+          type="button"
+          onClick={() => navigate(`/booking/${id}`)} // back to booking detail
+          className="border-2 border-red-600 text-red-600 bg-white hover:bg-red-600 hover:text-white transition duration-200 rounded-full px-4 py-2"
+        >
+          Cancel
+        </button>
+        <h1 className="text-3xl font-bold text-yellow-600 tracking-wide">
+          Edit Booking {no ? `#${no}` : ""}
+        </h1>
+      </div>
 
-    <BookingForm
-      title=""
-      inputs={inputs}
-      setInputs={setInputs}
-      drivers={drivers}
-      vehicles={vehicles}
-      selectedDriver={selectedDriver}
-      setSelectedDriver={setSelectedDriver}
-      selectedVehicle={selectedVehicle}
-      setSelectedVehicle={setSelectedVehicle}
-      startDate={startDate}
-      setStartDate={setStartDate}
-      endDate={endDate}
-      setEndDate={setEndDate}
-      startTime={startTime}
-      setStartTime={setStartTime}
-      endTime={endTime}
-      setEndTime={setEndTime}
-      errors={errors}
-      disabled={disabled}
-      onSubmit={handleSubmit}
-      customerName={customerName}
-    />
+      <BookingForm
+        title=""
+        inputs={inputs}
+        setInputs={setInputs}
+        drivers={drivers}
+        vehicles={vehicles}
+        selectedDriver={selectedDriver}
+        setSelectedDriver={setSelectedDriver}
+        selectedVehicle={selectedVehicle}
+        setSelectedVehicle={setSelectedVehicle}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        startTime={startTime}
+        setStartTime={setStartTime}
+        endTime={endTime}
+        setEndTime={setEndTime}
+        errors={errors}
+        disabled={disabled}
+        onSubmit={handleSubmit}
+        customerName={customerName}
+        isEdit={true}   // ✅ tell the form we’re editing
+      />
     </div>
   );
 }
