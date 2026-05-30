@@ -50,16 +50,17 @@ export default function Invoice() {
             className="flex items-center bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-200 shadow-sm"
           >
             <FaFilePdf className="mr-2" />
-            Download 
+            Download
           </a>
           <span
-            className={`px-3 py-1 rounded-full text-sm font-semibold ${
-              invoice.status === "paid"
-                ? "bg-green-100 text-green-700"
-                : "bg-yellow-100 text-yellow-700"
-            }`}
+            className={`px-3 py-1 rounded-full text-sm font-semibold
+              ${invoice.status === "paid" ? "bg-green-100 text-green-700" : ""}
+              ${invoice.status === "unpaid" ? "bg-yellow-100 text-yellow-700" : ""}
+              ${invoice.status === "partially_paid" ? "bg-blue-100 text-blue-700" : ""}
+              ${invoice.status === "cancelled" ? "bg-red-100 text-red-700" : ""}
+            `}
           >
-            {invoice.status}
+            {invoice.status.replace("_", " ")}
           </span>
         </div>
       </div>
@@ -103,6 +104,29 @@ export default function Invoice() {
             <span className="font-semibold">Daily Rate:</span>{" "}
             {Number(invoice.daily_rate).toLocaleString()}
           </p>
+
+          {/* Courtesy Booking Info */}
+          {(invoice.claim_no || invoice.accident_vehicle_reg) && (
+            <div className="bg-white rounded-lg shadow p-6 mb-8">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">
+                Courtesy Booking
+              </h2>
+              <div className="space-y-2">
+                {invoice.claim_no && (
+                  <p>
+                    <span className="font-semibold">Claim Number:</span>{" "}
+                    {invoice.claim_no}
+                  </p>
+                )}
+                {invoice.accident_vehicle_reg && (
+                  <p>
+                    <span className="font-semibold">Accident Vehicle Reg:</span>{" "}
+                    {invoice.accident_vehicle_reg}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -153,7 +177,9 @@ export default function Invoice() {
             <tbody>
               {invoice.payments.map((p) => (
                 <tr key={p.id} className="hover:bg-gray-50">
-                  <td className="border px-4 py-2">{formatDateTime(p.payment_time)}</td>
+                  <td className="border px-4 py-2">
+                    {formatDateTime(p.payment_time)}
+                  </td>
                   <td className="border px-4 py-2">
                     {Number(p.amount).toLocaleString()}
                   </td>

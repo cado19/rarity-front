@@ -439,7 +439,7 @@ export default function Booking() {
   const getInvoice = async () => {
     try {
       const response = await fetchBookingInvoice(id);
-      // console.log(response);
+      console.log(response);
       if (response.data.status === "Success") {
         setInvoice(response.data.invoice);
       }
@@ -888,7 +888,7 @@ export default function Booking() {
                 {/* View or Generate Invoice */}
                 {invoice ? (
                   <Link
-                    to={`/invoices/${invoice.invoice_id}`}
+                    to={`/invoices/${invoice.id}`}
                     className="px-4 py-2 hover:bg-purple-100 text-purple-700"
                     onClick={() => setInvoiceBtnOpen(false)}
                   >
