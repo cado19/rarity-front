@@ -28,6 +28,17 @@ export const cancel_booking = async (id) => {
 }
 
 // -------------------- Vehicle Functions --------------------
+export const update_vehicle_extras = async (extras) => {
+  const extrasUrl = baseUrl + `/api/fleet/update_extras.php`;
+  const response = await axios.post(extrasUrl, extras);
+  return response;
+};
+
+export const update_vehicle_basics = async (basics) => {
+  const response = await api.post(`/api/fleet/update_base.php`, basics);
+  return response;
+};
+
 export const update_vehicle_pricing = async (pricing) => {
   const response = await api.post(`/api/fleet/update_pricing.php`, pricing);
   return response;
@@ -39,6 +50,12 @@ export const update_vehicle_status = async (statusData) => {
   const response = await api.post(`/api/fleet/update_status.php`, statusData);
   return response;
 };
+
+export const update_work_order = async (payload) => {
+  const response = api.post(`/api/workorders/update.php`, payload);
+  return response;
+};
+
 
 // -------------------- Contract Functions --------------------
 export const upload_signature = async (payload) => {

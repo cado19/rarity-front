@@ -69,6 +69,22 @@ export const get_vehicle_history = async (vehicle_id) => {
   return response;
 };
 
+// get a vehicle's requirements
+export const get_vehicle_requirements = async (vehicle_id) => {
+  const response = await api.get(`/api/fleet/read_requirements.php`, {
+    params: { vehicle_id },
+  });
+  return response;
+};
+
+// get a single requirement
+export const get_vehicle_requirement = async (id) => {
+  const response = await api.get(`/api/fleet/read_requirement.php`, {
+    params: { id },
+  });
+  return response;
+};
+
 export const get_all_issues = async () => {
   const response = await api.get(`/api/fleet/read_issues.php`);
   return response;

@@ -10,16 +10,6 @@ const api = axios.create({
 });
 
 // -------------------- Vehicle Functions --------------------
-export const update_vehicle_extras = async (extras) => {
-  const extrasUrl = baseUrl + `/api/fleet/update_extras.php`;
-  const response = await axios.post(extrasUrl, extras);
-  return response;
-};
-
-export const update_vehicle_basics = async (basics) => {
-  const response = await api.post(`/api/fleet/update_base.php`, basics);
-  return response;
-};
 
 export const save_issue = async (issues) => {
   const issuesUrl = baseUrl + `/api/fleet/create_issue.php`;
@@ -32,10 +22,12 @@ export const save_work_order = async (payload) => {
   return response;
 };
 
-export const update_work_order = async (payload) => {
-  const response = api.post(`/api/workorders/update.php`, payload);
+
+// Save a vehicles's requirement
+export const save_requirement = async (payload) => {
+  const response = api.post(`/api/fleet/create_requirement.php`, payload);
   return response;
-};
+}
 
 // -------------------- Bookings Functions --------------------
 

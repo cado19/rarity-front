@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { get_vehicle_extras, get_vehicle_base } from "../../api/fetch";
 import { Mosaic } from "react-loading-indicators";
 import { FaArrowLeft } from "react-icons/fa";
-import { update_vehicle_extras } from "../../api/post";
+import { update_vehicle_extras } from "../../api/put";
 import Swal from "sweetalert2";
 
 export default function EditExtras() {

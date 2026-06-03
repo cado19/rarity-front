@@ -7,7 +7,7 @@ import { get_vehicle_base } from "../../api/fetch";
 import VehicleInput from "../../components/styled/VehicleInput";
 import VehicleDropdown from "../../components/styled/VehicleDropdown";
 import Loading from "../../components/PageContent/Loading";
-import { update_vehicle_basics } from "../../api/post";
+import { update_vehicle_basics } from "../../api/put";
 
 export default function EditBasics() {
   const { id } = useParams();
