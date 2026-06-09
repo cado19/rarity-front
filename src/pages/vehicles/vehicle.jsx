@@ -336,6 +336,11 @@ export default function Vehicle() {
               label="Edit Vehicle Pricing"
               variant="green"
             />
+            <StyledButton
+              to={`/vehicle/${id}/requirements`}
+              label="Vehicle Requirements"
+              variant="emerald"
+            />
           </div>
         </div>
       </div>

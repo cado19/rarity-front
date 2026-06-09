@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import WorkOrderForm from "./form";
 import { fetchWorkOrder } from "../../api/fetch";
-import { update_work_order } from "../../api/post";
+import { update_work_order } from "../../api/put";
 import Loading from "../../components/PageContent/Loading";
 import { normalizeNumber } from "../../components/utility/number";
 

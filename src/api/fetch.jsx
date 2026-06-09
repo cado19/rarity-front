@@ -97,6 +97,24 @@ export const get_issue = async (id) => {
   return response;
 };
 
+// Get all loans
+export const fetchLoans = async () => {
+  const response = await api.get("/api/loans/read.php");
+  return response.data;
+};
+
+// Get single loan
+export const fetchLoanById = async (id) => {
+  const response = await api.get(`/api/loans/read.php?id=${id}`);
+  return response.data;
+};
+
+// Get repayments for a loan
+export const fetchRepaymentsByLoan = async (loan_id) => {
+  const response = await api.get(`/api/repayments/by_loan.php?loan_id=${loan_id}`);
+  return response.data;
+};
+
 // -------------------- Workorder Functions --------------------
 
 // get all work orders

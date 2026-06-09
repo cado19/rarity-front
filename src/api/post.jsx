@@ -29,6 +29,19 @@ export const save_requirement = async (payload) => {
   return response;
 }
 
+// -------------------- Vehicle Loan Functions --------------------
+// Create a loan
+export const createLoan = async (payload) => {
+  const response = await api.post("/api/loans/create.php", payload);
+  return response.data;
+}
+
+// Create repayment
+export const createRepayment = async (payload) => {
+  const response = await api.post("/api/repayments/create.php", payload);
+  return response.data;
+};
+
 // -------------------- Bookings Functions --------------------
 
 // save booking

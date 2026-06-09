@@ -1,6 +1,14 @@
 // the functions here will handle deleting data in the backend. Delete operations in this system are updates to the deleted field of any entity.
 import axios from "axios";
+
 const baseUrl = import.meta.env.VITE_BASE_URL;
+
+const api = axios.create({
+  baseURL: baseUrl,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 // function to send delete request to the backend
 export const deleteVehicle = async (vehicleId) => {
@@ -21,3 +29,15 @@ export const deleteCustomer = async (customerId) => {
   const response = await axios.post(deleteUrl)
   return response;
 }
+
+// Soft delete loan
+export const deleteLoan = async (id) => {
+  const response = await api.post("/api/loans/delete.php", { id });
+  return response.data;
+};
+
+// Soft delete repayment
+export const deleteRepayment = async (id) => {
+  const response = await api.post("/api/repayments/delete.php", { id });
+  return response.data;
+};

@@ -56,6 +56,18 @@ export const update_work_order = async (payload) => {
   return response;
 };
 
+// -------------------- Vehicle Loan Functions --------------------
+// Update loan
+export const updateLoan = async (payload) => {
+  const response = await api.post("/api/loans/update.php", payload);
+  return response.data;
+};
+
+// Update repayment
+export const updateRepayment = async (payload) => {
+  const response = await api.post("/api/repayments/update.php", payload);
+  return response.data;
+};
 
 // -------------------- Contract Functions --------------------
 export const upload_signature = async (payload) => {

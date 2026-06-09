@@ -11,7 +11,6 @@ export default function VehicleInput({ label, name, value, onChange, error }) {
         placeholder=" "
         value={value}
         onChange={onChange}
-        required
       />
       <label
         htmlFor={name}

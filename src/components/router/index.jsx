@@ -68,6 +68,10 @@ import AllInvoices from "../../pages/invoices/all";
 import Invoice from "../../pages/invoices/invoice";
 import PaidInvoices from "../../pages/invoices/paid";
 import UnpaidInvoices from "../../pages/invoices/unpaid";
+import AllRequirements from "../../pages/vehicles/requirements/all";
+import Requirement from "../../pages/vehicles/requirements/show";
+import NewRequirement from "../../pages/vehicles/requirements/new";
+import EditRequirement from "../../pages/vehicles/requirements/edit";
 
 export default function AppRouter() {
   return (
@@ -161,6 +165,12 @@ export default function AppRouter() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Requirements  Routes  */}
+            <Route path="/vehicle/:vehicle_id/requirements" element={<AllRequirements />} />
+            <Route path="/vehicle/:vehicle_id/requirements/:id" element={<Requirement />} />
+            <Route path="/vehicle/:vehicle_id/requirements/new" element={<NewRequirement />} />
+            <Route path="/vehicle/:vehicle_id/requirements/:id/edit" element={<EditRequirement />} />
 
             {/* Customer Routes  */}
             <Route path="/customers" element={<AllCustomers />} />

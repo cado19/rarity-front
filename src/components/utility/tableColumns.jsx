@@ -240,3 +240,44 @@ export const invoiceColumns = [
     },
   },
 ];
+export const requirementColumns = [
+  {
+    accessorKey: "title",
+    header: "Title",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "priority",
+    header: "Priority",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: "category",
+    header: "Category",
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: "due_date",
+    header: "Due",
+    cell: (info) => formatDateOnly(info.getValue()),
+  },
+  {
+    id: "details",
+    header: "Details",
+    cell: (info) => {
+      const requirement = info.row.original;
+      return (
+        <Link
+          to={`/vehicle/${requirement.vehicle_id}/requirements/${requirement.id}`}
+        >
+          Details
+        </Link>
+      );
+    },
+  },
+];
