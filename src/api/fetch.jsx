@@ -103,15 +103,33 @@ export const fetchLoans = async () => {
   return response.data;
 };
 
-// Get single loan
+// Get single loan by loan_id
 export const fetchLoanById = async (id) => {
   const response = await api.get(`/api/loans/read.php?id=${id}`);
+  return response.data;
+};
+
+// Get single loan by vehicle_id
+export const fetchLoanByVehicleId = async (id) => {
+  const response = await api.get(`/api/loans/read_by_vehicle.php?id=${id}`);
+  return response.data;
+};
+
+// Check if loan exists for a vehicle
+export const checkLoanExists = async (vehicle_id) => {
+  const response = await api.get(`/api/loans/exists.php?vehicle_id=${vehicle_id}`);
   return response.data;
 };
 
 // Get repayments for a loan
 export const fetchRepaymentsByLoan = async (loan_id) => {
   const response = await api.get(`/api/repayments/by_loan.php?loan_id=${loan_id}`);
+  return response.data;
+};
+
+// Get repayment by repayment_id
+export const fetchRepaymentById = async (repayment_id) => {
+  const response = await api.get(`/api/repayments/get.php?repayment_id=${repayment_id}`);
   return response.data;
 };
 

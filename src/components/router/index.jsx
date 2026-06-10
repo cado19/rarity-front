@@ -72,6 +72,12 @@ import AllRequirements from "../../pages/vehicles/requirements/all";
 import Requirement from "../../pages/vehicles/requirements/show";
 import NewRequirement from "../../pages/vehicles/requirements/new";
 import EditRequirement from "../../pages/vehicles/requirements/edit";
+import NewLoan from "../../pages/vehicles/loans/new";
+import EditLoan from "../../pages/vehicles/loans/edit";
+import RepaymentList from "../../pages/vehicles/loans/repayments/all";
+import NewRepayment from "../../pages/vehicles/loans/repayments/new";
+import EditRepayment from "../../pages/vehicles/loans/repayments/edit";
+import LoanDetails from "../../pages/vehicles/loans/details";
 
 export default function AppRouter() {
   return (
@@ -167,10 +173,48 @@ export default function AppRouter() {
             />
 
             {/* Requirements  Routes  */}
-            <Route path="/vehicle/:vehicle_id/requirements" element={<AllRequirements />} />
-            <Route path="/vehicle/:vehicle_id/requirements/:id" element={<Requirement />} />
-            <Route path="/vehicle/:vehicle_id/requirements/new" element={<NewRequirement />} />
-            <Route path="/vehicle/:vehicle_id/requirements/:id/edit" element={<EditRequirement />} />
+            <Route
+              path="/vehicle/:vehicle_id/requirements"
+              element={<AllRequirements />}
+            />
+            <Route
+              path="/vehicle/:vehicle_id/requirements/:id"
+              element={<Requirement />}
+            />
+            <Route
+              path="/vehicle/:vehicle_id/requirements/new"
+              element={<NewRequirement />}
+            />
+            <Route
+              path="/vehicle/:vehicle_id/requirements/:id/edit"
+              element={<EditRequirement />}
+            />
+
+            {/* Loans  Routes  */}
+            <Route path="/vehicle/:vehicle_id/loan" element={<LoanDetails />} />
+
+            <Route
+              path="/vehicle/:vehicle_id/loans/new"
+              element={<NewLoan />}
+            />
+            <Route
+              path="/vehicle/:vehicle_id/loans/:loan_id/edit"
+              element={<EditLoan />}
+            />
+
+            {/* Loan Repayments  Routes  */}
+            <Route
+              path="/vehicle/:vehicle_id/loans/:loan_id/repayments"
+              element={<RepaymentList />}
+            />
+            <Route
+              path="/vehicle/:vehicle_id/loans/:loan_id/repayments/new"
+              element={<NewRepayment />}
+            />
+            <Route
+              path="/vehicle/:vehicle_id/loans/:loan_id/repayments/:repayment_id/edit"
+              element={<EditRepayment />}
+            />
 
             {/* Customer Routes  */}
             <Route path="/customers" element={<AllCustomers />} />

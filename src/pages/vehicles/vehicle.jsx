@@ -14,7 +14,11 @@ import carImg from "../../assets/car-img.png";
 import DailyRateForm from "../../components/vehicles/DailyRateForm";
 import { deleteVehicle } from "../../api/delete";
 import { update_vehicle_status } from "../../api/put";
-import { fetchVehicleWorkOrder, get_vehicle_history } from "../../api/fetch";
+import {
+  checkLoanExists,
+  fetchVehicleWorkOrder,
+  get_vehicle_history,
+} from "../../api/fetch";
 import AddImage from "./add_image";
 import StyledButton from "../../components/styled/StyledButton";
 import Loading from "../../components/PageContent/Loading";
@@ -32,6 +36,7 @@ export default function Vehicle() {
   const [vehicle, setVehicle] = useState(null);
   const [history, setHistory] = useState([]);
   const [workOrders, setWorkOrders] = useState([]);
+  const [loanExists, setLoanExists] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [disabled, setDisabled] = useState(false);
@@ -83,7 +88,7 @@ export default function Vehicle() {
   const fetchHistory = async () => {
     try {
       const response = await get_vehicle_history(id);
-      console.log("history response: ", response);
+      // console.log("history response: ", response);
       if (response.data.status === "Success") {
         setHistory(response.data.history);
       }
@@ -92,11 +97,22 @@ export default function Vehicle() {
     }
   };
 
-  // fetch vehicle work orders
+  // fetch vehicle loan status
+  const fetchLoanStatus = async () => {
+    try {
+      const response = await checkLoanExists(id);
+      console.log("loan status response: ", response);
+      setLoanExists(response.exists);
+    } catch (err) {
+      console.error("Error loan status:", err.message);
+    }
+  };
+
+  // fetch vehicle loan
   const fetchWorkOrders = async () => {
     try {
       const response = await fetchVehicleWorkOrder(id, 5);
-      console.log("work order response: ", response);
+      // console.log("work order response: ", response);
       if (response.data.status === "Success") {
         setWorkOrders(response.data.data);
       }
@@ -186,10 +202,7 @@ export default function Vehicle() {
   };
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("loggedIn");
-    if (!loggedIn) {
-      navigate("/login");
-    }
+    fetchLoanStatus();
     getVehicle();
     fetchHistory();
     fetchWorkOrders();
@@ -341,6 +354,20 @@ export default function Vehicle() {
               label="Vehicle Requirements"
               variant="emerald"
             />
+            {/* Loan button */}
+            {loanExists ? (
+              <StyledButton
+                to={`/vehicle/${id}/loan`}
+                label="View Loan"
+                variant="blue"
+              />
+            ) : (
+              <StyledButton
+                to={`/vehicle/${id}/loans/new`}
+                label="+ Loan"
+                variant="blue"
+              />
+            )}
           </div>
         </div>
       </div>
@@ -357,7 +384,9 @@ export default function Vehicle() {
                 className="font-semibold text-blue-600 hover:underline"
               >
                 <div className="flex justify-between">
-                  <span className="font-semibold">{wo.work_order_number} - {wo.title} </span>
+                  <span className="font-semibold">
+                    {wo.work_order_number} - {wo.title}{" "}
+                  </span>
                   <span className="text-sm text-gray-500">{wo.status}</span>
                 </div>
                 <div className="text-sm text-gray-600">
