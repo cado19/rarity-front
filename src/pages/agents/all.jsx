@@ -3,7 +3,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { baseURL } from "../../constants/url";
 import Loading from "../../components/PageContent/Loading";
-import DataTable from "react-data-table-component";
+// import DataTable from "react-data-table-component";
 import { Link, useNavigate } from "react-router-dom";
 import { esES } from "@mui/x-date-pickers/locales";
 import DriverNav from "../../components/navs/drivernav";
@@ -24,19 +24,19 @@ export default function AllAgents() {
     ? agentColumns
     : agentColumns.filter((col) => col.id !== "details");
 
-  const agentData = [];
+  // const agentData = [];
 
-  const addAgentData = (agent) => {
-    agentData.push({
-      id: agent.id,
-      name: agent.name,
-      email: agent.email,
-      phone_no: agent.phone_no,
-      country: agent.country,
-    });
-  };
+  // const addAgentData = (agent) => {
+  //   agentData.push({
+  //     id: agent.id,
+  //     name: agent.name,
+  //     email: agent.email,
+  //     phone_no: agent.phone_no,
+  //     country: agent.country,
+  //   });
+  // };
 
-  const [agents, setAgents] = useState(agentData);
+  const [agents, setAgents] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,8 +52,14 @@ export default function AllAgents() {
       if (res.data.length === 0) {
         setError("No agents found");
       } else {
-        res.data.forEach((agent) => addAgentData(agent));
-        setAgents(res.data);
+        const processed = res.data.map((agent) => ({
+          id: agent.id,
+          name: agent.name,
+          email: agent.email,
+          phone_no: agent.phone_no,
+          country: agent.country,
+        }));
+        setAgents(processed);
         // console.log(agentData);
         setLoading(false);
       }
@@ -76,7 +82,7 @@ export default function AllAgents() {
       });
     }
     getAgents();
-  }, [agents, navigate, loading]);
+  }, []);
 
   if (error) {
     return (

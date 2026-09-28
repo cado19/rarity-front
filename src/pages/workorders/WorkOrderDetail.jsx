@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchWorkOrder } from "../../api/fetch";
+import { formatDateOnly } from "../../components/utility/useDateFormatter";
 
 export default function WorkOrderDetail({ workOrderId }) {
   const [order, setOrder] = useState(null);
@@ -11,6 +12,7 @@ export default function WorkOrderDetail({ workOrderId }) {
         const res = await fetchWorkOrder(workOrderId);
 
         if (res.data.status === "Success") {
+          // console.log(res.data.work_order);
           setOrder(res.data.work_order);
           setItems(res.data.items || []);
         }
@@ -48,7 +50,7 @@ export default function WorkOrderDetail({ workOrderId }) {
         <strong>Status:</strong> {order.status}
       </p>
       <p>
-        <strong>Scheduled Date:</strong> {order.scheduled_date}
+        <strong>Scheduled Date:</strong>  formatDateOnly({order.scheduled_date})
       </p>
       {order.completion_date && (
         <p>
@@ -56,20 +58,20 @@ export default function WorkOrderDetail({ workOrderId }) {
         </p>
       )}
       {/* Service info */}
-      {order.work_order_service && (
+      {/* {order.service && (
         <p>
           <strong>Service Mileage (this order):</strong>{" "}
-          {order.work_order_service} km
+          {order.service} km
           {order.service_updated === 1 && (
             <span className="ml-2 text-green-600 font-semibold">
               (Vehicle updated)
             </span>
           )}
         </p>
-      )}
-      {order.vehicle_next_service && (
+      )} */}
+      {order.service && (
         <p>
-          <strong>Vehicle Next Service:</strong> {order.vehicle_next_service} km
+          <strong>Vehicle Next Service:</strong> {order.service} km
         </p>
       )}
       <p>
@@ -84,6 +86,11 @@ export default function WorkOrderDetail({ workOrderId }) {
         <strong>Total Cost:</strong> {Number(order.total_cost).toLocaleString()}
         .00
       </p>
+      {order.mpesa_code && (
+        <p>
+          <strong>Payment Ref:</strong> {order.mpesa_code}
+        </p>
+      )}
 
       <h3>Items</h3>
       {items.length > 0 ? (

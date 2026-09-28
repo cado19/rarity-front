@@ -507,7 +507,10 @@ export default function Booking() {
         bookingId={id}
         show={invoiceModalOpen}
         onClose={() => setInvoiceModalOpen(false)}
-        onCreated={(newInvoice) => console.log("Invoice created:", newInvoice)}
+        onCreated={(newInvoice) => {
+          console.log("Invoice created:", newInvoice);
+          getInvoice();
+        }}
       />
 
       {/* <AddPaymentForm

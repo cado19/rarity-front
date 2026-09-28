@@ -16,9 +16,9 @@ import ClientNav from "../../components/navs/clientnav";
 import Swal from "sweetalert2";
 
 export default function NewCustomer() {
-   const user = JSON.parse(localStorage.getItem("user"));
-   console.log("User data: ", user);
-   const userId = user?.id;
+  const user = JSON.parse(localStorage.getItem("user"));
+  console.log("User data: ", user);
+  const userId = user?.id;
   // state
   const [inputs, setInputs] = useState({
     account_id: userId,
@@ -26,11 +26,11 @@ export default function NewCustomer() {
     l_name: "",
     email: "",
     phone_number: "",
-    date_of_birth: '1970-01-01',
+    date_of_birth: "1970-01-01",
     id_type: "",
     id_number: "",
     dl_number: "",
-    dl_expiry: '1970-01-01',
+    dl_expiry: "1970-01-01",
     residential_address: "",
     work_address: "",
   });
@@ -111,7 +111,7 @@ export default function NewCustomer() {
       phone_number: value,
     });
     // console.log(value);
-  }
+  };
 
   // submit function
   const handleSubmit = async (e) => {
@@ -131,9 +131,11 @@ export default function NewCustomer() {
       console.log(inputs);
       console.log(response);
       if (response.data.status === "Success") {
-        const customer_id = response.data.customer_id;
-        navigate(`/customer/${customer_id}`, {state: {message: "Customer Created"}});
-      } else if(response.data.status === "Error") {
+        const customer_id = response.data.customer.id;
+        navigate(`/customer/${customer_id}`, {
+          state: { message: "Customer Created" },
+        });
+      } else if (response.data.status === "Error") {
         Swal.fire({
           title: "Error Occurred",
           text: response.data.message,
@@ -143,7 +145,7 @@ export default function NewCustomer() {
       }
       // console.log(response);
       setDisabled(false);
-      
+
       // console.log("Form submitted");
     }
   };
@@ -175,7 +177,7 @@ export default function NewCustomer() {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
-        <ClientNav /> 
+        <ClientNav />
         <h3 className="xl mt-2">Add Client</h3>
         <form className="max-w-md mx-auto p-3" onSubmit={handleSubmit}>
           <div className="grid md:grid-cols-2 md:gap-6">
@@ -255,24 +257,31 @@ export default function NewCustomer() {
             onChange={(phone) => phoneChange(phone)}
           />
 
-          {/* date of birth  */}
-          <div className="relative z-0 w-full mb-5 group mt-5">
+          {/* Date of Birth */}
+          <div className="w-full mb-5 mt-5">
+            <label
+              htmlFor="birth_date"
+              className="block text-sm font-medium text-gray-500 dark:text-gray-300 mb-2 peer-focus:text-blue-600"
+            >
+              Date of Birth
+            </label>
             <DatePicker
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder="Date of Birth"
+              id="birth_date"
+              selected={birthDate}
               onChange={(newValue) => birthDateChange(newValue)}
-              value={birthDate}
-              // slotProps={{ textField: { name: "date_of_birth" } }}
-              // name="date_of_birth"
-              // renderInput={(params) => <TextField {...params} />}
-              // selected={birthDate}
-              // format="YYYY-MM-DD"
-              // (newValue) => birthDateChange(newValue)
+              dateFormat="yyyy-MM-dd"
+              className="block w-full py-2.5 px-3 text-sm text-gray-900 
+               bg-transparent border border-gray-300 rounded-md 
+               dark:text-white dark:border-gray-600 
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholderText="Select date"
             />
+            {errors.birth_date && (
+              <p className="text-red-500 text-xs mt-1">{errors.birth_date}</p>
+            )}
           </div>
 
           <div>
-
             <Select
               options={options}
               defaultValue={options[0]}
@@ -293,7 +302,6 @@ export default function NewCustomer() {
               id="id_number"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              
               value={inputs.id_number}
               onChange={handleChange}
             />
@@ -313,7 +321,6 @@ export default function NewCustomer() {
               id="dl_number"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              
               value={inputs.dl_number}
               onChange={handleChange}
             />
@@ -328,14 +335,28 @@ export default function NewCustomer() {
             )}
           </div>
 
-          {/* dl expiry  */}
-          <div className="relative z-0 w-full mb-5 group">
+          {/* DL Expiry */}
+          <div className="w-full mb-5">
+            <label
+              htmlFor="dl_expiry"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
+              DL Expiry
+            </label>
             <DatePicker
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              value={dlExpiry}
+              id="dl_expiry"
+              selected={dlExpiry}
               onChange={(newValue) => dlDateChange(newValue)}
-
+              dateFormat="yyyy-MM-dd"
+              className="block w-full py-2.5 px-3 text-sm text-gray-900 
+               bg-transparent border border-gray-300 rounded-md 
+               dark:text-white dark:border-gray-600 
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholderText="Select date"
             />
+            {errors.dl_expiry && (
+              <p className="text-red-500 text-xs mt-1">{errors.dl_expiry}</p>
+            )}
           </div>
 
           {/* residential address  */}
@@ -346,7 +367,6 @@ export default function NewCustomer() {
               id="floating_email"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              
               value={inputs.residential_address}
               onChange={handleChange}
             />
@@ -371,7 +391,6 @@ export default function NewCustomer() {
               id="work_address"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              
               value={inputs.work_address}
               onChange={handleChange}
             />
@@ -386,7 +405,10 @@ export default function NewCustomer() {
             )}
           </div>
 
-          <button disabled={disabled} className="border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2">
+          <button
+            disabled={disabled}
+            className="border-2 border-gray-800 text-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-200 rounded-full px-4 py-2"
+          >
             Submit
           </button>
         </form>

@@ -1,4 +1,4 @@
-// hooks/useDateFormatter.js
+// utility/useDateFormatter.js
 
 // Full date + time (Option 3)
 export function formatDateTime(dateString) {

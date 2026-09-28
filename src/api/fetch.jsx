@@ -222,6 +222,12 @@ export const fetchUnpaidInvoices = async () => {
   return res.data.invoices;
 };
 
+// get all partially paid invoices
+export const fetchPartiallyPaidInvoices = async () => {
+  const res = await api.get("/api/invoices/partially_paid.php");
+  return res.data.invoices;
+};
+
 // get all cancelled invoices
 export const fetchCancelledInvoices = async () => {
   const res = await api.get("/api/invoices/cancelled.php");

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchInvoices, fetchPaidInvoices, fetchUnpaidInvoices, fetchCancelledInvoices } from "../../api/fetch";
+import { fetchInvoices, fetchPaidInvoices, fetchPartiallyPaidInvoices, fetchUnpaidInvoices, fetchCancelledInvoices } from "../../api/fetch";
 import Loading from "../../components/PageContent/Loading";
 import BasicTable from "../../components/utility/basicTable";
 import { invoiceColumns } from "../../components/utility/tableColumns";
@@ -18,6 +18,9 @@ export default function AllInvoices() {
         data = await fetchPaidInvoices();
       } else if (activeTab === "unpaid") {
         data = await fetchUnpaidInvoices();
+        console.log(data);
+      } else if (activeTab === "partially paid") {
+        data = await fetchPartiallyPaidInvoices();
         console.log(data);
       } else {
         data = await fetchCancelledInvoices();
@@ -45,7 +48,7 @@ export default function AllInvoices() {
 
        {/* Tabs */}
       <div className="flex space-x-4 border-b mb-6">
-        {["unpaid", "paid", "cancelled"].map((tab) => (
+        {["unpaid", "partially paid", "paid", "cancelled"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}

@@ -50,12 +50,15 @@ export default function Agent() {
 
   const navigate = useNavigate();
 
-  const getRoleId = () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      setRoleId(user.role_id);
-    }
-  };
+  // const getRoleId = () => {
+  //   const user = JSON.parse(localStorage.getItem("user"));
+  //   if (user) {
+  //     setRoleId(user.role_id);
+  //   }
+  // };
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userRoles = user?.roles?.map((r) => r.id) || [];
 
   const getAgent = async () => {
     try {
@@ -215,7 +218,7 @@ export default function Agent() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        getRoleId(); // synchronous
+        //getRoleId(); // synchronous
 
         // run all async calls in parallel
         const [agentRes, bookingsRes, commissionsRes] = await Promise.all([
@@ -243,7 +246,7 @@ export default function Agent() {
     loadData();
   }, [id]);
 
-  console.log("role id", roleId);
+  // console.log("role id", roleId);
 
   if (error) {
     return (
@@ -295,8 +298,9 @@ export default function Agent() {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-3 mt-6">
-          {roleId == 0 && (
+          {userRoles.includes(0) && (
             <>
+              {/* Set Commission  */}
               <button
                 className="flex items-center gap-2 px-4 py-2 rounded-md border border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition"
                 onClick={() => setIsModalOpen(true)}
@@ -304,6 +308,7 @@ export default function Agent() {
                 <FaCog className="text-lg" />
                 Set Commission
               </button>
+              {/* Set Vehicle Category Rates for Agent  */}
               <button
                 className="flex items-center gap-2 px-4 py-2 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white transition"
                 onClick={() => setRateModalOpen(true)}
@@ -313,7 +318,7 @@ export default function Agent() {
               </button>
             </>
           )}
-
+          {/* Edit Agent Details  */}
           <button
             className="flex items-center gap-2 px-4 py-2 rounded-md border border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition"
             onClick={() => setPassModalOpen(true)}
@@ -321,7 +326,7 @@ export default function Agent() {
             <FaKey className="text-lg" />
             Edit Password
           </button>
-
+          {/* Edit Agent Details  */}
           <button
             className="flex items-center gap-2 px-4 py-2 rounded-md border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition"
             onClick={() => navigate(`/agent/${id}/edit`)}
@@ -329,13 +334,21 @@ export default function Agent() {
             <FaEdit className="text-lg" />
             Edit Agent Details
           </button>
-
+          {/* Generate Commission for Agent  */}
           <button
             className="flex items-center gap-2 px-4 py-2 rounded-md border border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition"
             onClick={() => setEarnedModalOpen(true)}
           >
             <FaChartBar className="text-lg" />
             Generate Commission
+          </button>
+          {/* Set Vehicle Category Rates for Agent  */}
+          <button
+            className="flex items-center gap-2 px-4 py-2 rounded-md border border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition"
+            onClick={() => setRateModalOpen(true)}
+          >
+            <FaChartBar className="text-lg" />
+            Set Category Rates
           </button>
         </div>
       </div>

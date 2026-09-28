@@ -28,6 +28,7 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
     parts_cost: existingOrder?.parts_cost || "",
     status: existingOrder?.status || "open",
     service: existingOrder?.service || "",
+    mpesa_code: existingOrder?.mpesa_code || "",
   });
 
   useEffect(() => {
@@ -282,6 +283,22 @@ export default function WorkOrderForm({ existingOrder, handleSubmit }) {
               value={inputs.service}
               onChange={(e) => handleChange("service", e.target.value)}
               placeholder="Enter next service mileage"
+              className="w-full border rounded px-3 py-2"
+            />
+          </div>
+        )}
+
+        {/* MPESA Code - only show when editing */}
+        {existingOrder && (
+          <div className="mb-5 group">
+            <label className="block text-sm text-gray-600 mb-1">
+              MPESA Code
+            </label>
+            <input
+              type="text"
+              value={inputs.mpesa_code}
+              onChange={(e) => handleChange("mpesa_code", e.target.value)}
+              placeholder="Enter MPESA code"
               className="w-full border rounded px-3 py-2"
             />
           </div>

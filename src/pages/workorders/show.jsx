@@ -5,6 +5,7 @@ import axios from "axios";
 import { fetchWorkOrder } from "../../api/fetch";
 import StyledButton from "../../components/styled/StyledButton";
 import Loading from "../../components/PageContent/Loading";
+import { formatDateOnly } from "../../components/utility/useDateFormatter";
 
 export default function WorkOrderShowPage() {
   const { id } = useParams();
@@ -18,6 +19,7 @@ export default function WorkOrderShowPage() {
       try {
         const res = await fetchWorkOrder(id);
         if (res.data.status === "Success") {
+          console.log(res.data.work_order);
           setOrder(res.data.work_order);
           setItems(res.data.items || []);
         }
@@ -70,11 +72,19 @@ export default function WorkOrderShowPage() {
           <strong>Status:</strong> {order.status}
         </p>
         <p>
-          <strong>Scheduled Date:</strong> {order.scheduled_date}
+          <strong>Mileage at repair:</strong> {order.mileage} km
+        </p>
+        {order.service && (
+        <p>
+          <strong>Vehicle Next Service:</strong> {order.service} km
+        </p>
+      )}
+        <p>
+          <strong>Scheduled Date:</strong> {formatDateOnly(order.scheduled_date)}
         </p>
         {order.completion_date && (
           <p>
-            <strong>Completed:</strong> {order.completion_date}
+            <strong>Completed:</strong> {formatDateOnly(order.completion_date)}
           </p>
         )}
         <p>
@@ -85,6 +95,9 @@ export default function WorkOrderShowPage() {
         </p>
         <p>
           <strong>Total Cost:</strong> {order.total_cost}
+        </p>
+        <p>
+          <strong>Payment Ref:</strong> {order.mpesa_code}
         </p>
       </div>
 
