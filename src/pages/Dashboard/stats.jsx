@@ -14,6 +14,7 @@ import {
 import { getDashboardStats } from "../../api/fetch";
 import Loading from "../../components/PageContent/Loading";
 import StyledButton from "../../components/styled/StyledButton";
+import FilterBar from "../../components/styled/FilterBar";
 
 export default function StatsDashboard() {
   const userData = JSON.parse(localStorage.getItem("user"));
@@ -22,12 +23,20 @@ export default function StatsDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(new Date().getFullYear());
   const navigate = useNavigate();
+
+  // Reset month and year to current month when 'Reset to current month' is clicked
+  const handleReset = () => {
+    setMonth(null);
+    setYear(null);
+  };
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await getDashboardStats(userId);
+        const response = await getDashboardStats(userId, month, year);
         console.log(response);
         setStats(response); // fetch.jsx returns response.data already
       } catch (err) {
@@ -37,7 +46,7 @@ export default function StatsDashboard() {
       }
     };
     fetchStats();
-  }, []);
+  }, [month, year]);
 
   if (loading) {
     return <Loading />;
@@ -120,7 +129,6 @@ export default function StatsDashboard() {
         </div>
       </div>
 
-      {/* Bottom Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {/* Revenue by Customer */}
         <div className="bg-white p-4 rounded shadow">
@@ -167,6 +175,146 @@ export default function StatsDashboard() {
             ))}
           </ul>
         </div>
+      </div>
+
+      {/* COMPANY STATS  */}
+      {/* Filter UI  */}
+<FilterBar
+  month={month}
+  year={year}
+  setMonth={setMonth}
+  setYear={setYear}
+  onReset={handleReset}
+/>
+
+      {/* Bottom Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Current Month Revenue by Agents */}
+        <div className="bg-white p-4 rounded shadow mb-6">
+          <h3 className="text-lg font-semibold border-b pb-2 mb-3 flex items-center">
+            <FaCoins className="text-blue-600 mr-2" /> Current Month Revenue by
+            Agents
+          </h3>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="text-left p-2 border">Agent</th>
+                <th className="text-right p-2 border">Realized Revenue</th>
+                <th className="text-right p-2 border">Potential Revenue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {base.current_month_revenue_by_agents?.map((agent) => (
+                <tr key={agent.account_id} className="hover:bg-gray-50">
+                  <td className="p-2 border font-medium">
+                    {agent.account_name}
+                  </td>
+                  <td className="p-2 border text-right text-green-700">
+                    Ksh. {Number(agent.realized_revenue).toLocaleString()}
+                  </td>
+                  <td className="p-2 border text-right text-blue-700">
+                    Ksh. {Number(agent.potential_revenue).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Booking Counts per Agent */}
+        <div className="bg-white p-4 rounded shadow mb-6">
+          <h3 className="text-lg font-semibold border-b pb-2 mb-3">
+            Booking Counts per Agent
+          </h3>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="text-left p-2 border">Agent</th>
+                <th className="text-right p-2 border">Completed</th>
+                <th className="text-right p-2 border">Cancelled</th>
+                <th className="text-right p-2 border">Active</th>
+                <th className="text-right p-2 border">Upcoming</th>
+              </tr>
+            </thead>
+            <tbody>
+              {base.current_month_booking_count_by_agents?.map((agent) => (
+                <tr key={agent.account_id} className="hover:bg-gray-50">
+                  <td className="p-2 border font-medium">
+                    {agent.account_name}
+                  </td>
+                  <td className="p-2 border text-right text-green-700">
+                    {agent.completed_count}
+                  </td>
+                  <td className="p-2 border text-right text-red-700">
+                    {agent.cancelled_count}
+                  </td>
+                  <td className="p-2 border text-right text-blue-700">
+                    {agent.active_count}
+                  </td>
+                  <td className="p-2 border text-right text-yellow-700">
+                    {agent.upcoming_count}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Booking Completion Rate per Agent */}
+        <div className="bg-white p-4 rounded shadow">
+          <h3 className="text-lg font-semibold mb-2 flex items-center border-b pb-2">
+            <FaCarSide className="text-blue-600 mr-2" />
+            Booking Completion Rate per Agent
+          </h3>
+          <ul className="space-y-2">
+            {base.current_month_completion_rate_by_agents?.map((r) => (
+              <li
+                key={r.account_id}
+                className="flex justify-between items-center border-b py-1"
+              >
+                <span className="font-medium">{r.account_name}</span>
+                <span className="text-gray-700">
+                  {Number(r.completion_rate)}%
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Current Month Vehicle Performance */}
+        <div className="bg-white p-4 rounded shadow mb-6">
+          <h3 className="text-lg font-semibold border-b pb-2 mb-3 flex items-center">
+            <FaCoins className="text-blue-600 mr-2" /> Current Month Vehicle Performance
+          </h3>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="text-left p-2 border">Vehicle</th>
+                <th className="text-right p-2 border">Average Revenue / Booking</th>
+                <th className="text-right p-2 border">Total Revenue</th>
+                <th className="text-right p-2 border">Completed Bookings</th>
+              </tr>
+            </thead>
+            <tbody>
+              {base.current_month_vehicle_performance?.map((vehicle) => (
+                <tr key={vehicle.id} className="hover:bg-gray-50">
+                  <td className="p-2 border font-medium">
+                    {vehicle.vehicle}
+                  </td>
+                  <td className="p-2 border text-right text-green-700">
+                    Ksh. {Number(vehicle.avg_income_per_booking).toLocaleString()}
+                  </td>
+                  <td className="p-2 border text-right text-blue-700">
+                    Ksh. {Number(vehicle.total_revenue).toLocaleString()}
+                  </td>
+                  <td className="p-2 border text-right text-blue-700">
+                     {vehicle.completed_bookings}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          </div>
       </div>
 
       {/* Role-Specific Sections */}
@@ -251,6 +399,7 @@ export default function StatsDashboard() {
 
       {/* Calendar Link */}
       <div className="mt-6 text-end">
+        <StyledButton to="/maintenance_costs" label="View vehicle maintenance costs →" variant="primary" />
         <StyledButton
           to="/calen"
           label="View Calendar →"

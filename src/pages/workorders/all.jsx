@@ -7,6 +7,8 @@ import StyledButton from "../../components/styled/StyledButton"; // adjust path 
 export default function WorkflowDashboard() {
   const [orders, setOrders] = useState([]);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5; // adjust as needed
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -19,6 +21,13 @@ export default function WorkflowDashboard() {
     };
     fetchOrders();
   }, []);
+
+  // Calculate indexes
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentOrders = orders.slice(indexOfFirstRow, indexOfLastRow);
+
+  const totalPages = Math.ceil(orders.length / rowsPerPage);
 
   return (
     <div className="flex gap-6">
@@ -33,55 +42,81 @@ export default function WorkflowDashboard() {
           />
         </div>
 
-        <table className="w-full border">
-          <thead>
-            <tr>
-              <th>Number</th>
-              <th>Vehicle</th>
-              <th>Title</th>
-              <th>Status</th>
-              <th>Total Cost</th>
-              <th>Next Service</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr
-                key={order.id}
-                className={`cursor-pointer ${selectedOrderId === order.id ? "bg-gray-200" : ""}`}
-                onClick={() => setSelectedOrderId(order.id)}
-              >
-                <td>{order.work_order_number}</td>
-                <td>
-                  {order.make} {order.model} ({order.number_plate})
-                </td>
-                <td>{order.title}</td>
-                <td>{order.status}</td>
-                <td>{order.total_cost}</td>
-                <td>
-                  {order.work_order_service
-                    ? `${order.work_order_service} km`
-                    : "—"}
-                  {order.service_updated === 1 && (
-                    <span className="ml-2 text-green-600 font-semibold">
-                      (Updated)
-                    </span>
-                  )}
-                </td>
-                <td>
-                  {/* More details link */}
-                  <Link
-                    to={`/workorders/${order.id}`}
-                    className="px-3 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-700 hover:text-white transition"
-                  >
-                    More
-                  </Link>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full border">
+            <thead>
+              <tr>
+                <th>Number</th>
+                <th>Vehicle</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Total Cost</th>
+                <th>Next Service</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {currentOrders.map((order) => (
+                <tr
+                  key={order.id}
+                  className={`cursor-pointer ${selectedOrderId === order.id ? "bg-gray-200" : ""}`}
+                  onClick={() => setSelectedOrderId(order.id)}
+                >
+                  <td>{order.work_order_number}</td>
+                  <td>
+                    {order.make} {order.model} ({order.number_plate})
+                  </td>
+                  <td>{order.title}</td>
+                  <td>{order.status}</td>
+                  <td>{order.total_cost}</td>
+                  <td>
+                    {order.work_order_service
+                      ? `${order.work_order_service} km`
+                      : "—"}
+                    {order.service_updated === 1 && (
+                      <span className="ml-2 text-green-600 font-semibold">
+                        (Updated)
+                      </span>
+                    )}
+                  </td>
+                  <td>
+                    {/* More details link */}
+                    <Link
+                      to={`/workorders/${order.id}`}
+                      className="px-3 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-700 hover:text-white transition"
+                    >
+                      More
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="flex justify-between items-center mt-4">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
+            >
+              Previous
+            </button>
+
+            <span className="text-sm text-gray-700">
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Right side: detail sidebar */}

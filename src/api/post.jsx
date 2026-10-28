@@ -77,6 +77,12 @@ export const assign_driver = async (payload) => {
   return response;
 };
 
+// save payment data
+export const save_payment = async (payload) => {
+  const response = await api.post("/api/booking_payments/create.php", payload);
+  return response;
+};
+
 // create an invoice
 export const save_invoice = async (payload) => {
   const response = await api.post("/api/invoices/generate.php", payload);

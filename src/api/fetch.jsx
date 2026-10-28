@@ -157,6 +157,13 @@ export const fetchVehicleWorkOrder = async (vehicle_id, limit = null) => {
   return response;
 };
 
+// get a vehicles' work order total aggregate
+export const getVehicleWorkOrderStats = async (page = 1, limit = 10) => {
+  const response = await api.post("/api/workorders/stats.php", { page, limit });
+  return response.data;
+};
+
+
 // -------------------- Bookings Functions --------------------
 // get all bookings
 export const fetchBookings = async () => {
@@ -192,6 +199,14 @@ export const fetchActiveBookings = async () => {
 export const fetchBooking = async (id) => {
   const response = await api.get(`/api/bookings/read_single.php`, {
     params: { id },
+  });
+  return response;
+};
+
+// get single booking's payments 
+export const fetchBookingPayments = async (booking_id) => {
+  const response = await api.get(`/api/booking_payments/read.php`, {
+    params: { booking_id },
   });
   return response;
 };
@@ -339,9 +354,12 @@ export const fetchMessages = async (conversation_id) => {
 };
 
 // Dashboard Stats
-export const getDashboardStats = async (account_id) => {
-  const response = await api.post("/api/dashboard/web_home_stats.php", {
+export const getDashboardStats = async (account_id, month = null, year = null) => {
+  const body = {
     account_id,
-  });
+    ...(month && { month }),
+    ...(year && { year }),
+  };
+  const response = await api.post("/api/dashboard/web_home_stats.php", body);
   return response.data;
 };

@@ -18,8 +18,9 @@ const variantClasses = {
 };
 
 const StyledButton = ({ to, label, variant = 'amber', rounded = false }) => {
+  const Component = to ? Link : 'button';
   return (
-    <Link
+    <Component
       to={to}
       className={clsx(
         'inline-block border px-4 py-2 transition duration-200 shadow-sm',
@@ -28,7 +29,7 @@ const StyledButton = ({ to, label, variant = 'amber', rounded = false }) => {
       )}
     >
       {label}
-    </Link>
+    </Component>
   );
 };
 

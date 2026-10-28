@@ -50,7 +50,7 @@ export default function WorkOrderDetail({ workOrderId }) {
         <strong>Status:</strong> {order.status}
       </p>
       <p>
-        <strong>Scheduled Date:</strong>  formatDateOnly({order.scheduled_date})
+        <strong>Scheduled Date:</strong>  {formatDateOnly(order.scheduled_date)}
       </p>
       {order.completion_date && (
         <p>

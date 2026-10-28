@@ -78,6 +78,7 @@ import RepaymentList from "../../pages/vehicles/loans/repayments/all";
 import NewRepayment from "../../pages/vehicles/loans/repayments/new";
 import EditRepayment from "../../pages/vehicles/loans/repayments/edit";
 import LoanDetails from "../../pages/vehicles/loans/details";
+import MaintenanceCosts from "../../pages/vehicles/maintenance_costs";
 
 export default function AppRouter() {
   return (
@@ -88,6 +89,7 @@ export default function AppRouter() {
             <Route index element={<StatsDashboard />} />
             <Route path="/calen" element={<Dashboard />} />
             {/* Vehicle Routes  */}
+            <Route path="/maintenance_costs" element={<MaintenanceCosts />} />
             <Route path="/vehicles" element={<AllVehicles />} />
             <Route path="/vehicle/:id" element={<Vehicle />} />
             <Route

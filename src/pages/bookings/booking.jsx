@@ -13,17 +13,23 @@ import Delivery from "./delivery";
 import Loading from "../../components/PageContent/Loading";
 import Fuel from "./fuel";
 import AddMedia from "./add_media";
-import { fetchBooking, fetchBookingInvoice } from "../../api/fetch";
+import {
+  fetchBooking,
+  fetchBookingInvoice,
+  fetchBookingPayments,
+} from "../../api/fetch";
 import {
   activate_booking,
   assign_driver,
   complete_booking_with_mileage,
   save_fuel,
+  save_payment,
 } from "../../api/post";
 import { useChat } from "../../context/ChatContext";
 import { cancel_booking } from "../../api/put";
 import InvoiceForm from "../../components/forms/InvoiceForm";
 import AddPaymentForm from "../../components/forms/AddPaymentForm";
+import PaymentModal from "./pay";
 
 export default function Booking() {
   const { id } = useParams();
@@ -31,6 +37,7 @@ export default function Booking() {
   const [roleId, setRoleId] = useState(null);
   const [booking, setBooking] = useState(null);
   const [invoice, setInvoice] = useState(null);
+  const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false); // state for loading when media is being uploaded
   const [error, setError] = useState(null);
@@ -44,6 +51,7 @@ export default function Booking() {
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false); // this is used to control the invoice modal
   const [paymentModalOpen, setPaymentModalOpen] = useState(false); // this is used to control the payment of an invoice modal
   const [total, setTotal] = useState(0); // this is used because total changes with driver fee
+  const [showPayments, setShowPayments] = useState(false);
 
   const [extendInfo, setExtendInfo] = useState(null);
   const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -205,6 +213,28 @@ export default function Booking() {
       Swal.fire({
         title: "Error",
         text: "The fuel couldn't be added",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
+  const recordPayment = async (data) => {
+    setPaymentModalOpen(false);
+    // console.log("Payment payload: ", data);
+    try {
+      await save_payment(data); // API call
+      Swal.fire({
+        title: "Payment Recorded",
+        text: "The payment has been added successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      getBooking(); // refresh booking details
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "The payment couldn't be added",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -439,9 +469,22 @@ export default function Booking() {
   const getInvoice = async () => {
     try {
       const response = await fetchBookingInvoice(id);
-      console.log(response);
+      // console.log(response);
       if (response.data.status === "Success") {
         setInvoice(response.data.invoice);
+      }
+    } catch (error) {
+      const errorMessage = "Error: " + error.message;
+      setError(errorMessage);
+    }
+  };
+
+  const getPayments = async () => {
+    try {
+      const response = await fetchBookingPayments(id);
+      console.log("Booking payments: ", response);
+      if (response.data.status === "Success") {
+        setPayments(response.data.payments);
       }
     } catch (error) {
       const errorMessage = "Error: " + error.message;
@@ -453,7 +496,8 @@ export default function Booking() {
     getRoleId();
     getInvoice();
     getBooking();
-    checkMessage();
+    getPayments();
+    // checkMessage();
   }, []);
 
   // handle back button redirection based on booking state
@@ -501,6 +545,13 @@ export default function Booking() {
     );
   }
 
+  // Show balance from payments
+  const totalPayments = payments
+    ? payments.reduce((sum, p) => sum + Number(p.amount), 0)
+    : 0;
+
+  const remainingBalance = Number(booking.total) - totalPayments;
+
   return (
     <div>
       <InvoiceForm
@@ -540,6 +591,13 @@ export default function Booking() {
           mount: { scale: 1, y: 0 },
           unmount: { scale: 0.9, y: -100 },
         }}
+      />
+
+      <PaymentModal
+        show={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+        bookingId={id}
+        onSubmit={recordPayment}
       />
 
       <AddMedia
@@ -658,6 +716,44 @@ export default function Booking() {
             </p>
           )}
 
+          {/* Payments  */}
+          {payments && payments.length > 0 && (
+            <div className="mt-6">
+              <button
+                onClick={() => setShowPayments(!showPayments)}
+                className="text-indigo-600 underline cursor-pointer"
+              >
+                {showPayments ? "Hide Payments" : "Show Payments"}
+              </button>
+
+              {showPayments && (
+                <div className="mt-4 border rounded p-4 bg-gray-50">
+                  <h3 className="font-semibold mb-2">Payments</h3>
+                  <ul className="space-y-2">
+                    {payments.map((p) => (
+                      <li
+                        key={p.id}
+                        className="flex justify-between border-b pb-1"
+                      >
+                        <span>
+                          {p.payment_no} — Ref: {p.ref}
+                        </span>
+                        <span className="text-green-700">
+                          Ksh. {Number(p.amount).toLocaleString()}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p className="leading-loose text-center mt-4">
+                    <span className="font-bold">Remaining Balance:</span>{" "}
+                    {remainingBalance.toLocaleString()}/-
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           <p className="leading-loose text-center">
             <span className="font-bold">Status:</span> {booking.status}
           </p>
@@ -721,6 +817,12 @@ export default function Booking() {
               onClick={() => setFuelModalOpen(true)}
             >
               Fuel Vehicle
+            </button>
+            <button
+              className="border border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300 mt-4"
+              onClick={() => setPaymentModalOpen(true)}
+            >
+              Record Payment
             </button>
             {booking.url ? (
               <>
