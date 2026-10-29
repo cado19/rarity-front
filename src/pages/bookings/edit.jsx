@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import {
+  fetchAgents,
   fetchBooking,
   fetchBookingDrivers,
   get_booking_vehicles,
@@ -58,10 +59,12 @@ export default function EditBooking() {
 
   // State
   const [no, setNo] = useState();
+  const [agents, setAgents] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
+  const [selectedAgent, setSelectedAgent] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
@@ -110,10 +113,11 @@ export default function EditBooking() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [bookingRes, dRes, vRes] = await Promise.all([
+        const [bookingRes, dRes, vRes, aRes] = await Promise.all([
           fetchBooking(id),
           fetchBookingDrivers(),
           get_booking_vehicles(),
+          fetchAgents(),
         ]);
 
         const booking = bookingRes.data.booking;
@@ -146,6 +150,7 @@ export default function EditBooking() {
         // Populate inputs
         setInputs({
           ...inputs,
+          account_id: booking.account_id,
           customer_id: booking.customer_id,
           vehicle_id: booking.vehicle_id,
           driver_id: booking.d_id,
@@ -184,6 +189,13 @@ export default function EditBooking() {
           })),
         );
 
+        setAgents(
+          aRes.data.map((a) => ({
+            value: a.id,
+            label: `${a.name}`,
+          })),
+        );
+
         // After setting vehicles find the booked vehicle's id from all the loaded vehicles to add daily_rate to it
         const matchedVehicle = vRes.vehicles.find(
           (v) => v.id === booking.vehicle_id,
@@ -194,6 +206,12 @@ export default function EditBooking() {
           value: booking.driver_id,
           label: `${booking.driver_name}`,
         });
+        
+        setSelectedAgent({
+          value: booking.account_id,
+          label: `${booking.agent}`,
+        });
+
         if (matchedVehicle) {
           setSelectedVehicle({
             value: matchedVehicle.id,
@@ -297,12 +315,15 @@ export default function EditBooking() {
         title=""
         inputs={inputs}
         setInputs={setInputs}
+        agents={agents}
         drivers={drivers}
         vehicles={vehicles}
         selectedDriver={selectedDriver}
         setSelectedDriver={setSelectedDriver}
         selectedVehicle={selectedVehicle}
         setSelectedVehicle={setSelectedVehicle}
+        selectedAgent={selectedAgent}
+        setSelectedAgent={setSelectedAgent}
         startDate={startDate}
         setStartDate={setStartDate}
         endDate={endDate}
@@ -315,7 +336,7 @@ export default function EditBooking() {
         disabled={disabled}
         onSubmit={handleSubmit}
         customerName={customerName}
-        isEdit={true}   // ✅ tell the form we’re editing
+        isEdit={true} // ✅ tell the form we’re editing
       />
     </div>
   );

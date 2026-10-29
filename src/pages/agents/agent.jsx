@@ -199,7 +199,7 @@ export default function Agent() {
   const categoryOptions = [
     { value: "1", label: "SUV" },
     { value: "2", label: "Mid Size SUV" },
-    { value: "3", label: "Medium Car" },
+    { value: "3", label: "Luxury Mid SUV" },
     { value: "4", label: "Small Car" },
     { value: "5", label: "Safari" },
     { value: "6", label: "Luxury" },

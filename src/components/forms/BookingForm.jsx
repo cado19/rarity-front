@@ -12,6 +12,7 @@ export default function BookingForm({
   title, // NEW: passed from parent
   inputs,
   setInputs,
+  agents,
   clients,
   drivers,
   vehicles,
@@ -21,6 +22,8 @@ export default function BookingForm({
   setSelectedDriver,
   selectedVehicle,
   setSelectedVehicle,
+  selectedAgent,
+  setSelectedAgent,
   startDate,
   setStartDate,
   endDate,
@@ -35,7 +38,7 @@ export default function BookingForm({
   show,
   setShow,
   customerName,
-  isEdit
+  isEdit,
 }) {
   const [days, setDays] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
@@ -225,6 +228,20 @@ export default function BookingForm({
             </label>
           </div>
 
+          {/* Account select */}
+          <div className="mb-5 group">
+            <Select
+              options={agents}
+              value={selectedAgent}
+              onChange={(option) => {
+                setSelectedAgent(option);
+                setInputs((prev) => ({ ...prev, account_id: option.value }));
+              }}
+              placeholder="Select Account"
+              isSearchable
+            />
+          </div>
+
           {/* Customer select */}
           <div className="mb-5 group">
             {customerName ? (
@@ -320,9 +337,7 @@ export default function BookingForm({
                   Claim Number
                 </label>
                 {errors.claim_no && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.claim_no}
-                  </p>
+                  <p className="text-red-500 text-xs mt-1">{errors.claim_no}</p>
                 )}
               </div>
             </>

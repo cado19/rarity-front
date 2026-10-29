@@ -13,6 +13,7 @@ import BookingNav from "../../components/navs/bookingnav";
 import { AiFillCaretRight } from "react-icons/ai";
 import { AiFillCaretDown } from "react-icons/ai";
 import {
+  fetchAgents,
   fetchBookingCustomers,
   fetchBookingDrivers,
   get_booking_vehicles,
@@ -48,11 +49,13 @@ export default function NewBooking() {
   const [clients, setClients] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [vehicles, setVehicles] = useState([]);
+  const [agents, setAgents] = useState([]);
   const [dailyRate, setDailyRate] = useState(0);
 
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
+  const [selectedAgent, setSelectedAgent] = useState(null);
   const [startDate, setStartDate] = useState(new Date(today));
   const [endDate, setEndDate] = useState(new Date(today));
   const [startTime, setStartTime] = useState(new Date(today));
@@ -92,10 +95,11 @@ export default function NewBooking() {
   // fetch dropdown data
   const fetchDropdowns = async () => {
     try {
-      const [cRes, dRes, vRes] = await Promise.all([
+      const [cRes, dRes, vRes, aRes] = await Promise.all([
         fetchBookingCustomers(),
         fetchBookingDrivers(),
         get_booking_vehicles(),
+        fetchAgents(),
       ]);
 
       // set state
@@ -116,6 +120,12 @@ export default function NewBooking() {
           value: v.id,
           label: `${v.make} ${v.model} ${v.number_plate}`,
           daily_rate: v.daily_rate,
+        })),
+      );
+      setAgents(
+        aRes.data.map((a) => ({
+          value: a.id,
+          label: `${a.name}`,
         })),
       );
     } catch (error) {
@@ -275,6 +285,7 @@ export default function NewBooking() {
         title="New Booking"
         inputs={inputs}
         setInputs={setInputs}
+        agents={agents}
         clients={clients}
         drivers={drivers}
         vehicles={vehicles}
@@ -284,6 +295,8 @@ export default function NewBooking() {
         setSelectedDriver={setSelectedDriver}
         selectedVehicle={selectedVehicle}
         setSelectedVehicle={setSelectedVehicle}
+        selectedAgent={selectedAgent}
+        setSelectedAgent={setSelectedAgent}
         startDate={startDate}
         setStartDate={setStartDate}
         endDate={endDate}
@@ -296,7 +309,7 @@ export default function NewBooking() {
         disabled={disabled}
         onSubmit={handleSubmit}
         customerName={""}
-        isEdit={false}   // ✅ tell the form we’re creating
+        isEdit={false} // ✅ tell the form we’re creating
       />
     </div>
   );

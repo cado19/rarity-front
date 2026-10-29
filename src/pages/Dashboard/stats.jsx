@@ -178,14 +178,17 @@ export default function StatsDashboard() {
       </div>
 
       {/* COMPANY STATS  */}
+      <h1 className="text-4xl font-extrabold text-gray-800 tracking-wide uppercase border-b-4 border-yellow-500 pb-2 mb-2">
+        Company Stats
+      </h1>
       {/* Filter UI  */}
-<FilterBar
-  month={month}
-  year={year}
-  setMonth={setMonth}
-  setYear={setYear}
-  onReset={handleReset}
-/>
+      <FilterBar
+        month={month}
+        year={year}
+        setMonth={setMonth}
+        setYear={setYear}
+        onReset={handleReset}
+      />
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -284,13 +287,16 @@ export default function StatsDashboard() {
         {/* Current Month Vehicle Performance */}
         <div className="bg-white p-4 rounded shadow mb-6">
           <h3 className="text-lg font-semibold border-b pb-2 mb-3 flex items-center">
-            <FaCoins className="text-blue-600 mr-2" /> Current Month Vehicle Performance
+            <FaCoins className="text-blue-600 mr-2" /> Current Month Vehicle
+            Performance
           </h3>
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-100">
                 <th className="text-left p-2 border">Vehicle</th>
-                <th className="text-right p-2 border">Average Revenue / Booking</th>
+                <th className="text-right p-2 border">
+                  Average Revenue / Booking
+                </th>
                 <th className="text-right p-2 border">Total Revenue</th>
                 <th className="text-right p-2 border">Completed Bookings</th>
               </tr>
@@ -298,23 +304,22 @@ export default function StatsDashboard() {
             <tbody>
               {base.current_month_vehicle_performance?.map((vehicle) => (
                 <tr key={vehicle.id} className="hover:bg-gray-50">
-                  <td className="p-2 border font-medium">
-                    {vehicle.vehicle}
-                  </td>
+                  <td className="p-2 border font-medium">{vehicle.vehicle}</td>
                   <td className="p-2 border text-right text-green-700">
-                    Ksh. {Number(vehicle.avg_income_per_booking).toLocaleString()}
+                    Ksh.{" "}
+                    {Number(vehicle.avg_income_per_booking).toLocaleString()}
                   </td>
                   <td className="p-2 border text-right text-blue-700">
                     Ksh. {Number(vehicle.total_revenue).toLocaleString()}
                   </td>
                   <td className="p-2 border text-right text-blue-700">
-                     {vehicle.completed_bookings}
+                    {vehicle.completed_bookings}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          </div>
+        </div>
       </div>
 
       {/* Role-Specific Sections */}
@@ -399,7 +404,11 @@ export default function StatsDashboard() {
 
       {/* Calendar Link */}
       <div className="mt-6 text-end">
-        <StyledButton to="/maintenance_costs" label="View vehicle maintenance costs →" variant="primary" />
+        <StyledButton
+          to="/maintenance_costs"
+          label="View vehicle maintenance costs →"
+          variant="primary"
+        />
         <StyledButton
           to="/calen"
           label="View Calendar →"
