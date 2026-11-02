@@ -11,6 +11,7 @@ import {
   fetchBooking,
   fetchBookingDrivers,
   get_booking_vehicles,
+  fetchVehicleCategories,
 } from "../../api/fetch";
 import { save_booking } from "../../api/post";
 import Loading from "../../components/PageContent/Loading";
@@ -62,6 +63,9 @@ export default function EditBooking() {
   const [agents, setAgents] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [vehicles, setVehicles] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [allVehicles, setAllVehicles] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [selectedAgent, setSelectedAgent] = useState(null);
@@ -113,11 +117,12 @@ export default function EditBooking() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [bookingRes, dRes, vRes, aRes] = await Promise.all([
+        const [bookingRes, dRes, vRes, aRes, catRes] = await Promise.all([
           fetchBooking(id),
           fetchBookingDrivers(),
           get_booking_vehicles(),
           fetchAgents(),
+          fetchVehicleCategories(),
         ]);
 
         const booking = bookingRes.data.booking;
@@ -186,6 +191,7 @@ export default function EditBooking() {
             value: v.id,
             label: `${v.make} ${v.model} ${v.number_plate}`,
             daily_rate: v.daily_rate,
+            category_id: v.category_id,
           })),
         );
 
@@ -196,17 +202,38 @@ export default function EditBooking() {
           })),
         );
 
+        setCategories(
+          catRes.data.data.map((c) => ({
+            value: c.id,
+            label: c.name,
+          })),
+        );
+
         // After setting vehicles find the booked vehicle's id from all the loaded vehicles to add daily_rate to it
         const matchedVehicle = vRes.vehicles.find(
           (v) => v.id === booking.vehicle_id,
         );
+
+        // Match category with the vehicle that came from db
+        if (matchedVehicle) {
+          const matchedCategory = catRes.data.data.find(
+            (c) => Number(c.id) === Number(matchedVehicle.category_id),
+          );
+
+          if (matchedCategory) {
+            setSelectedCategory({
+              value: matchedCategory.id,
+              label: matchedCategory.name,
+            });
+          }
+        }
 
         // Preselect driver/vehicle
         setSelectedDriver({
           value: booking.driver_id,
           label: `${booking.driver_name}`,
         });
-        
+
         setSelectedAgent({
           value: booking.account_id,
           label: `${booking.agent}`,
@@ -238,6 +265,31 @@ export default function EditBooking() {
 
     loadData();
   }, [id]);
+
+  useEffect(() => {
+    if (!selectedCategory) {
+      setVehicles(
+        allVehicles.map((v) => ({
+          value: v.id,
+          label: `${v.make} ${v.model} ${v.number_plate}`,
+          daily_rate: v.daily_rate,
+          category_id: v.category_id,
+        })),
+      );
+      return;
+    }
+
+    const filteredVehicles = allVehicles
+      .filter((v) => String(v.category_id) === String(selectedCategory.value))
+      .map((v) => ({
+        value: v.id,
+        label: `${v.make} ${v.model} ${v.number_plate}`,
+        daily_rate: v.daily_rate,
+        category_id: v.category_id,
+      }));
+
+    setVehicles(filteredVehicles);
+  }, [selectedCategory, allVehicles]);
 
   // Validation
   const validate = (data) => {
@@ -318,6 +370,9 @@ export default function EditBooking() {
         agents={agents}
         drivers={drivers}
         vehicles={vehicles}
+        categories={categories}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
         selectedDriver={selectedDriver}
         setSelectedDriver={setSelectedDriver}
         selectedVehicle={selectedVehicle}

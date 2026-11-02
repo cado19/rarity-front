@@ -22,6 +22,9 @@ export default function BookingForm({
   setSelectedDriver,
   selectedVehicle,
   setSelectedVehicle,
+  selectedCategory,
+  setSelectedCategory,
+  categories,
   selectedAgent,
   setSelectedAgent,
   startDate,
@@ -266,6 +269,17 @@ export default function BookingForm({
             {errors.customer_id && (
               <p className="text-red-500 text-xs mt-1">{errors.customer_id}</p>
             )}
+          </div>
+
+          {/* Category Select */}
+          <div className="mb-5 group">
+            <Select
+              options={categories}
+              value={selectedCategory}
+              onChange={setSelectedCategory}
+              placeholder="Select Vehicle Category"
+              isClearable
+            />
           </div>
 
           {/* Vehicle select */}

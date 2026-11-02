@@ -97,6 +97,11 @@ export const get_issue = async (id) => {
   return response;
 };
 
+export const fetchVehicleCategories = async (id) => {
+  const response = await api.get(`/api/fleet/all_categories.php`);
+  return response;
+};
+
 // Get all loans
 export const fetchLoans = async () => {
   const response = await api.get("/api/loans/read.php");

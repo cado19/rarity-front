@@ -20,7 +20,7 @@ export default function AllAgents() {
   const userRoles = user?.roles?.map((r) => r.id) || [];
 
   // Filter columns dynamically
-  const filteredColumns = userRoles.includes(0)
+  const filteredColumns = userRoles.includes(0) || userRoles.includes(1)
     ? agentColumns
     : agentColumns.filter((col) => col.id !== "details");
 

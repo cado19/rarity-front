@@ -17,6 +17,7 @@ import {
   fetchBookingCustomers,
   fetchBookingDrivers,
   get_booking_vehicles,
+  fetchVehicleCategories,
 } from "../../api/fetch";
 import { save_booking } from "../../api/post";
 import BookingForm from "../../components/forms/BookingForm";
@@ -51,6 +52,10 @@ export default function NewBooking() {
   const [vehicles, setVehicles] = useState([]);
   const [agents, setAgents] = useState([]);
   const [dailyRate, setDailyRate] = useState(0);
+
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [allVehicles, setAllVehicles] = useState([]);
 
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -95,11 +100,12 @@ export default function NewBooking() {
   // fetch dropdown data
   const fetchDropdowns = async () => {
     try {
-      const [cRes, dRes, vRes, aRes] = await Promise.all([
+      const [cRes, dRes, vRes, aRes, catRes] = await Promise.all([
         fetchBookingCustomers(),
         fetchBookingDrivers(),
         get_booking_vehicles(),
         fetchAgents(),
+        fetchVehicleCategories(),
       ]);
 
       // set state
@@ -120,14 +126,39 @@ export default function NewBooking() {
           value: v.id,
           label: `${v.make} ${v.model} ${v.number_plate}`,
           daily_rate: v.daily_rate,
+          category_id: v.category_id,
         })),
       );
-      setAgents(
-        aRes.data.map((a) => ({
-          value: a.id,
-          label: `${a.name}`,
+      setAllVehicles(vRes.vehicles); // For the filtering by category
+      // setAgents(
+      //   aRes.data.map((a) => ({
+      //     value: a.id,
+      //     label: `${a.name}`,
+      //   })),
+      // );
+      // Set Categories
+      setCategories(
+        catRes.data.data.map((c) => ({
+          value: c.id,
+          label: c.name,
         })),
       );
+
+      const agentOptions = aRes.data.map((a) => ({
+        value: a.id,
+        label: `${a.name}`,
+      }));
+
+      setAgents(agentOptions);
+
+      // Filter current logged in agent
+      const currentAgent = agentOptions.find(
+        (a) => Number(a.value) === Number(userId),
+      );
+
+      if (currentAgent) {
+        setSelectedAgent(currentAgent);
+      }
     } catch (error) {
       console.error("Error fetching dropdown data: ", error);
     } finally {
@@ -144,6 +175,38 @@ export default function NewBooking() {
     // setAccountId();
     // initFormValues();
   }, []);
+
+  useEffect(() => {
+    setSelectedVehicle(null);
+
+    setInputs((prev) => ({
+      ...prev,
+      vehicle_id: "",
+    }));
+
+    if (!selectedCategory) {
+      setVehicles(
+        allVehicles.map((v) => ({
+          value: v.id,
+          label: `${v.make} ${v.model} ${v.number_plate}`,
+          daily_rate: v.daily_rate,
+          category_id: v.category_id,
+        })),
+      );
+      return;
+    }
+
+    const filtered = allVehicles
+      .filter((v) => String(v.category_id) === String(selectedCategory.value))
+      .map((v) => ({
+        value: v.id,
+        label: `${v.make} ${v.model} ${v.number_plate}`,
+        daily_rate: v.daily_rate,
+        category_id: v.category_id,
+      }));
+
+    setVehicles(filtered);
+  }, [selectedCategory, allVehicles]);
 
   // Change functions
 
@@ -295,6 +358,9 @@ export default function NewBooking() {
         setSelectedDriver={setSelectedDriver}
         selectedVehicle={selectedVehicle}
         setSelectedVehicle={setSelectedVehicle}
+        categories={categories}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
         selectedAgent={selectedAgent}
         setSelectedAgent={setSelectedAgent}
         startDate={startDate}
