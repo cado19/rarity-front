@@ -79,246 +79,269 @@ import NewRepayment from "../../pages/vehicles/loans/repayments/new";
 import EditRepayment from "../../pages/vehicles/loans/repayments/edit";
 import LoanDetails from "../../pages/vehicles/loans/details";
 import MaintenanceCosts from "../../pages/vehicles/maintenance_costs";
+import ProtectedApp from "./ProtectedApp";
 
 export default function AppRouter() {
   return (
     <div>
       <HashRouter>
         <Routes>
-          <Route path="/" element={<PageContent />}>
-            <Route index element={<StatsDashboard />} />
-            <Route path="/calen" element={<Dashboard />} />
-            {/* Vehicle Routes  */}
-            <Route path="/maintenance_costs" element={<MaintenanceCosts />} />
-            <Route path="/vehicles" element={<AllVehicles />} />
-            <Route path="/vehicle/:id" element={<Vehicle />} />
-            <Route
-              path="/vehicle/new"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1, 7]}>
-                  <NewVehicle />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/vehicle/edit_rate"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1, 7]}>
-                  <EditRate />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/vehicle/edit_basics/:id"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1, 7]}>
-                  <EditBasics />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/vehicle/edit_extras/:id"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1, 7]}>
-                  <EditExtras />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/vehicle/edit_pricing/:id"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1, 7]}>
-                  <EditPricing />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/vehicle/:id/work_orders"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
-                  <VehicleWorkOrders />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/issues" element={<AllIssues />} />
-            <Route path="/issues/new" element={<NewIssue />} />
-            <Route path="/issues/:id" element={<Issue />} />
+          <Route element={<ProtectedApp />}>
+            <Route path="/" element={<PageContent />}>
+              <Route index element={<StatsDashboard />} />
+              <Route path="/calen" element={<Dashboard />} />
+              {/* Vehicle Routes  */}
+              <Route path="/maintenance_costs" element={<MaintenanceCosts />} />
+              <Route path="/vehicles" element={<AllVehicles />} />
+              <Route path="/vehicle/:id" element={<Vehicle />} />
+              <Route
+                path="/vehicle/new"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1, 7]}>
+                    <NewVehicle />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/vehicle/edit_rate"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1, 7]}>
+                    <EditRate />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/vehicle/edit_basics/:id"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1, 7]}>
+                    <EditBasics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/vehicle/edit_extras/:id"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1, 7]}>
+                    <EditExtras />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/vehicle/edit_pricing/:id"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1, 7]}>
+                    <EditPricing />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/vehicle/:id/work_orders"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
+                    <VehicleWorkOrders />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/issues" element={<AllIssues />} />
+              <Route path="/issues/new" element={<NewIssue />} />
+              <Route path="/issues/:id" element={<Issue />} />
 
-            {/* Workorder Routes  */}
-            <Route
-              path="/workorders"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
-                  <WorkflowDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/workorders/create"
-              element={<WorkOrderCreatePage />}
-            />
-            <Route
-              path="/workorders/:id/edit"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
-                  <WorkOrderEdit />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/workorders/:id"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
-                  <WorkOrderShowPage />
-                </ProtectedRoute>
-              }
-            />
+              {/* Workorder Routes  */}
+              <Route
+                path="/workorders"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
+                    <WorkflowDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/workorders/create"
+                element={<WorkOrderCreatePage />}
+              />
+              <Route
+                path="/workorders/:id/edit"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
+                    <WorkOrderEdit />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/workorders/:id"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1, 2, 7]}>
+                    <WorkOrderShowPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Requirements  Routes  */}
-            <Route
-              path="/vehicle/:vehicle_id/requirements"
-              element={<AllRequirements />}
-            />
-            <Route
-              path="/vehicle/:vehicle_id/requirements/:id"
-              element={<Requirement />}
-            />
-            <Route
-              path="/vehicle/:vehicle_id/requirements/new"
-              element={<NewRequirement />}
-            />
-            <Route
-              path="/vehicle/:vehicle_id/requirements/:id/edit"
-              element={<EditRequirement />}
-            />
+              {/* Requirements  Routes  */}
+              <Route
+                path="/vehicle/:vehicle_id/requirements"
+                element={<AllRequirements />}
+              />
+              <Route
+                path="/vehicle/:vehicle_id/requirements/:id"
+                element={<Requirement />}
+              />
+              <Route
+                path="/vehicle/:vehicle_id/requirements/new"
+                element={<NewRequirement />}
+              />
+              <Route
+                path="/vehicle/:vehicle_id/requirements/:id/edit"
+                element={<EditRequirement />}
+              />
 
-            {/* Loans  Routes  */}
-            <Route path="/vehicle/:vehicle_id/loan" element={<LoanDetails />} />
+              {/* Loans  Routes  */}
+              <Route
+                path="/vehicle/:vehicle_id/loan"
+                element={<LoanDetails />}
+              />
 
-            <Route
-              path="/vehicle/:vehicle_id/loans/new"
-              element={<NewLoan />}
-            />
-            <Route
-              path="/vehicle/:vehicle_id/loans/:loan_id/edit"
-              element={<EditLoan />}
-            />
+              <Route
+                path="/vehicle/:vehicle_id/loans/new"
+                element={<NewLoan />}
+              />
+              <Route
+                path="/vehicle/:vehicle_id/loans/:loan_id/edit"
+                element={<EditLoan />}
+              />
 
-            {/* Loan Repayments  Routes  */}
-            <Route
-              path="/vehicle/:vehicle_id/loans/:loan_id/repayments"
-              element={<RepaymentList />}
-            />
-            <Route
-              path="/vehicle/:vehicle_id/loans/:loan_id/repayments/new"
-              element={<NewRepayment />}
-            />
-            <Route
-              path="/vehicle/:vehicle_id/loans/:loan_id/repayments/:repayment_id/edit"
-              element={<EditRepayment />}
-            />
+              {/* Loan Repayments  Routes  */}
+              <Route
+                path="/vehicle/:vehicle_id/loans/:loan_id/repayments"
+                element={<RepaymentList />}
+              />
+              <Route
+                path="/vehicle/:vehicle_id/loans/:loan_id/repayments/new"
+                element={<NewRepayment />}
+              />
+              <Route
+                path="/vehicle/:vehicle_id/loans/:loan_id/repayments/:repayment_id/edit"
+                element={<EditRepayment />}
+              />
 
-            {/* Customer Routes  */}
-            <Route path="/customers" element={<AllCustomers />} />
-            <Route path="/recent_clients" element={<RecentCustomers />} />
-            <Route path="/customer/:id" element={<Customer />} />
-            <Route path="/customer/new" element={<NewCustomer />} />
-            <Route path="/customer/edit/:id" element={<EditCustomer />} />
-            <Route
-              path="/customer/:id/delete"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1]}>
-                  <DeleteCustomer />
-                </ProtectedRoute>
-              }
-            />
+              {/* Customer Routes  */}
+              <Route path="/customers" element={<AllCustomers />} />
+              <Route path="/recent_clients" element={<RecentCustomers />} />
+              <Route path="/customer/:id" element={<Customer />} />
+              <Route path="/customer/new" element={<NewCustomer />} />
+              <Route path="/customer/edit/:id" element={<EditCustomer />} />
+              <Route
+                path="/customer/:id/delete"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1]}>
+                    <DeleteCustomer />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Driver Routes  */}
-            <Route path="/drivers" element={<AllDrivers />} />
-            <Route
-              path="/driver/new"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1]}>
-                  <NewDriver />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/driver/:id" element={<Driver />} />
-            <Route path="/driver/workplan" element={<WorkPlan />} />
+              {/* Driver Routes  */}
+              <Route path="/drivers" element={<AllDrivers />} />
+              <Route
+                path="/driver/new"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1]}>
+                    <NewDriver />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/driver/:id" element={<Driver />} />
+              <Route path="/driver/workplan" element={<WorkPlan />} />
 
-            {/* Booking Routes  */}
-            <Route path="/bookings/all" element={<AllBookings />} />
-            <Route path="/bookings/active" element={<ActiveBookings />} />
-            <Route path="/bookings/completed" element={<CompletedBookings />} />
-            <Route path="/bookings/upcoming" element={<UpcomingBookings />} />
-            <Route path="/bookings/cancelled" element={<CancelledBookings />} />
-            <Route path="/bookings/new" element={<NewBooking />} />
-            <Route path="/bookings/edit/:id" element={<EditBooking />} />
-            <Route path="/booking/:id" element={<Booking />} />
-            <Route path="/booking/:id/cancel" element={<CancelBooking />} />
-            <Route path="/booking/:id/complete" element={<CompleteBooking />} />
-            <Route path="/booking/:id/activate" element={<ActivateBooking />} />
-            <Route path="/bookings/voucher/:id" element={<BookingVoucher />} />
-            <Route path="/bookings/reservations" element={<Reservations />} />
-            {/* <Route path='/bookings/reservations' element={<Reservations />} /> */}
+              {/* Booking Routes  */}
+              <Route path="/bookings/all" element={<AllBookings />} />
+              <Route path="/bookings/active" element={<ActiveBookings />} />
+              <Route
+                path="/bookings/completed"
+                element={<CompletedBookings />}
+              />
+              <Route path="/bookings/upcoming" element={<UpcomingBookings />} />
+              <Route
+                path="/bookings/cancelled"
+                element={<CancelledBookings />}
+              />
+              <Route path="/bookings/new" element={<NewBooking />} />
+              <Route path="/bookings/edit/:id" element={<EditBooking />} />
+              <Route path="/booking/:id" element={<Booking />} />
+              <Route path="/booking/:id/cancel" element={<CancelBooking />} />
+              <Route
+                path="/booking/:id/complete"
+                element={<CompleteBooking />}
+              />
+              <Route
+                path="/booking/:id/activate"
+                element={<ActivateBooking />}
+              />
+              <Route
+                path="/bookings/voucher/:id"
+                element={<BookingVoucher />}
+              />
+              <Route path="/bookings/reservations" element={<Reservations />} />
+              {/* <Route path='/bookings/reservations' element={<Reservations />} /> */}
 
-            {/* Invoice Routes  */}
-            <Route path="invoices/all" element={<AllInvoices />} />
-            <Route path="invoices/paid" element={<PaidInvoices />} />
-            <Route path="invoices/unpaid" element={<UnpaidInvoices />} />
-            <Route path="invoices/:id" element={<Invoice />} />
+              {/* Invoice Routes  */}
+              <Route path="invoices/all" element={<AllInvoices />} />
+              <Route path="invoices/paid" element={<PaidInvoices />} />
+              <Route path="invoices/unpaid" element={<UnpaidInvoices />} />
+              <Route path="invoices/:id" element={<Invoice />} />
 
-            {/* Agent Routes  */}
-            <Route
-              path="/agents"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1]}>
-                  <AllAgents />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/agents/new"
-              element={
-                <ProtectedRoute allowedRoles={[0, 1]}>
-                  <NewAgent />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/agent/:id" element={<Agent />} />
-            <Route path="/agent/:id/edit" element={<EditAgent />} />
-            <Route path="/agent/:id/earnings" element={<Earnings />} />
-            <Route path="/agent/commissions" element={<Commissions />} />
+              {/* Agent Routes  */}
+              <Route
+                path="/agents"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1]}>
+                    <AllAgents />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/agents/new"
+                element={
+                  <ProtectedRoute allowedRoles={[0, 1]}>
+                    <NewAgent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/agent/:id" element={<Agent />} />
+              <Route path="/agent/:id/edit" element={<EditAgent />} />
+              <Route path="/agent/:id/earnings" element={<Earnings />} />
+              <Route path="/agent/commissions" element={<Commissions />} />
 
-            {/* Analytic Routes  */}
-            <Route
-              path="/analytics"
-              element={
-                <ProtectedRoute allowedRoles={[0]}>
-                  <Analytics />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/analytics/vehicle"
-              element={
-                <ProtectedRoute allowedRoles={[0]}>
-                  <VehicleAnalytics />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/analytics/vehicle/month-stats"
-              element={
-                <ProtectedRoute allowedRoles={[0]}>
-                  <MonthStats />
-                </ProtectedRoute>
-              }
-            />
+              {/* Analytic Routes  */}
+              <Route
+                path="/analytics"
+                element={
+                  <ProtectedRoute allowedRoles={[0]}>
+                    <Analytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/analytics/vehicle"
+                element={
+                  <ProtectedRoute allowedRoles={[0]}>
+                    <VehicleAnalytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/analytics/vehicle/month-stats"
+                element={
+                  <ProtectedRoute allowedRoles={[0]}>
+                    <MonthStats />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Payment Routes  */}
-            <Route path="/payments" element={<AllPayments />} />
+              {/* Payment Routes  */}
+              <Route path="/payments" element={<AllPayments />} />
+            </Route>
           </Route>
+
+          {/* Public Routes  */}
           <Route path="*" element={<NotFound />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
