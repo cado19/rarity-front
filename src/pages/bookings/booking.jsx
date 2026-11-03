@@ -319,9 +319,9 @@ export default function Booking() {
       showCancelButton: true,
       confirmButtonText: "Complete",
       inputValidator: (value) => {
-        if (!value) {
-          return "Mileage is required";
-        }
+        // if (!value) {
+        //   return "Mileage is required";
+        // }
         if (value < 0) {
           return "Mileage cannot be negative";
         }
@@ -336,7 +336,7 @@ export default function Booking() {
             id,
             vehicle_id: booking.vehicle_id,
             user_id: userId,
-            mileage,
+            // mileage,
           });
 
           if (response.data.status === "Success") {
