@@ -32,7 +32,7 @@ export const ChatProvider = ({ children, agentId }) => {
       }
     };
     pollUnread();
-    const interval = setInterval(pollUnread, 3000);
+    const interval = setInterval(pollUnread, 300000);
     return () => clearInterval(interval);
   }, [agentId]);
 

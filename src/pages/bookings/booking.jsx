@@ -493,10 +493,13 @@ export default function Booking() {
   };
 
   useEffect(() => {
-    getRoleId();
-    getInvoice();
-    getBooking();
-    getPayments();
+    const fetchEverything = () => {
+      getRoleId();
+      getInvoice();
+      getBooking();
+      getPayments();
+    };
+    fetchEverything();
     // checkMessage();
   }, []);
 

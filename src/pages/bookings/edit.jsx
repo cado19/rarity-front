@@ -186,6 +186,8 @@ export default function EditBooking() {
           })),
         );
 
+        setAllVehicles(vRes.vehicles);
+
         setVehicles(
           vRes.vehicles.map((v) => ({
             value: v.id,
@@ -332,8 +334,9 @@ export default function EditBooking() {
       setDisabled(false);
       return;
     }
-    // console.log("Inputs: ", inputs);
+    console.log("Inputs: ", inputs);
     const res = await update_booking_details(inputs);
+    console.log(res);
     if (res.data.status === "Success") {
       navigate(`/booking/${id}`, {
         state: { message: "Booking updated successfully" },
