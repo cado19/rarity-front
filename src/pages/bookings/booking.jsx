@@ -26,7 +26,7 @@ import {
   save_payment,
 } from "../../api/post";
 import { useChat } from "../../context/ChatContext";
-import { cancel_booking } from "../../api/put";
+import { cancel_booking, update_booking_payment } from "../../api/put";
 import InvoiceForm from "../../components/forms/InvoiceForm";
 import AddPaymentForm from "../../components/forms/AddPaymentForm";
 import PaymentModal from "./pay";
@@ -49,7 +49,9 @@ export default function Booking() {
   const [contractBtnOpen, setContractBtnOpen] = useState(false); // this is used to control the contract options dropdown
   const [invoiceBtnOpen, setInvoiceBtnOpen] = useState(false); // this is used to control the invoice options dropdown
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false); // this is used to control the invoice modal
-  const [paymentModalOpen, setPaymentModalOpen] = useState(false); // this is used to control the payment of an invoice modal
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false); // this is used to control the modal for adding a payment
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [editPaymentModalOpen, setEditPaymentModalOpen] = useState(false); // this is used to control the modal for editing a payment
   const [total, setTotal] = useState(0); // this is used because total changes with driver fee
   const [showPayments, setShowPayments] = useState(false);
 
@@ -230,7 +232,7 @@ export default function Booking() {
         icon: "success",
         confirmButtonText: "OK",
       });
-      getBooking(); // refresh booking details
+      getPayments(); // refresh booking details
     } catch (error) {
       Swal.fire({
         title: "Error",
@@ -240,6 +242,27 @@ export default function Booking() {
       });
     }
   };
+
+  const updatePayment = async (data) => {
+    setEditPaymentModalOpen(false);
+    try {
+      await update_booking_payment(data);
+       Swal.fire({
+        title: "Payment Recorded",
+        text: "The payment has been updated successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      getPayments();
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "The payment couldn't be updated",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  }
 
   const assignDriver = async (data) => {
     setDeliveryModalOpen(false);
@@ -596,11 +619,33 @@ export default function Booking() {
         }}
       />
 
+      {/* Modal for adding a payment  */}
       <PaymentModal
         show={paymentModalOpen}
         onClose={() => setPaymentModalOpen(false)}
-        bookingId={id}
+        title="Record Payment"
+        submitLabel="Record Payment"
+        initialValues={{
+          booking_id: id,
+          amount: "",
+          ref: "",
+        }}
         onSubmit={recordPayment}
+      />
+
+      {/* Modal for editing a payment  */}
+      <PaymentModal
+        show={editPaymentModalOpen}
+        onClose={() => setEditPaymentModalOpen(false)}
+        title="Edit Payment"
+        submitLabel="Update Payment"
+        initialValues={{
+          id: selectedPayment?.id,
+          booking_id: selectedPayment?.booking_id,
+          amount: selectedPayment?.amount,
+          ref: selectedPayment?.ref,
+        }}
+        onSubmit={updatePayment}
       />
 
       <AddMedia
@@ -732,21 +777,38 @@ export default function Booking() {
               {showPayments && (
                 <div className="mt-4 border rounded p-4 bg-gray-50">
                   <h3 className="font-semibold mb-2">Payments</h3>
-                  <ul className="space-y-2">
-                    {payments.map((p) => (
-                      <li
-                        key={p.id}
-                        className="flex justify-between border-b pb-1"
-                      >
-                        <span>
-                          {p.payment_no} — Ref: {p.ref}
-                        </span>
-                        <span className="text-green-700">
-                          Ksh. {Number(p.amount).toLocaleString()}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                  <table className="w-full">
+                    <thead>
+                      <tr>
+                        <th>Payment No</th>
+                        <th>Reference</th>
+                        <th>Amount</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {payments.map((payment) => (
+                        <tr key={payment.id}>
+                          <td>{payment.payment_no}</td>
+                          <td>{payment.ref}</td>
+                          <td>{Number(payment.amount).toLocaleString()}</td>
+
+                          <td>
+                            <button
+                              onClick={() => {
+                                setSelectedPayment(payment);
+                                setEditPaymentModalOpen(true);
+                              }}
+                              className="border border-blue-500 text-blue-500 px-2 py-1 rounded"
+                            >
+                              Edit
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
 
                   <p className="leading-loose text-center mt-4">
                     <span className="font-bold">Remaining Balance:</span>{" "}
