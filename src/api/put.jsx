@@ -32,6 +32,30 @@ export const update_booking_payment = async (payment) => {
   return response;
 } 
 
+// activate multiple bookings
+export const activateBookings = async (bookingIds) => {
+  const response = await api.post(
+    "/api/bookings/activate_multiple.php",
+    {
+      booking_ids: bookingIds,
+    }
+  );
+
+  return response.data;
+};
+
+// complete multiple bookings
+export const completeBookings = async (bookingIds) => {
+  const response = await api.post(
+    "/api/bookings/complete_multiple.php",
+    {
+      booking_ids: bookingIds,
+    }
+  );
+
+  return response.data;
+};
+
 // -------------------- Vehicle Functions --------------------
 export const update_vehicle_extras = async (extras) => {
   const extrasUrl = baseUrl + `/api/fleet/update_extras.php`;

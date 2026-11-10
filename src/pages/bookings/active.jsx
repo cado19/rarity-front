@@ -2,11 +2,13 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { formatDate } from "date-fns";
+import Swal from "sweetalert2";
 import { Mosaic } from "react-loading-indicators";
 import BookingNav from "../../components/navs/bookingnav";
 import BasicTable from "../../components/utility/basicTable";
 import { bookingColumns } from "../../components/utility/tableColumns";
 import { fetchActiveBookings } from "../../api/fetch";
+import { completeBookings } from "../../api/put";
 
 export default function ActiveBookings() {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -16,8 +18,57 @@ export default function ActiveBookings() {
   const bookingData = [];
   const [bookings, setBookings] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
+  const [rowSelection, setRowSelection] = useState({}); // For selecting a row
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Custom columns to help us with multiselect
+  const bookingColumnsWithSelection = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <input
+          type="checkbox"
+          checked={table.getIsAllPageRowsSelected()}
+          onChange={table.getToggleAllPageRowsSelectedHandler()}
+        />
+      ),
+      cell: ({ row }) => (
+        <input
+          type="checkbox"
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      ),
+    },
+    ...bookingColumns,
+  ];
+
+  const handleBulkComplete = async () => {
+    if (selectedBookingIds.length === 0) return;
+
+    const decision = await Swal.fire({
+      title: "Activate Bookings?",
+      text: `${selectedBookingIds.length} bookings will be activated.`,
+      icon: "question",
+      showCancelButton: true,
+    });
+
+    if (!decision.isConfirmed) return;
+
+    const result = await completeBookings(selectedBookingIds);
+
+    if (result.status === "Success") {
+      Swal.fire({
+        title: "Success",
+        text: result.message,
+        icon: "success",
+      });
+
+      getBookings();
+      setRowSelection({});
+    }
+  };
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
@@ -74,6 +125,10 @@ export default function ActiveBookings() {
     );
   }
 
+  const selectedBookingIds = Object.keys(rowSelection)
+    .filter((key) => rowSelection[key])
+    .map((key) => bookings[key]?.id);
+
   return (
     <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
       <BookingNav />
@@ -81,11 +136,22 @@ export default function ActiveBookings() {
       <h1 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-4 mt-2">
         Active Bookings
       </h1>
+
+      {selectedBookingIds.length > 0 && (
+        <button
+          onClick={handleBulkComplete}
+          className="bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Complete Selected ({selectedBookingIds.length})
+        </button>
+      )}
       <BasicTable
         data={bookings}
-        columns={bookingColumns}
+        columns={bookingColumnsWithSelection}
         columnFilters={columnFilters}
         setColumnFilters={setColumnFilters}
+        rowSelection={rowSelection}
+        setRowSelection={setRowSelection}
       />
     </div>
   );

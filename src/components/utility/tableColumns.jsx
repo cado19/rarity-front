@@ -41,6 +41,7 @@ export const bookingColumns = [
     },
   },
 ];
+
 export const reservationColumns = [
   {
     accessorKey: "client",
