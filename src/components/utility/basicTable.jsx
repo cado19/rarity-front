@@ -13,13 +13,19 @@ export default function BasicTable({
   columns,
   columnFilters,
   setColumnFilters,
+  rowSelection,
+  setRowSelection,
 }) {
   const table = useReactTable({
     data,
     columns,
     state: {
       columnFilters,
+      rowSelection,
     },
+    enableRowSelection: true,
+
+    onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -33,7 +39,11 @@ export default function BasicTable({
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th key={header.id}>
-                  {header.column.columnDef.header}
+                  {/* {header.column.columnDef.header} */}
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
                   <br />
                   {header.column.getCanFilter() && (
                     <div className="relative mt-1 w-[75%]">

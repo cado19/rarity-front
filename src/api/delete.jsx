@@ -23,6 +23,18 @@ export const deleteVehicle = async (vehicleId) => {
   }
 }
 
+// delete multiple vehicles
+export const deleteVehicles = async (vehicleIds) => {
+  const response = await api.post(
+    "/api/fleet/delete_multiple.php",
+    {
+      vehicle_ids: vehicleIds,
+    }
+  );
+
+  return response.data;
+};
+
 // function to send delete request to the backend
 export const deleteCustomer = async (customerId) => {
   const deleteUrl = baseUrl + `/api/customers/delete.php?id=${customerId}`;

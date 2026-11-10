@@ -5,6 +5,7 @@ import { baseURL } from "../../constants/url";
 
 import { Link } from "react-router-dom";
 import { IoIosAddCircleOutline } from "react-icons/io";
+import Swal from "sweetalert2";
 import VehicleNav from "../../components/navs/vehicleNav";
 import { Mosaic } from "react-loading-indicators";
 import {
@@ -16,9 +17,27 @@ import {
 } from "@tanstack/react-table";
 import BasicTable from "../../components/utility/basicTable";
 import { get_all_vehicles } from "../../api/fetch";
+import { deleteVehicles } from "../../api/delete";
 
 export default function AllVehicles() {
   const columns = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <input
+          type="checkbox"
+          checked={table.getIsAllPageRowsSelected()}
+          onChange={table.getToggleAllPageRowsSelectedHandler()}
+        />
+      ),
+      cell: ({ row }) => (
+        <input
+          type="checkbox"
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      ),
+    },
     {
       accessorKey: "make",
       header: "Make",
@@ -50,6 +69,7 @@ export default function AllVehicles() {
   ];
 
   const [vehicles, setVehicles] = useState([]);
+  const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -58,12 +78,15 @@ export default function AllVehicles() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const selectedVehicleIds = Object.keys(rowSelection)
+    .filter((key) => rowSelection[key])
+    .map((key) => vehicles[key]?.id);
+
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
   const vehicleUrl = baseUrl + "/api/fleet/all.php";
 
-
-const getVehicles = async () => {
+  const getVehicles = async () => {
     try {
       const response = await get_all_vehicles();
       // const fetchedVehicles = response.data.vehicles.map((vehicle) => ({
@@ -81,7 +104,7 @@ const getVehicles = async () => {
     } finally {
       setLoading(false);
     }
-  };  
+  };
   // console.log("vehicles: " + vehicles);
   // console.log(vehicleData);
 
@@ -93,7 +116,33 @@ const getVehicles = async () => {
     getVehicles();
   }, []);
 
+  const handleBulkDelete = async () => {
+    const selectedIds = Object.keys(rowSelection)
+      .filter((key) => rowSelection[key])
+      .map((key) => vehicles[key].id);
 
+    if (selectedIds.length === 0) return;
+
+    const decision = await Swal.fire({
+      title: "Delete Vehicles?",
+      text: `${selectedIds.length} vehicles will be deleted.`,
+      icon: "warning",
+      showCancelButton: true,
+    });
+
+    if (!decision.isConfirmed) return;
+
+    const result = await deleteVehicles(selectedIds);
+
+    if (result.status === "Success") {
+      Swal.fire("Success", result.message, "success");
+      getVehicles();
+      setRowSelection({});
+    }
+  };
+
+  console.log(rowSelection);
+  console.log(selectedVehicleIds);
 
   if (error) {
     return (
@@ -111,6 +160,10 @@ const getVehicles = async () => {
     );
   }
 
+  // const selectedVehicles = table
+  //   ?.getSelectedRowModel()
+  //   ?.rows.map((row) => row.original.id);
+
   return (
     <div className="bg-white px-4 pb-4 rounded border-gray-200 flex-1 shadow-md mt-2 mx-3">
       <VehicleNav />
@@ -118,8 +171,22 @@ const getVehicles = async () => {
       <h1 className="text-3xl font-bold text-end text-yellow-600 tracking-wide mb-4 mt-2">
         Vehicles
       </h1>
-      <BasicTable columns={columns} columnFilters={columnFilters} setColumnFilters={setColumnFilters} data={vehicles} />
-
+      {selectedVehicleIds.length > 0 && (
+        <button
+          onClick={handleBulkDelete}
+          className="bg-red-600 text-white px-4 py-2 rounded"
+        >
+          Delete Selected
+        </button>
+      )}
+      <BasicTable
+        columns={columns}
+        columnFilters={columnFilters}
+        setColumnFilters={setColumnFilters}
+        data={vehicles}
+        rowSelection={rowSelection}
+        setRowSelection={setRowSelection}
+      />
     </div>
   );
 }
