@@ -25,6 +25,7 @@ import { Mosaic } from "react-loading-indicators";
 import { EarnedCommissionsModal } from "../../components/agents/earnedCommissionModal";
 import {
   fetchAgentBookings,
+  fetchAgentCategoryRates,
   fetchAgentCommissionPlans,
   fetchAgentDetails,
 } from "../../api/fetch";
@@ -33,6 +34,7 @@ import {
   submit_agent_rate,
   submit_agent_commission,
 } from "../../api/post";
+import CategoryRatesModal from "../../components/agents/categoryRatesModal";
 
 export default function Agent() {
   const { id } = useParams();
@@ -40,13 +42,15 @@ export default function Agent() {
   const [agent, setAgent] = useState();
   const [roleId, setRoleId] = useState(null);
   const [agentBookings, setAgentBookings] = useState([]);
+  const [agentRates, setAgentRates] = useState([]);
   const [agentCommissionPlans, setAgentCommissionPlans] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // commission modal open close state
-  const [rateModalOpen, setRateModalOpen] = useState(false); // rate modal open close state
+  const [rateModalOpen, setRateModalOpen] = useState(false); // modal to set category rates open close state
   const [passModalOpen, setPassModalOpen] = useState(false); // password modal open close state
   const [earnedModalOpen, setEarnedModalOpen] = useState(false); // earning form modal
+  const [viewRateModalOpen, setViewRateModalOpen] = useState(false); // modal to view category rates open close state
 
   const navigate = useNavigate();
 
@@ -60,6 +64,7 @@ export default function Agent() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userRoles = user?.roles?.map((r) => r.id) || [];
 
+  // Get agent basic details
   const getAgent = async () => {
     try {
       const response = await fetchAgentDetails(id);
@@ -73,6 +78,18 @@ export default function Agent() {
     }
   };
 
+  // Get agent category rates
+  const getAgentRates = async () => {
+    try {
+      const response = await fetchAgentCategoryRates(id);
+      console.log(response);
+    } catch (error) {
+      const errorMessage = error.message;
+      setError(errorMessage);
+    }
+  };
+
+  // Get agent bookings
   const getAgentBookings = async () => {
     try {
       const response = await fetchAgentBookings(id);
@@ -221,21 +238,24 @@ export default function Agent() {
         //getRoleId(); // synchronous
 
         // run all async calls in parallel
-        const [agentRes, bookingsRes, commissionsRes] = await Promise.all([
+        const [agentRes, bookingsRes, commissionsRes, ratesRes] = await Promise.all([
           fetchAgentDetails(id),
           fetchAgentBookings(id),
           fetchAgentCommissionPlans(id),
+          fetchAgentCategoryRates(id)
         ]);
 
         // set state from results
         setAgent(agentRes.agent);
-        console.log("Agent res: ", agentRes);
+        // console.log("Agent res: ", agentRes);
+        // console.log("Rates res: ", ratesRes.data.category_rates);
 
         if (bookingsRes.message !== "Agent has no bookings") {
           formatBookings(bookingsRes.bookings);
         }
 
         setAgentCommissionPlans(commissionsRes.data);
+        setAgentRates(ratesRes.data.category_rates)
       } catch (err) {
         setError(err.message || "Failed to load agent data");
       } finally {
@@ -311,10 +331,10 @@ export default function Agent() {
               {/* Set Vehicle Category Rates for Agent  */}
               <button
                 className="flex items-center gap-2 px-4 py-2 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white transition"
-                onClick={() => setRateModalOpen(true)}
+                onClick={() => setViewRateModalOpen(true)}
               >
                 <FaDollarSign className="text-lg" />
-                Set Rate
+                View Category Rate
               </button>
             </>
           )}
@@ -451,6 +471,11 @@ export default function Agent() {
         show={earnedModalOpen}
         onClose={() => setEarnedModalOpen(false)}
         agentId={id}
+      />
+      <CategoryRatesModal 
+        show={viewRateModalOpen}
+        onClose={() => setViewRateModalOpen(false)}
+        rates={agentRates}
       />
     </>
   );

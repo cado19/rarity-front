@@ -330,6 +330,13 @@ export const fetchAgentCommissionPlans = async (id) => {
   return response.data;
 };
 
+export const fetchAgentCategoryRates = async (agent_id) => {
+  const response = await api.get(`/api/agents/read_category_rates.php`, {
+    params: { agent_id },
+  });
+  return response;
+};
+
 export const fetchAgentBookings = async (agent_id) => {
   const response = await api.get(`/api/bookings/agent_bookings.php`, {
     params: { agent_id },
